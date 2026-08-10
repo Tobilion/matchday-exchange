@@ -18,7 +18,7 @@ const SPEEDS = [1, 2, 4, 8, 20];
 
 export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed, knockout, onClose, onApply }) => {
   const [match, setMatch] = useState<FootysimMatch | null>(null);
-  const [phase, setPhase] = useState<"simulating" | "playing" | "done">("simulating");
+  const [phase, setPhase] = useState<"simulating" | "playing" | "done" | "error">("simulating");
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(4);
@@ -28,15 +28,24 @@ export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed,
 
   // Simulate in a web worker (keeps the UI responsive).
   useEffect(() => {
-    const worker = new Worker(new URL("../engine/footysimWorker.ts", import.meta.url));
+    const worker = new Worker(new URL("../engine/footysimWorker.ts", import.meta.url), { type: "module" });
     worker.postMessage({ homeTeam, awayTeam, seed, knockout });
     worker.onmessage = (e: MessageEvent<FootysimMatch>) => {
       setMatch(e.data);
       setPhase("playing");
       worker.terminate();
     };
-    worker.onerror = () => {
-      setPhase("done");
+    worker.onerror = (err) => {
+      // The worker's own uncaught exception was previously swallowed here and
+      // `phase` was set straight to "done" — which the UI reads as a normal
+      // completed match: it shows "✓ Result Saved" and a blank 0-0 pitch
+      // (frames stayed [] since `match` never got set), even though nothing
+      // was simulated or recorded. `onApply` below only fires when `match` is
+      // truthy, so no result was actually written, but the label claimed
+      // otherwise — misleading. Surface it as a distinct error state instead,
+      // and log what actually broke so it's debuggable.
+      console.error("[footysim] worker failed to simulate match", err.message || err);
+      setPhase("error");
       worker.terminate();
     };
     return () => worker.terminate();
@@ -96,7 +105,9 @@ export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed,
             ← Back to Live
           </button>
           <span className="text-[10px] font-mono font-black uppercase tracking-widest text-indigo-300">🛰️ Spatial Engine · 2D Match</span>
-          {phase === "done" ? <span className="text-[9px] font-mono text-emerald-400 uppercase">✓ Result saved</span> : <span className="w-16" />}
+          {phase === "done" ? <span className="text-[9px] font-mono text-emerald-400 uppercase">✓ Result saved</span> :
+            phase === "error" ? <span className="text-[9px] font-mono text-rose-400 uppercase">⚠ Simulation failed</span> :
+            <span className="w-16" />}
         </div>
 
         {/* scoreboard */}
@@ -108,7 +119,7 @@ export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed,
           <div className="text-center shrink-0">
             <div className="font-mono text-2xl font-black text-white bg-black/40 px-4 py-1 rounded-lg">{hs} - {as_}</div>
             <div className="text-[10px] font-mono text-slate-400 mt-1">
-              {phase === "simulating" ? "…" : phase === "done" ? "FULL TIME" : isHalfTime ? "HALF TIME" : `${minute}'`}
+              {phase === "simulating" ? "…" : phase === "error" ? "—" : phase === "done" ? "FULL TIME" : isHalfTime ? "HALF TIME" : `${minute}'`}
             </div>
           </div>
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -121,6 +132,14 @@ export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed,
         <div className="relative">
           {phase === "simulating" ? (
             <div className="h-64 flex items-center justify-center text-slate-400 text-sm animate-pulse">Running the spatial simulation…</div>
+          ) : phase === "error" ? (
+            <div className="h-64 flex flex-col items-center justify-center gap-2 text-center px-6">
+              <span className="text-3xl">⚠️</span>
+              <p className="text-sm font-bold text-rose-400">The spatial engine couldn't simulate this match.</p>
+              <p className="text-xs text-slate-400 max-w-sm">
+                No result was recorded — the fixture is unchanged. Check the browser console for details, or go back and use the standard sim for this match instead.
+              </p>
+            </div>
           ) : (
             <FootballPitch2D frame={frame} homeTeamId={homeTeam.id} homeColor={homeTeam.primaryColor} awayColor={awayTeam.primaryColor} homeName={homeTeam.shortName} awayName={awayTeam.shortName} />
           )}

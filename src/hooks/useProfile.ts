@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Profile, Team, Fixture, Tipster, BetTicket, ClubOwnership, PurchasedItem } from "../types";
 import { persistStateToCache, getKeysForMode, loadProfile } from "../utils/storage";
+import { creditWalletOnServer } from "../utils/apiClient";
 
 const MAX_SINGLE_TX = 100_000;
 
@@ -84,6 +85,20 @@ export function useProfile(deps: UseProfileDeps) {
     if (!hasFunds) {
       alert("Insufficient wallet balance for withdrawal!");
       return false;
+    }
+    // Wallet deposits/withdrawals used to only ever touch local state and
+    // localStorage — the server's stored balance never heard about them.
+    // That's what let a client show e.g. $1600 (post-deposit) while the
+    // server still had the pre-deposit figure, so the very next bet placed
+    // through placeBetOnServer got rejected with a 402 "insufficient funds"
+    // even though the player just funded the wallet. Push the same signed
+    // delta to the server (positive for deposit, negative for withdraw) so
+    // its balance doesn't silently drift from what's shown on screen. Fire
+    // and forget: if there's no server running this resolves to "unreachable"
+    // and is a no-op, same as every other server call in the app.
+    if (gameMode) {
+      const delta = action === "DEPOSIT" ? amount : -amount;
+      creditWalletOnServer({ gameMode, slot: activeSlot }, delta, `Wallet ${action.toLowerCase()}`);
     }
     return true;
   };

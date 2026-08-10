@@ -9,6 +9,7 @@ import { useTransferMarket } from "../hooks/useTransferMarket";
 import { useChallenges } from "../hooks/useChallenges";
 import { useGame } from "../context/GameContext";
 import { useUI } from "../context/UIContext";
+import { getKeysForMode, loadProfile } from "../utils/storage";
 
 import { Header } from "./Header";
 import { generateTransferListings } from "../engine/transferEngine";
@@ -63,6 +64,22 @@ export default function Dashboard() {
 
   const profileHook = useProfile({ gameMode, activeSlot, teams, setTeams, fixtures, tipsters, tipsterTickets });
   const { userProfile, setUserProfile, persist } = profileHook;
+
+  // handleResetAndGenerate (GameContext) rewrites the profile in localStorage
+  // and resets GameContext-owned state (teams/fixtures/tipsters), but it has
+  // no way to reach `userProfile` here — that's owned by the separate
+  // useProfile hook, and neither hook's effects re-fire on reset because
+  // gameMode/activeSlot don't change. Without this, the wallet/tickets shown
+  // on screen stay exactly as they were pre-reset until some unrelated event
+  // (slot switch, page reload) happens to reload the profile. Reload it
+  // explicitly right after every reset so the UI actually reflects it.
+  const handleResetAndReloadProfile = (keepRecords?: boolean) => {
+    handleResetAndGenerate(keepRecords);
+    if (gameMode) {
+      const reloaded = loadProfile(getKeysForMode(gameMode, activeSlot));
+      if (reloaded) setUserProfile(reloaded);
+    }
+  };
 
   const transferMarketHook = useTransferMarket({ userProfile, setUserProfile, persist, teams });
   const { transferListings, setTransferListings, userBids, setUserBids, transferToast, handlePlaceUserBid, handleWithdrawBid, handleRefreshListings, showTransferToast } = transferMarketHook;
@@ -159,7 +176,7 @@ export default function Dashboard() {
         activeTab={activeTab} setActiveTab={setActiveTab}
         username={userProfile.username} balance={userProfile.balance}
         addFunds={() => setShowWalletModal(true)}
-        resetTournament={handleResetAndGenerate}
+        resetTournament={handleResetAndReloadProfile}
         currentRoundLabel={currentRoundLabel}
         gameMode={gameMode} exitToMenu={exitToMenu}
         hasOwnedClub={!!userProfile.ownedTeamId}
@@ -265,7 +282,7 @@ export default function Dashboard() {
 
       {transferToast && showTransferToast && <div className="fixed bottom-4 left-4 z-50 bg-slate-800 text-xs px-3 py-2 rounded-xl border border-white/10">{transferToast}</div>}
       {showWalletModal && <WalletModal balance={userProfile.balance} onConfirmTransaction={profileHook.handleConfirmWalletTransaction} onClose={() => setShowWalletModal(false)} />}
-      {showWinnerCelebration && <WinnerCelebrationModal gameMode={gameMode} balance={userProfile.balance} championName={champion.name} championCrest={champion.crest} onClose={() => setShowWinnerCelebration(false)} onResetRound={handleResetAndGenerate} />}
+      {showWinnerCelebration && <WinnerCelebrationModal gameMode={gameMode} balance={userProfile.balance} championName={champion.name} championCrest={champion.crest} onClose={() => setShowWinnerCelebration(false)} onResetRound={handleResetAndReloadProfile} />}
       {ownerRevenueReport && <OwnerRevenueModal teamName={ownerRevenueReport.teamName} revenue={ownerRevenueReport.revenue} fixtures={ownerRevenueReport.fixtures} onClose={() => setOwnerRevenueReport(null)} />}
       {globalEntity && <GlobalEntityPreviewModal globalEntity={globalEntity} teams={teams} onClose={() => setGlobalEntity(null)} onChangeEntity={(e) => setGlobalEntity(e)} onNavigateToTeams={() => { setGlobalEntity(null); setActiveTab("teams"); }} />}
       {betBuilderFixtureId && (() => { const bb = fixtures.find(f => f.id === betBuilderFixtureId); return bb ? <BetBuilder fixture={bb} teams={teams} balance={userProfile.balance} onPlace={handleBBPlace} onClose={() => setBetBuilderFixtureId(null)} /> : null; })()}

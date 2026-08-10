@@ -50,6 +50,16 @@ async function callApi<T>(path: string, body: unknown): Promise<ServerResult<T>>
     clearTimeout(timer);
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
+      if (res.status >= 500) {
+        // Every INTENTIONAL rejection in server/index.ts uses a 4xx status
+        // (400 validation, 402 insufficient funds, 404 not found, 409 no
+        // profile yet) — nothing there returns 5xx on purpose. A 5xx means
+        // an uncaught exception blew up the route handler, which is the
+        // same class of problem as the server not running at all: treat it
+        // as "unreachable" so the caller falls back to local computation
+        // instead of surfacing a raw crash/status code to the player.
+        return { ok: false, reason: "unreachable" };
+      }
       return { ok: false, reason: "rejected", error: json?.error || `Server error (${res.status})`, status: res.status };
     }
     return { ok: true, ...json } as ServerResult<T>;

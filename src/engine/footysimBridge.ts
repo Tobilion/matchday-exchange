@@ -54,7 +54,22 @@ function attributesFor(p: Player): Record<string, number> {
 
 /** Assign a team's best XI to 4-3-3 roles, filling shortfalls greedily. */
 function toTeamDict(team: Team): { dict: TeamDict; pidMap: Map<string, Player> } {
-  const xi = getStartingXI(team);
+  let xi = getStartingXI(team);
+  if (xi.length < 11) {
+    // getStartingXI only ever picks from HEALTHY players, so a squad with
+    // enough simultaneous injuries/suspensions can come back short of 11 —
+    // that's a valid state for the rest of the app (the classic tick engine
+    // tolerates it), but the spatial engine needs a full 11-a-side lineup to
+    // assign every 4-3-3 role. Without this pad, `take()` below runs out of
+    // players once the shortfall bites and throws (undefined.id), which is
+    // what actually killed the watched 2D match — the worker's uncaught
+    // exception, not a "real" 0-0. Pad with whichever remaining squad
+    // players aren't already in the XI (even if currently injured/reserve —
+    // a stand-in on the spatial pitch beats crashing the whole feature).
+    const used = new Set(xi.map((p) => p.id));
+    const rest = team.players.filter((p) => !used.has(p.id)).sort((a, b) => b.rating - a.rating);
+    xi = [...xi, ...rest].slice(0, 11);
+  }
   const pidMap = new Map<string, Player>();
   const buckets: Record<string, Player[]> = { GK: [], DEF: [], MID: [], ATT: [] };
   for (const p of xi) (buckets[p.position] ?? buckets.MID).push(p);
@@ -64,7 +79,10 @@ function toTeamDict(team: Team): { dict: TeamDict; pidMap: Map<string, Player> }
   const used = new Set([gk.id]);
   const take = (prefer: Position): Player => {
     const fromBucket = buckets[prefer].find((p) => !used.has(p.id));
-    const pick = fromBucket ?? pool.find((p) => !used.has(p.id))!;
+    // Last-resort fallback for a squad that's still short of 11 total
+    // players even after the pad above (extremely small custom squads) —
+    // reuse the GK rather than crashing the match over a cosmetic duplicate.
+    const pick = fromBucket ?? pool.find((p) => !used.has(p.id)) ?? gk;
     used.add(pick.id);
     return pick;
   };

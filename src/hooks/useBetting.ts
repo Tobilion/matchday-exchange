@@ -65,9 +65,17 @@ export function useBetting(deps: UseBettingDeps) {
       }
     });
     return () => { cancelled = true; };
-    // Only re-run when the save slot itself changes, not on every profile edit.
+    // Re-run when the save slot changes, AND when userProfile first becomes
+    // available for that slot (the `!!userProfile` dep) — NOT on every
+    // subsequent profile edit, since `!!userProfile` only flips once it's
+    // already true. This matters because gameMode/activeSlot are often set
+    // (e.g. on campaign resume) on a render where userProfile is still null
+    // (useProfile's own restore effect hasn't committed yet); without this,
+    // the early-return above would skip bootstrap for the whole session and
+    // every bet/cash-out would hit the server with no profile ever seeded,
+    // surfacing a raw 409 "call bootstrap first" instead of falling back.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameMode, activeSlot]);
+  }, [gameMode, activeSlot, !!userProfile]);
 
   const persist = (profile: Profile) =>
     persistStateToCache(gameMode, activeSlot, profile, teams, fixtures, tipsters, tipsterTickets);
@@ -185,12 +193,23 @@ export function useBetting(deps: UseBettingDeps) {
     persist(nextProfile);
   };
 
+  // Guards against a double-submit (double-click, or a slow server response
+  // tempting a second click before the first resolves) firing two concurrent
+  // placeBetOnServer calls for the same stake. Without this, the button in
+  // BettingSlip has nothing stopping a second call from going out while the
+  // first is still in flight; the first debits the server balance, and the
+  // second — now genuinely insufficient — comes back a real 402, which reads
+  // very confusingly on screen ("it said insufficient funds but also took my
+  // money") even though only the first bet was actually placed.
+  const placingBet = useRef(false);
+
   const handlePlaceBet = async (
     type: "SINGLE" | "ACCUMULATOR",
     totalStake: number,
     selectionStakes?: { [secId: string]: number },
   ) => {
     if (!userProfile) return;
+    if (placingBet.current) return;
     if (!Number.isFinite(totalStake) || totalStake <= 0) {
       alert("Stake must be greater than zero.");
       return;
@@ -203,6 +222,8 @@ export function useBetting(deps: UseBettingDeps) {
       }
     }
 
+    placingBet.current = true;
+    try {
     if (gameMode && serverAvailable.current !== false) {
       const result = await placeBetOnServer(
         { gameMode, slot: activeSlot },
@@ -230,6 +251,9 @@ export function useBetting(deps: UseBettingDeps) {
     }
 
     placeBetLocally(type, totalStake, selectionStakes);
+    } finally {
+      placingBet.current = false;
+    }
   };
 
   /** Local (client-only) cash-out — the ORIGINAL logic, used when the server isn't reachable. */
@@ -262,9 +286,16 @@ export function useBetting(deps: UseBettingDeps) {
    * any `offerAmount` it likes, so the server treats it as a display hint,
    * never as the amount to actually pay out.
    */
+  const cashingOutTickets = useRef<Set<string>>(new Set());
+
   const handleCashOut = async (ticketId: string, offerAmount: number) => {
     if (!userProfile) return;
+    // Same double-submit guard as handlePlaceBet, keyed per-ticket so cashing
+    // out one ticket doesn't block cashing out a different one at the same time.
+    if (cashingOutTickets.current.has(ticketId)) return;
+    cashingOutTickets.current.add(ticketId);
 
+    try {
     if (gameMode && serverAvailable.current !== false) {
       const result = await cashOutOnServer({ gameMode, slot: activeSlot }, ticketId, fixtures);
       if (result.ok) {
@@ -287,6 +318,9 @@ export function useBetting(deps: UseBettingDeps) {
     }
 
     cashOutLocally(ticketId, offerAmount);
+    } finally {
+      cashingOutTickets.current.delete(ticketId);
+    }
   };
 
   /**
