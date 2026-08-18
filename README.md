@@ -1,6 +1,6 @@
 # Matchday Exchange — Football Simulation & Sportsbook
 
-[![CI](https://github.com/Tobilion/football-bet-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobilion/football-bet-simulator/actions/workflows/ci.yml)
+[![CI](https://github.com/Tobilion/matchday-exchange/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobilion/matchday-exchange/actions/workflows/ci.yml)
 
 **Live demo: [matchday-exchange.vercel.app](https://matchday-exchange.vercel.app/)**
 
@@ -36,7 +36,7 @@ React 19 · TypeScript 5.8 · Vite 6 · Tailwind CSS 4 · Recharts · Motion. Fu
 Prerequisite: Node.js 18+ ([nodejs.org](https://nodejs.org)). Then, in a terminal:
 
 ```bash
-git clone https://github.com/Tobilion/football-bet-simulator.git
+git clone https://github.com/Tobilion/matchday-exchange.git
 cd football-tournament-betting-simulator
 npm install
 npm run dev
