@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Tobilion/football-bet-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobilion/football-bet-simulator/actions/workflows/ci.yml)
 
-**Live demo: [football-bet-simulator.vercel.app](https://football-bet-simulator.vercel.app/)**
+**Live demo: [matchday-exchange.vercel.app](https://matchday-exchange.vercel.app/)**
 
 ![Demo](demo.gif)
 
