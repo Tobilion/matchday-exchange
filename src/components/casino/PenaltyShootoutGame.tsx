@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Sparkles } from "lucide-react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
@@ -15,6 +15,17 @@ export const PenaltyShootoutGame: React.FC<GameProps> = ({ balance, onUpdateBala
 
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
   const stakeRef = useRef<number>(safeStake);
+  const liveRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (liveRef.current && stakeRef.current > 0) {
+      onUpdateBalanceRef.current(stakeRef.current);
+      liveRef.current = false;
+    }
+  }, []);
 
   const targets = [
     { id: "TL", label: "⚽ Top-Left" },
@@ -28,11 +39,12 @@ export const PenaltyShootoutGame: React.FC<GameProps> = ({ balance, onUpdateBala
 
     if (!inGame) {
       if (balance < safeStake) {
-        setCommentary("❌ Insufficient balance. Claim emergency cash!");
+        setCommentary("❌ Insufficient balance. Top up via the Wallet!");
         return;
       }
       stakeRef.current = safeStake;
       onUpdateBalance(-safeStake);
+      liveRef.current = true;
       setInGame(true);
       setRoundsCount(1);
       setCurrentMulti(1.0);
@@ -41,13 +53,15 @@ export const PenaltyShootoutGame: React.FC<GameProps> = ({ balance, onUpdateBala
     setFiring(true);
     setCommentary("Run up... releasing direct power volley shot!");
 
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setFiring(false);
       const saved = Math.random() < 0.62;
       setLastEvent({ spot, saved });
 
       if (saved) {
         setInGame(false);
+        liveRef.current = false;
         setCommentary("🧤 AMAZING SAVE! The diving keeper intercepts your shot!");
         addLog("Penalty Shootout", stakeRef.current, 0, "LOSS", `Saved at ${spot} on shot ${roundsCount}`);
         setRoundsCount(0);
@@ -60,6 +74,7 @@ export const PenaltyShootoutGame: React.FC<GameProps> = ({ balance, onUpdateBala
           const finalVal = stakeRef.current * 40.0;
           onUpdateBalance(finalVal);
           setInGame(false);
+          liveRef.current = false;
           setCommentary(`🏆 SHOT-MASTER! 4 goals in a row! Maximum payout $${formatMoney(finalVal)} (40.0x Jackpot)!`);
           addLog("Penalty Shootout", stakeRef.current, 40.0, "WIN", "Cleared 4 rounds penalty streak!");
           setRoundsCount(0);
@@ -72,7 +87,9 @@ export const PenaltyShootoutGame: React.FC<GameProps> = ({ balance, onUpdateBala
   };
 
   const handleCashout = () => {
-    if (!inGame || roundsCount <= 1 || firing) return;
+    if (!inGame || !liveRef.current || roundsCount <= 1 || firing) return;
+    liveRef.current = false;
+    if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
     const winVal = stakeRef.current * currentMulti;
     onUpdateBalance(winVal);
     setInGame(false);

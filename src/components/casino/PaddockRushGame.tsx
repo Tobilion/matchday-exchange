@@ -24,14 +24,27 @@ export const PaddockRushGame: React.FC<GameProps> = ({
   const crashLimitRef = useRef<number>(1.0);
   const stakeRef = useRef<number>(1);
   const isStartingRef = useRef<boolean>(false);
+  // Synchronous round guards — state updates are async, so a second click
+  // before re-render would otherwise credit the payout twice.
+  const liveRef = useRef(false);
+  const cashingOutRef = useRef(false);
 
-  const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
-
+  // Leaving mid-run refunds the stake instead of burning it.
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
   useEffect(() => {
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, []);
+  useEffect(() => () => {
+    if (liveRef.current && stakeRef.current > 0) {
+      onUpdateBalanceRef.current(stakeRef.current);
+      liveRef.current = false;
+    }
+  }, []);
+
+  const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
 
   const startCrashGame = () => {
     if (isLive || isStartingRef.current) return;
@@ -39,12 +52,14 @@ export const PaddockRushGame: React.FC<GameProps> = ({
       setCommentary("❌ Insufficient lobby wallet funds.");
       return;
     }
-    
+
     isStartingRef.current = true;
     stakeRef.current = safeStake;
 
     // Deduct the stake using functional state updates
     onUpdateBalance(-stakeRef.current);
+    liveRef.current = true;
+    cashingOutRef.current = false;
     setIsLive(true);
     setIsCrashed(false);
     setIsCashedOut(false);
@@ -72,6 +87,7 @@ export const PaddockRushGame: React.FC<GameProps> = ({
 
     if (currentMulti >= crashLimitRef.current) {
       setIsLive(false);
+      liveRef.current = false;
       setIsCrashed(true);
       setMultiplier(crashLimitRef.current);
       setCommentary(
@@ -92,7 +108,9 @@ export const PaddockRushGame: React.FC<GameProps> = ({
   };
 
   const handleCashout = () => {
-    if (!isLive || isCashedOut || isCrashed) return;
+    if (!isLive || !liveRef.current || isCashedOut || isCrashed || cashingOutRef.current) return;
+    cashingOutRef.current = true;
+    liveRef.current = false;
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     setIsLive(false);
     setIsCashedOut(true);

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { RefreshCw } from "lucide-react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
@@ -19,6 +19,20 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
   const currentRoundRef = useRef<number>(0);
   const currentPoolRef = useRef<number>(0);
   const balanceAtStartRef = useRef<number>(0);
+  // Sync guards: `spinning` state flips async, so rapid clicks would queue
+  // duplicate resolve timers. Unmount mid-streak refunds the live pool.
+  const busyRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (currentRoundRef.current > 0 && currentPoolRef.current > 0) {
+      onUpdateBalanceRef.current(currentPoolRef.current);
+      currentRoundRef.current = 0;
+      currentPoolRef.current = 0;
+    }
+  }, []);
 
   const safeStake = balance > 0 ? Math.max(1, Math.min(stake, Math.floor(balance))) : stake;
 
@@ -26,7 +40,9 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
     setSpinning(true);
     setMessage("Shuffling casino decks...");
 
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      busyRef.current = false;
       setSpinning(false);
       const rand = Math.random() * 100;
       let draw: "RED" | "BLACK" | "JOKER";
@@ -79,12 +95,14 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
   };
 
   const selectColor = (choice: "RED" | "BLACK") => {
-    if (spinning) return;
+    if (spinning || busyRef.current) return;
+    busyRef.current = true;
     setSpinning(true);
     if (round === 0) {
       if (balance <= 0) {
-        setMessage("❌ Insufficient balance. Top up your wallet or claim emergency funds.");
+        setMessage("❌ Insufficient balance. Top up your wallet to continue.");
         setSpinning(false);
+        busyRef.current = false;
         return;
       }
       const wager = Math.min(safeStake, balance);
@@ -102,7 +120,8 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
   };
 
   const handleCashout = () => {
-    if (round <= 1 || currentPool <= 0 || spinning) return;
+    if (round <= 1 || currentPool <= 0 || spinning || busyRef.current) return;
+    busyRef.current = true;
     const finalPool = currentPoolRef.current;
     const origWager = originalWagerRef.current;
     onUpdateBalance(finalPool);
@@ -112,6 +131,7 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
     setCurrentPool(0);
     currentRoundRef.current = 0;
     currentPoolRef.current = 0;
+    busyRef.current = false;
   };
 
   return (

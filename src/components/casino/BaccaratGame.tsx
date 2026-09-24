@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 
@@ -33,10 +33,15 @@ export const BaccaratGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
   const [bankerHand, setBankerHand] = useState<Card[]>([]);
   const [message, setMessage] = useState("Choose PLAYER, BANKER, or TIE and deal!");
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  // Synchronous deal, but the phase flip is async — guard against double-click.
+  const actingRef = useRef(false);
 
   const deal = () => {
+    if (actingRef.current || phase === "dealing") return;
     if (balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
-    onUpdateBalance(-safeStake);
+    actingRef.current = true;
+    const roundStake = safeStake;
+    onUpdateBalance(-roundStake);
     setPhase("dealing");
 
     // Initial 2 cards each
@@ -70,19 +75,20 @@ export const BaccaratGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
     let payout = 0; let status: "WIN"|"LOSS" = "LOSS"; let msg = "";
 
     if (winner === betSide) {
-      if (betSide === "player") { payout = safeStake * 2; msg = `✅ Player ${pPt} beats Banker ${bPt}! Win $${formatMoney(payout)}`; }
-      else if (betSide === "banker") { payout = safeStake * 1.95; msg = `✅ Banker ${bPt} beats Player ${pPt}! Win $${formatMoney(payout)} (5% comm.)`; }
-      else { payout = safeStake * 9; msg = `🎉 TIE! Both ${pPt}! Win $${formatMoney(payout)} (8:1)!`; }
+      if (betSide === "player") { payout = roundStake * 2; msg = `✅ Player ${pPt} beats Banker ${bPt}! Win $${formatMoney(payout)}`; }
+      else if (betSide === "banker") { payout = roundStake * 1.95; msg = `✅ Banker ${bPt} beats Player ${pPt}! Win $${formatMoney(payout)} (5% comm.)`; }
+      else { payout = roundStake * 9; msg = `🎉 TIE! Both ${pPt}! Win $${formatMoney(payout)} (8:1)!`; }
       status = "WIN";
     } else if (winner === "tie" && betSide !== "tie") {
-      payout = safeStake; status = "WIN"; msg = `🤝 Tie! Stake returned (${pPt} each).`;
+      payout = roundStake; status = "WIN"; msg = `🤝 Tie! Stake returned (${pPt} each).`;
     } else {
-      msg = `❌ ${winner === "player" ? `Player ${pPt}` : `Banker ${bPt}`} wins. You bet ${betSide}. Lost $${formatMoney(safeStake)}.`;
+      msg = `❌ ${winner === "player" ? `Player ${pPt}` : `Banker ${bPt}`} wins. You bet ${betSide}. Lost $${formatMoney(roundStake)}.`;
     }
 
-    onUpdateBalance(payout);
+    if (payout > 0) onUpdateBalance(payout);
     setMessage(msg); setPhase("done");
-    addLog("Baccarat Royale", safeStake, payout > 0 ? payout / safeStake : 0, status, msg.slice(0, 50));
+    addLog("Baccarat Royale", roundStake, payout > 0 ? payout / roundStake : 0, status, msg.slice(0, 50));
+    actingRef.current = false;
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { KENO_TOTAL as TOTAL, KENO_DRAW as DRAW, KENO_PAYOUTS } from "./constants";
@@ -21,6 +21,19 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
   const [hits, setHits] = useState(0);
   const [message, setMessage] = useState("Pick up to 10 numbers then draw!");
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  const drawingRef = useRef(false);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const drawStakeRef = useRef(0);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+    if (drawingRef.current && drawStakeRef.current > 0) {
+      onUpdateBalanceRef.current(drawStakeRef.current);
+      drawingRef.current = false;
+    }
+  }, []);
 
   const togglePick = (n: number) => {
     if (phase !== "idle") return;
@@ -33,39 +46,47 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
   };
 
   const draw = () => {
+    if (drawingRef.current || phase !== "idle") return;
     if (picks.size === 0) { setMessage("Pick at least 1 number first!"); return; }
     if (balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
-    onUpdateBalance(-safeStake);
-    const pickCount = picks.size;
+    drawingRef.current = true;
+    drawStakeRef.current = safeStake;
+    const roundStake = drawStakeRef.current;
+    const roundPicks = new Set(picks);
+    const pickCount = roundPicks.size;
+    onUpdateBalance(-roundStake);
     const pool = Array.from({ length: TOTAL }, (_, i) => i + 1);
     const drawnNums = shuffle(pool).slice(0, DRAW);
     setPhase("revealing");
     const revealed: number[] = [];
-    drawnNums.forEach((num, i) => {
-      setTimeout(() => {
+    timersRef.current = drawnNums.map((num, i) => setTimeout(() => {
         revealed.push(num);
         setDrawn([...revealed]);
         if (i === drawnNums.length - 1) {
-          const hitCount = drawnNums.filter(n => picks.has(n)).length;
+          drawingRef.current = false;
+          timersRef.current = [];
+          const hitCount = drawnNums.filter(n => roundPicks.has(n)).length;
           const table = KENO_PAYOUTS[pickCount] ?? {};
           const multi = table[hitCount] ?? 0;
-          const payout = safeStake * multi;
-          onUpdateBalance(payout);
+          const payout = roundStake * multi;
+          if (payout > 0) onUpdateBalance(payout);
           setHits(hitCount);
           setPhase("done");
           if (multi > 0) {
             setMessage(`🎯 ${hitCount} hits! ${multi}x payout — Win $${formatMoney(payout)}!`);
-            addLog("Keno Rush", safeStake, multi, "WIN", `${hitCount}/${pickCount} hits`);
+            addLog("Keno Rush", roundStake, multi, "WIN", `${hitCount}/${pickCount} hits`);
           } else {
             setMessage(`${hitCount} hits from ${pickCount} picks. Better luck next time!`);
-            addLog("Keno Rush", safeStake, 0, "LOSS", `${hitCount}/${pickCount} hits`);
+            addLog("Keno Rush", roundStake, 0, "LOSS", `${hitCount}/${pickCount} hits`);
           }
         }
-      }, i * 150);
-    });
+      }, i * 150));
   };
 
-  const reset = () => { setPicks(new Set()); setDrawn([]); setPhase("idle"); setHits(0); setMessage("Pick up to 10 numbers then draw!"); };
+  const reset = () => {
+    if (drawingRef.current) return;
+    setPicks(new Set()); setDrawn([]); setPhase("idle"); setHits(0); setMessage("Pick up to 10 numbers then draw!");
+  };
 
   const activeTable = KENO_PAYOUTS[picks.size || 10] ?? {};
 

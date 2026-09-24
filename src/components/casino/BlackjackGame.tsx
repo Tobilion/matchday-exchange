@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 
@@ -74,6 +74,22 @@ export const BlackjackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, a
   const [doubled, setDoubled] = useState(false);
 
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  // Round stake captured at deal time. Payouts MUST use this, never the live
+  // `safeStake` (which shrinks after the deduct re-renders with a lower
+  // balance — the old code underpaid every win when balance < 2x stake).
+  const roundStakeRef = useRef(0);
+  // Sync guards: state flips are async, so rapid clicks would double-act.
+  const actingRef = useRef(false);
+  const liveRef = useRef(false);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  // Leaving mid-hand refunds the total staked instead of burning it.
+  useEffect(() => () => {
+    if (liveRef.current && roundStakeRef.current > 0) {
+      onUpdateBalanceRef.current(roundStakeRef.current);
+      liveRef.current = false;
+    }
+  }, []);
 
   const resolveDealer = useCallback((pHand: Card[], currentDeck: Card[], currentStake: number, currentDealerHand: Card[]) => {
     const pVal = handValue(pHand);
@@ -94,53 +110,69 @@ export const BlackjackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, a
   }, [onUpdateBalance, addLog]);
 
   const deal = useCallback(() => {
+    if (actingRef.current || liveRef.current) return;
     if (balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
+    actingRef.current = true;
+    roundStakeRef.current = safeStake;
+    const roundStake = roundStakeRef.current;
     const newDeck = shuffle([...buildDeck(),...buildDeck(),...buildDeck(),...buildDeck(),...buildDeck(),...buildDeck()]);
     const pH: Card[] = [newDeck[0], newDeck[2]];
     const dH: Card[] = [newDeck[1], { ...newDeck[3], hidden: true }];
-    onUpdateBalance(-safeStake);
+    onUpdateBalance(-roundStake);
+    liveRef.current = true;
     const remDeck = newDeck.slice(4);
     setDeck(remDeck); setPlayerHand(pH); setDealerHand(dH); setPhase("playing"); setResult(null); setDoubled(false);
     const pVal = handValue(pH);
     if (pVal === 21) {
       const dReveal = dH.map(c => ({ ...c, hidden: false }));
       setDealerHand(dReveal);
-      if (handValue(dReveal) === 21) { onUpdateBalance(safeStake); setResult("push"); setMessage("🤝 Both Blackjack — Push!"); addLog("Stadium Blackjack", safeStake, 1, "WIN", "Push both BJ"); setPhase("done"); return; }
-      onUpdateBalance(safeStake * 2.5); setResult("blackjack"); setMessage(`🃏 BLACKJACK! Win $${formatMoney(safeStake * 2.5)} (3:2)!`); addLog("Stadium Blackjack", safeStake, 2.5, "WIN", "Blackjack 3:2"); setPhase("done"); return;
+      if (handValue(dReveal) === 21) { onUpdateBalance(roundStake); setResult("push"); setMessage("🤝 Both Blackjack — Push!"); addLog("Stadium Blackjack", roundStake, 1, "WIN", "Push both BJ"); setPhase("done"); liveRef.current = false; actingRef.current = false; return; }
+      onUpdateBalance(roundStake * 2.5); setResult("blackjack"); setMessage(`🃏 BLACKJACK! Win $${formatMoney(roundStake * 2.5)} (3:2)!`); addLog("Stadium Blackjack", roundStake, 2.5, "WIN", "Blackjack 3:2"); setPhase("done"); liveRef.current = false; actingRef.current = false; return;
     }
     setMessage(`Your hand: ${pVal} | Dealer shows: ${handValue([dH[0]])}. Hit or Stand?`);
+    actingRef.current = false;
   }, [balance, safeStake, onUpdateBalance, addLog]);
 
   const hit = useCallback(() => {
-    if (phase !== "playing") return;
+    if (phase !== "playing" || actingRef.current) return;
+    actingRef.current = true;
+    const roundStake = roundStakeRef.current;
     const newCard = deck[0]; const newHand = [...playerHand, newCard]; const remDeck = deck.slice(1);
     setPlayerHand(newHand); setDeck(remDeck);
     const val = handValue(newHand);
     if (val > 21) {
       setDealerHand(h => h.map(c => ({ ...c, hidden: false }))); setResult("bust");
-      setMessage(`💥 Bust! ${val}. Lost $${formatMoney(safeStake)}.`);
-      addLog("Stadium Blackjack", safeStake, 0, "LOSS", `Bust at ${val}`); setPhase("done");
-    } else if (val === 21) { resolveDealer(newHand, remDeck, safeStake, dealerHand); }
+      setMessage(`💥 Bust! ${val}. Lost $${formatMoney(roundStake)}.`);
+      addLog("Stadium Blackjack", roundStake, 0, "LOSS", `Bust at ${val}`); setPhase("done"); liveRef.current = false;
+    } else if (val === 21) { resolveDealer(newHand, remDeck, roundStake, dealerHand); liveRef.current = false; }
     else { setMessage(`Hand: ${val}. Hit or Stand?`); }
-  }, [phase, deck, playerHand, dealerHand, safeStake, resolveDealer, addLog]);
+    actingRef.current = false;
+  }, [phase, deck, playerHand, dealerHand, resolveDealer, addLog]);
 
   const stand = useCallback(() => {
-    if (phase !== "playing") return;
-    resolveDealer(playerHand, deck, safeStake, dealerHand);
-  }, [phase, playerHand, deck, dealerHand, safeStake, resolveDealer]);
+    if (phase !== "playing" || actingRef.current) return;
+    actingRef.current = true;
+    resolveDealer(playerHand, deck, roundStakeRef.current, dealerHand);
+    liveRef.current = false;
+    actingRef.current = false;
+  }, [phase, playerHand, deck, dealerHand, resolveDealer]);
 
   const doubleDown = useCallback(() => {
-    if (phase !== "playing" || playerHand.length !== 2 || balance < safeStake) return;
-    onUpdateBalance(-safeStake); setDoubled(true);
+    if (phase !== "playing" || actingRef.current || playerHand.length !== 2 || balance < roundStakeRef.current) return;
+    actingRef.current = true;
+    const roundStake = roundStakeRef.current;
+    onUpdateBalance(-roundStake); setDoubled(true);
+    roundStakeRef.current = roundStake * 2;
     const newCard = deck[0]; const newHand = [...playerHand, newCard]; const remDeck = deck.slice(1);
     setPlayerHand(newHand); setDeck(remDeck);
     const val = handValue(newHand);
     if (val > 21) {
       setDealerHand(h => h.map(c => ({ ...c, hidden: false }))); setResult("bust");
-      setMessage(`💥 Double Bust ${val}! Lost $${formatMoney(safeStake * 2)}.`);
-      addLog("Stadium Blackjack", safeStake * 2, 0, "LOSS", `Double bust ${val}`); setPhase("done");
-    } else { resolveDealer(newHand, remDeck, safeStake * 2, dealerHand); }
-  }, [phase, playerHand, deck, dealerHand, balance, safeStake, onUpdateBalance, resolveDealer, addLog]);
+      setMessage(`💥 Double Bust ${val}! Lost $${formatMoney(roundStake * 2)}.`);
+      addLog("Stadium Blackjack", roundStake * 2, 0, "LOSS", `Double bust ${val}`); setPhase("done"); liveRef.current = false;
+    } else { resolveDealer(newHand, remDeck, roundStake * 2, dealerHand); liveRef.current = false; }
+    actingRef.current = false;
+  }, [phase, playerHand, deck, dealerHand, balance, onUpdateBalance, resolveDealer, addLog]);
 
   return (
     <div className="space-y-3 select-none">

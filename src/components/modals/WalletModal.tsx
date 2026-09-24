@@ -5,16 +5,25 @@ interface WalletModalProps {
   balance: number;
   onConfirmTransaction: (amount: number, action: "DEPOSIT" | "WITHDRAW") => boolean;
   onClose: () => void;
+  /** Per-save-slot scope (e.g. "tournament_slot1") — the emergency grant is one-time per scope. */
+  grantScopeKey?: string;
 }
+
+const EMERGENCY_GRANT = 1000;
 
 export const WalletModal: React.FC<WalletModalProps> = ({
   balance,
   onConfirmTransaction,
-  onClose
+  onClose,
+  grantScopeKey,
 }) => {
   const [walletAction, setWalletAction] = useState<"DEPOSIT" | "WITHDRAW">("DEPOSIT");
   const [walletValue, setWalletValue] = useState<string>("100");
   const [walletSuccessMsg, setWalletSuccessMsg] = useState<string>("");
+  const grantKey = grantScopeKey ? `fs_emergency_grant_${grantScopeKey}` : null;
+  const [grantClaimed, setGrantClaimed] = useState<boolean>(() => {
+    try { return grantKey ? localStorage.getItem(grantKey) === "1" : false; } catch { return false; }
+  });
 
   const handleConfirm = () => {
     const amount = parseFloat(walletValue);
@@ -122,22 +131,25 @@ export const WalletModal: React.FC<WalletModalProps> = ({
           ))}
         </div>
 
-        {balance < 50 && (
+        {balance < 50 && !grantClaimed && (
           <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-center space-y-2 animate-fade-in">
             <span className="text-[10px] text-amber-400 font-mono uppercase font-black block">
               ⚠️ EMERGENCY FUNDS AVAILABLE
             </span>
             <p className="text-[9px] text-slate-400">
-              Your balance is critically low. Collect a $1,000.00 cash grant to continue wagering!
+              Your balance is critically low. Collect a one-time ${EMERGENCY_GRANT.toLocaleString()}.00 cash grant to continue wagering!
             </p>
             <button
               onClick={() => {
-                onConfirmTransaction(1000, "DEPOSIT");
-                setWalletSuccessMsg("Claimed $1,000.00 Emergency Grant!");
+                if (onConfirmTransaction(EMERGENCY_GRANT, "DEPOSIT")) {
+                  try { if (grantKey) localStorage.setItem(grantKey, "1"); } catch {}
+                  setGrantClaimed(true);
+                  setWalletSuccessMsg(`Claimed $${EMERGENCY_GRANT.toLocaleString()}.00 Emergency Grant!`);
+                }
               }}
               className="w-full py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[10px] rounded-lg tracking-wider uppercase cursor-pointer transition-colors"
             >
-              Collect $1,000 Grant
+              Collect ${EMERGENCY_GRANT.toLocaleString()} Grant
             </button>
           </div>
         )}

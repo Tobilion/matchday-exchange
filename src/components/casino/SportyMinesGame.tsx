@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 
@@ -20,6 +20,21 @@ export const SportyMinesGame: React.FC<GameProps> = ({
   );
   const [roundOver, setRoundOver] = useState<boolean>(false);
   const stakeRef = useRef<number>(1);
+  // Synchronous round guards (state updates are async — a second click before
+  // re-render would otherwise deduct/credit twice).
+  const liveRef = useRef(false);
+  const busyRef = useRef(false);
+
+  // If the player leaves mid-round (lobby, tab switch unmount), refund the
+  // stake instead of burning it.
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (liveRef.current && stakeRef.current > 0) {
+      onUpdateBalanceRef.current(stakeRef.current);
+      liveRef.current = false;
+    }
+  }, []);
 
   const totalCells = 25;
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
@@ -34,12 +49,15 @@ export const SportyMinesGame: React.FC<GameProps> = ({
   };
 
   const handleStartGame = () => {
+    if (liveRef.current || busyRef.current) return;
     if (balance < safeStake) {
       setCommentary("❌ Insufficient funds.");
       return;
     }
+    busyRef.current = true;
     stakeRef.current = safeStake;
     onUpdateBalance(-stakeRef.current);
+    liveRef.current = true;
     setInGame(true);
     setRoundOver(false);
     setRevealedCount(0);
@@ -58,10 +76,11 @@ export const SportyMinesGame: React.FC<GameProps> = ({
       revealed: false,
     }));
     setGrid(nextGrid);
+    busyRef.current = false;
   };
 
   const handleCellClick = (index: number) => {
-    if (!inGame || grid[index].revealed || roundOver) return;
+    if (!inGame || !liveRef.current || grid[index].revealed || roundOver) return;
 
     const cell = grid[index];
     const newGrid = [...grid];
@@ -72,6 +91,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
       const fullyRevealedGrid = newGrid.map((c) => ({ ...c, revealed: true }));
       setGrid(fullyRevealedGrid);
       setInGame(false);
+      liveRef.current = false;
       setRoundOver(true);
       setCommentary(
         `💥 EXPLOSION! You hit a mine! Game over — see where all ${mineCount} mines were hidden.`,
@@ -99,6 +119,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
         const winAmount = stakeRef.current * nextMulti;
         onUpdateBalance(winAmount);
         setInGame(false);
+        liveRef.current = false;
         setRoundOver(true);
         setCommentary(
           `🏆 BOARD CLEARANCE! All safe cells revealed! Won $${formatMoney(winAmount)} (${nextMulti}x)`,
@@ -119,13 +140,16 @@ export const SportyMinesGame: React.FC<GameProps> = ({
   };
 
   const handleCashout = () => {
-    if (!inGame || revealedCount === 0) return;
+    if (!inGame || !liveRef.current || revealedCount === 0 || busyRef.current) return;
+    busyRef.current = true;
+    liveRef.current = false;
     const finalMulti = multiplier;
     const finalPayout = stakeRef.current * finalMulti;
     const fullyRevealedGrid = grid.map((c) => ({ ...c, revealed: true }));
     setGrid(fullyRevealedGrid);
     onUpdateBalance(finalPayout);
     setInGame(false);
+    busyRef.current = false;
     setRoundOver(true);
     setCommentary(
       `💰 SAFE CASHOUT! Secured $${formatMoney(finalPayout)} at ${finalMulti}x. See the full board reveal!`,
@@ -232,7 +256,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
             <span>
               Cashout:{" "}
               <b className="text-emerald-400">
-                ${formatMoney(safeStake * multiplier)} ({multiplier}x)
+                ${formatMoney(stakeRef.current * multiplier)} ({multiplier}x)
               </b>
             </span>
           </div>
@@ -241,7 +265,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
             disabled={revealedCount === 0}
             className="w-full bg-emerald-500 hover:bg-emerald-400 text-[#05070a] font-sans font-black text-xs py-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer uppercase tracking-wider"
           >
-            💰 CASHOUT NOW (${formatMoney(safeStake * multiplier)})
+            💰 CASHOUT NOW (${formatMoney(stakeRef.current * multiplier)})
           </button>
         </>
       ) : (

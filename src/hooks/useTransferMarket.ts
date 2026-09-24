@@ -3,6 +3,7 @@ import { TransferListing, Profile } from "../types";
 import { generateTransferListings, refreshTransferListings } from "../engine/transferEngine";
 import { transition, type Bid } from "../engine/bidLifecycle";
 import { addToast } from "./useToast";
+import { creditWalletOnServer } from "../utils/apiClient";
 
 /** Adapts the app's plain `{listingId, amount}` bid tuple into the state
  *  machine's `Bid` shape. Bids the user currently holds are always "live"
@@ -18,10 +19,12 @@ interface UseTransferMarketDeps {
   setUserProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
   persist: (profile: Profile) => void;
   teams: import("../types").Team[];
+  gameMode: "TOURNAMENT" | "LEAGUE" | null;
+  activeSlot: number;
 }
 
 export function useTransferMarket(deps: UseTransferMarketDeps) {
-  const { userProfile, setUserProfile, persist, teams } = deps;
+  const { userProfile, setUserProfile, persist, teams, gameMode, activeSlot } = deps;
   const [transferListings, setTransferListings] = useState<TransferListing[]>([]);
   const [userBids, setUserBids] = useState<{ listingId: string; amount: number }[]>([]);
   const [transferToast, setTransferToast] = useState<string>("");
@@ -84,6 +87,9 @@ export function useTransferMarket(deps: UseTransferMarketDeps) {
     };
     setUserProfile(nextProfile);
     persist(nextProfile);
+    if (gameMode && walletDelta !== 0) {
+      creditWalletOnServer({ gameMode, slot: activeSlot }, Math.round(walletDelta * 100) / 100, prevBid ? `Updated bid on ${playerName}` : `Placed bid on ${playerName}`);
+    }
 
     setUserBids((prev) => {
       const filtered = prev.filter((b) => b.listingId !== listingId);
@@ -134,6 +140,9 @@ export function useTransferMarket(deps: UseTransferMarketDeps) {
     };
     setUserProfile(nextProfile);
     persist(nextProfile);
+    if (gameMode) {
+      creditWalletOnServer({ gameMode, slot: activeSlot }, Math.round(walletDelta * 100) / 100, `Withdrew bid on ${playerName}`);
+    }
 
     setUserBids((prev) => prev.filter((b) => b.listingId !== listingId));
 
@@ -179,6 +188,9 @@ export function useTransferMarket(deps: UseTransferMarketDeps) {
     };
     setUserProfile(nextProfile);
     persist(nextProfile);
+    if (gameMode) {
+      creditWalletOnServer({ gameMode, slot: activeSlot }, -REFRESH_FEE, "Refreshed transfer market");
+    }
     addToast({ type: "info", title: "🔄 Market Refreshed", message: "A fresh set of players is available.", duration: 3500 });
   };
 

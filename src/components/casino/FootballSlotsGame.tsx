@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { SLOTS_REEL_WEIGHTS as REEL_WEIGHTS, SLOTS_TRIPLE_PAY as TRIPLE_PAY, SLOTS_PAIR_PAY as PAIR_PAY, SLOTS_REEL_SYMS as REEL_SYMS } from "./constants";
@@ -20,18 +20,35 @@ export const FootballSlotsGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
   const weightsSet = ["🏆", "👟", "⚽", "📯", "🟨"];
 
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  const spinningRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spinStakeRef = useRef(0);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (spinningRef.current && spinStakeRef.current > 0) {
+      onUpdateBalanceRef.current(spinStakeRef.current);
+      spinningRef.current = false;
+    }
+  }, []);
 
   const handleSpin = () => {
-    if (spinning) return;
+    if (spinning || spinningRef.current) return;
     if (balance < safeStake) {
       setCommentary("❌ Insufficient balance.");
       return;
     }
-    onUpdateBalance(-safeStake);
+    spinningRef.current = true;
+    spinStakeRef.current = safeStake;
+    const roundStake = spinStakeRef.current;
+    onUpdateBalance(-roundStake);
     setSpinning(true);
     setCommentary("Football slot reels are rotating fast...");
 
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      spinningRef.current = false;
       setSpinning(false);
 
       const r1 = spinReel();
@@ -45,18 +62,18 @@ export const FootballSlotsGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
       const pairMulti = matchedSym ? PAIR_PAY[matchedSym] ?? 0 : 0;
 
       if (tripleMulti > 0) {
-        const winVal = safeStake * tripleMulti;
+        const winVal = roundStake * tripleMulti;
         onUpdateBalance(winVal);
         setCommentary(`🎉 MEGA WIN! 3×${r1}! Won $${formatMoney(winVal)} (${tripleMulti}x)!`);
-        addLog("Football Slots", safeStake, tripleMulti, "WIN", `Hit 3 of a kind: ${r1}`);
+        addLog("Football Slots", roundStake, tripleMulti, "WIN", `Hit 3 of a kind: ${r1}`);
       } else if (matchedSym && pairMulti > 0) {
-        const winVal = safeStake * pairMulti;
+        const winVal = roundStake * pairMulti;
         onUpdateBalance(winVal);
         setCommentary(`🎉 WIN! Two-of-a-kind ${matchedSym}! Won $${formatMoney(winVal)} (${pairMulti}x)!`);
-        addLog("Football Slots", safeStake, pairMulti, "WIN", `Matched 2: ${matchedSym}`);
+        addLog("Football Slots", roundStake, pairMulti, "WIN", `Matched 2: ${matchedSym}`);
       } else {
         setCommentary("💔 No matching lines. Try another spin to hit the Cup jackpot (100x)!");
-        addLog("Football Slots", safeStake, 0, "LOSS", "No matching lines");
+        addLog("Football Slots", roundStake, 0, "LOSS", "No matching lines");
       }
     }, 1100);
   };

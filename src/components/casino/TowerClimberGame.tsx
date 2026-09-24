@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { TOWER_FLOORS as FLOORS, TOWER_COLS as COLS, TOWER_FLOOR_MULTIPLIERS as FLOOR_MULTIPLIERS } from "./constants";
@@ -23,50 +23,77 @@ export const TowerClimberGame: React.FC<GameProps> = ({ balance, onUpdateBalance
   const [message, setMessage] = useState("Set stake and START to climb the tower!");
   const [pool, setPool] = useState(0);
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  // Round stake captured at start — payouts/logs must use this, never the
+  // live `safeStake` (which shrinks after the deduct re-renders).
+  const roundStakeRef = useRef(0);
+  const liveRef = useRef(false);
+  const busyRef = useRef(false);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (liveRef.current && roundStakeRef.current > 0) {
+      onUpdateBalanceRef.current(roundStakeRef.current);
+      liveRef.current = false;
+    }
+  }, []);
 
   const startGame = () => {
+    if (liveRef.current || busyRef.current) return;
     if (balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
-    onUpdateBalance(-safeStake);
+    busyRef.current = true;
+    roundStakeRef.current = safeStake;
+    onUpdateBalance(-roundStakeRef.current);
+    liveRef.current = true;
     const generatedFloors = Array.from({ length: FLOORS }, (_, i) => genFloor(i));
     setFloors(generatedFloors);
-    setCurrentFloor(0); setRevealedFloors([]); setPool(safeStake);
+    setCurrentFloor(0); setRevealedFloors([]); setPool(roundStakeRef.current);
     setPhase("playing"); setMessage(`Floor 1 of ${FLOORS} — Pick a door!`);
+    busyRef.current = false;
   };
 
   const pickCell = (col: number) => {
-    if (phase !== "playing") return;
+    if (phase !== "playing" || !liveRef.current || busyRef.current) return;
+    busyRef.current = true;
+    const roundStake = roundStakeRef.current;
     const floor = floors[currentFloor];
     const chosen = floor[col];
     const newRevealed = [...revealedFloors, { cells: floor, chosen: col }];
     setRevealedFloors(newRevealed);
     if (chosen === "bomb") {
       setPhase("done");
-      const lostMsg = `💥 BOOM! Hit a bomb on floor ${currentFloor + 1}! Lost $${formatMoney(safeStake)}.`;
+      liveRef.current = false;
+      const lostMsg = `💥 BOOM! Hit a bomb on floor ${currentFloor + 1}! Lost $${formatMoney(roundStake)}.`;
       setMessage(lostMsg);
-      addLog("Tower Climber", safeStake, 0, "LOSS", `Bombed floor ${currentFloor + 1}`);
+      addLog("Tower Climber", roundStake, 0, "LOSS", `Bombed floor ${currentFloor + 1}`);
     } else {
       const nextFloor = currentFloor + 1;
       const multi = FLOOR_MULTIPLIERS[currentFloor];
-      const newPool = safeStake * multi;
+      const newPool = roundStake * multi;
       setPool(newPool);
       if (nextFloor >= FLOORS) {
         onUpdateBalance(newPool);
         setPhase("done");
+        liveRef.current = false;
         setMessage(`🏆 TOP FLOOR! ${FLOORS}/${FLOORS} climbed! Win $${formatMoney(newPool)} (${multi}x)!`);
-        addLog("Tower Climber", safeStake, multi, "WIN", `Completed all ${FLOORS} floors!`);
+        addLog("Tower Climber", roundStake, multi, "WIN", `Completed all ${FLOORS} floors!`);
       } else {
         setCurrentFloor(nextFloor);
         setMessage(`✅ Safe! Floor ${nextFloor + 1} next — Pool: $${formatMoney(newPool)} (${multi}x). Pick or Cashout.`);
       }
     }
+    busyRef.current = false;
   };
 
   const cashout = () => {
-    if (phase !== "playing" || currentFloor === 0) return;
+    if (phase !== "playing" || !liveRef.current || busyRef.current || currentFloor === 0) return;
+    busyRef.current = true;
+    liveRef.current = false;
+    const roundStake = roundStakeRef.current;
     onUpdateBalance(pool);
-    addLog("Tower Climber", safeStake, pool / safeStake, "WIN", `Cashed at floor ${currentFloor}`);
+    addLog("Tower Climber", roundStake, pool / roundStake, "WIN", `Cashed at floor ${currentFloor}`);
     setMessage(`💰 Cashed out $${formatMoney(pool)} at floor ${currentFloor}/${FLOORS}!`);
     setPhase("done");
+    busyRef.current = false;
   };
 
   const renderFloor = (idx: number) => {

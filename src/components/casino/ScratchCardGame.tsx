@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { SCRATCH_PRIZE_TABLE as PRIZE_TABLE, SCRATCH_PLANT_PROB as PLANT_PROB, SCRATCH_WIN_WEIGHTS as WIN_WEIGHTS } from "./constants";
@@ -60,29 +60,41 @@ export const ScratchCardGame: React.FC<GameProps> = ({ balance, onUpdateBalance,
   const [phase, setPhase] = useState<"idle"|"scratching"|"done">("idle");
   const [message, setMessage] = useState("Buy a scratch card and reveal the symbols!");
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  // Card price captured at buy — settle paths must use this, never the live
+  // `safeStake` (which shrinks after the deduct re-renders with less balance).
+  const cardStakeRef = useRef(0);
+  // Settle guard: reveal-all double-click (or scratch completing + reveal-all
+  // racing) must pay exactly once.
+  const settledRef = useRef(false);
 
   const buyCard = () => {
+    if (phase !== "idle" && phase !== "done") return;
     if (balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
-    onUpdateBalance(-safeStake);
+    cardStakeRef.current = safeStake;
+    settledRef.current = false;
+    onUpdateBalance(-cardStakeRef.current);
     const newCard = genCard();
     setCard(newCard); setRevealed(Array(9).fill(false));
     setPhase("scratching"); setMessage("Tap cells to scratch!");
   };
 
   const scratch = (i: number) => {
-    if (phase !== "scratching" || revealed[i]) return;
+    if (phase !== "scratching" || revealed[i] || settledRef.current) return;
     const newRev = [...revealed]; newRev[i] = true; setRevealed(newRev);
     if (newRev.every(r => r)) {
+      if (settledRef.current) return;
+      settledRef.current = true;
+      const roundStake = cardStakeRef.current;
       const prize = checkPrize(card);
       setPhase("done");
       if (prize && prize.multiplier > 0) {
-        const payout = safeStake * prize.multiplier;
+        const payout = roundStake * prize.multiplier;
         onUpdateBalance(payout);
         setMessage(`🎉 ${prize.symbol} x${prize.count}! WIN $${formatMoney(payout)} (${prize.multiplier}x)!`);
-        addLog("Scratch & Score", safeStake, prize.multiplier, "WIN", `${prize.symbol} triple match`);
+        addLog("Scratch & Score", roundStake, prize.multiplier, "WIN", `${prize.symbol} triple match`);
       } else {
         setMessage(`No match. Better luck next card!`);
-        addLog("Scratch & Score", safeStake, 0, "LOSS", "No matching symbols");
+        addLog("Scratch & Score", roundStake, 0, "LOSS", "No matching symbols");
       }
     } else {
       const revCount = newRev.filter(Boolean).length;
@@ -91,18 +103,20 @@ export const ScratchCardGame: React.FC<GameProps> = ({ balance, onUpdateBalance,
   };
 
   const revealAll = () => {
-    if (phase !== "scratching") return;
+    if (phase !== "scratching" || settledRef.current) return;
+    settledRef.current = true;
+    const roundStake = cardStakeRef.current;
     const newRev = Array(9).fill(true); setRevealed(newRev);
     const prize = checkPrize(card);
     setPhase("done");
     if (prize && prize.multiplier > 0) {
-      const payout = safeStake * prize.multiplier;
+      const payout = roundStake * prize.multiplier;
       onUpdateBalance(payout);
       setMessage(`🎉 ${prize.symbol} x${prize.count}! WIN $${formatMoney(payout)} (${prize.multiplier}x)!`);
-      addLog("Scratch & Score", safeStake, prize.multiplier, "WIN", `${prize.symbol} triple`);
+      addLog("Scratch & Score", roundStake, prize.multiplier, "WIN", `${prize.symbol} triple`);
     } else {
       setMessage("No match. Try again!");
-      addLog("Scratch & Score", safeStake, 0, "LOSS", "No match");
+      addLog("Scratch & Score", roundStake, 0, "LOSS", "No match");
     }
   };
 

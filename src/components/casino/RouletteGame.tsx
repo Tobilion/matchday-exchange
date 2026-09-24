@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 
@@ -54,28 +54,49 @@ export const RouletteGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
   const [spinDeg, setSpinDeg] = useState(0);
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
   const totalDegRef = useRef(0);
+  // Sync spin guard + cancellable timer. Unmount mid-spin cancels the pending
+  // payout and refunds the stake instead of crediting an unmounted component.
+  const spinningRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spinStakeRef = useRef(0);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (spinningRef.current && spinStakeRef.current > 0) {
+      onUpdateBalanceRef.current(spinStakeRef.current);
+      spinningRef.current = false;
+    }
+  }, []);
 
   const spin = () => {
-    if (spinning || balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
-    onUpdateBalance(-safeStake);
+    if (spinning || spinningRef.current) return;
+    if (balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
+    spinningRef.current = true;
+    spinStakeRef.current = safeStake;
+    const roundStake = spinStakeRef.current;
+    const roundBet = selectedBet;
+    onUpdateBalance(-roundStake);
     setSpinning(true); setResult(null); setMessage("🎡 Spinning...");
     const winNum = Math.floor(Math.random() * 37);
     const extraSpins = 5 + Math.floor(Math.random() * 5);
     const newDeg = totalDegRef.current + extraSpins * 360 + (winNum / 37) * 360;
     totalDegRef.current = newDeg;
     setSpinDeg(newDeg);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      spinningRef.current = false;
       setSpinning(false); setResult(winNum);
       setHistory(h => [winNum, ...h].slice(0, 12));
-      const won = checkWin(selectedBet, winNum);
+      const won = checkWin(roundBet, winNum);
       if (won) {
-        const payout = safeStake * selectedBet.payout;
+        const payout = roundStake * roundBet.payout;
         onUpdateBalance(payout);
-        setMessage(`✅ ${winNum}! ${selectedBet.label} wins! +$${formatMoney(payout)} (${selectedBet.payout}x)`);
-        addLog("Stadium Roulette", safeStake, selectedBet.payout, "WIN", `${winNum} — ${selectedBet.label}`);
+        setMessage(`✅ ${winNum}! ${roundBet.label} wins! +$${formatMoney(payout)} (${roundBet.payout}x)`);
+        addLog("Stadium Roulette", roundStake, roundBet.payout, "WIN", `${winNum} — ${roundBet.label}`);
       } else {
-        setMessage(`❌ ${winNum} — ${winNum === 0 ? "Zero!" : RED_NUMS.includes(winNum) ? "Red" : "Black"}. ${selectedBet.label} loses.`);
-        addLog("Stadium Roulette", safeStake, 0, "LOSS", `${winNum} — ${selectedBet.label} missed`);
+        setMessage(`❌ ${winNum} — ${winNum === 0 ? "Zero!" : RED_NUMS.includes(winNum) ? "Red" : "Black"}. ${roundBet.label} loses.`);
+        addLog("Stadium Roulette", roundStake, 0, "LOSS", `${winNum} — ${roundBet.label} missed`);
       }
     }, 3000);
   };

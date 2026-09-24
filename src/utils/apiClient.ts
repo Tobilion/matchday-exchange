@@ -48,17 +48,23 @@ async function callApi<T>(path: string, body: unknown): Promise<ServerResult<T>>
       signal: controller.signal,
     });
     clearTimeout(timer);
-    const json = await res.json().catch(() => ({}));
+    const text = await res.text().catch(() => "");
+    let json: any = {};
+    try { json = text ? JSON.parse(text) : {}; } catch { json = {}; }
+    // Same-origin /api on a static host (missing VITE_API_BASE_URL) returns
+    // HTML 404, not JSON. That means "no server configured", not an
+    // authoritative rejection — fall back to local logic.
+    const contentType = res.headers.get("content-type") || "";
     if (!res.ok) {
-      if (res.status >= 500) {
-        // Every INTENTIONAL rejection in server/index.ts uses a 4xx status
-        // (400 validation, 402 insufficient funds, 404 not found, 409 no
-        // profile yet) — nothing there returns 5xx on purpose. A 5xx means
-        // an uncaught exception blew up the route handler, which is the
-        // same class of problem as the server not running at all: treat it
-        // as "unreachable" so the caller falls back to local computation
-        // instead of surfacing a raw crash/status code to the player.
-        return { ok: false, reason: "unreachable" };
+      if (res.status >= 500 || res.status === 413 || res.status === 404) {
+        // 500/413: server crash or payload too large — same class as offline.
+        // 404: either a missing route or (commonly) a static host serving
+        // index.html for unknown paths when no API base is configured.
+        // HTML bodies confirm the latter; either way local fallback is safer
+        // than surfacing a raw status code as an authoritative answer.
+        if (res.status !== 404 || !contentType.includes("application/json")) {
+          return { ok: false, reason: "unreachable" };
+        }
       }
       return { ok: false, reason: "rejected", error: json?.error || `Server error (${res.status})`, status: res.status };
     }
@@ -115,4 +121,14 @@ export function settleOnServer(ctx: GameModeSlot, completedFixtures: Fixture[]) 
  */
 export function creditWalletOnServer(ctx: GameModeSlot, amount: number, reason?: string) {
   return callApi<{ profile: Profile }>("/wallet/credit", { ...ctx, amount, reason });
+}
+
+/** Overwrites the server slot (new campaign / season reset). Fire-and-forget. */
+export function overwriteWalletOnServer(ctx: GameModeSlot, profile: Profile) {
+  return callApi<{ profile: Profile }>("/wallet/overwrite", { ...ctx, profile });
+}
+
+/** Deletes the server slot (save deletion). Fire-and-forget. */
+export function deleteWalletOnServer(ctx: GameModeSlot) {
+  return callApi<{ ok: boolean }>("/wallet/delete", { ...ctx });
 }

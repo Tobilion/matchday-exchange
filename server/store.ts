@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import type { Profile } from "../src/types";
@@ -57,4 +57,25 @@ export function bootstrapProfile(
   if (existing) return existing;
   writeProfile(gameMode, slot, clientProfile);
   return clientProfile;
+}
+
+/** Overwrites the server's canonical profile (new campaign / season reset). */
+export function overwriteProfile(
+  gameMode: "TOURNAMENT" | "LEAGUE",
+  slot: number,
+  profile: Profile,
+): Profile {
+  writeProfile(gameMode, slot, profile);
+  return profile;
+}
+
+/** Deletes the server's canonical profile for a slot. No-op if none exists. */
+export function deleteProfile(gameMode: "TOURNAMENT" | "LEAGUE", slot: number): void {
+  try {
+    const path = profilePath(gameMode, slot);
+    if (existsSync(path)) unlinkSync(path);
+  } catch {
+    /* missing file or unwritable dir — removing the save is still complete
+       from the caller's perspective (localStorage is already cleared). */
+  }
 }

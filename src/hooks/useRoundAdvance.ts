@@ -191,12 +191,13 @@ export function buildHandleAdvanceRound(deps: UseRoundAdvanceDeps) {
         settledViaServer = true;
         totalWinPayoutSum = serverResult.totalWinPayoutSum;
         finalTickets = serverResult.profile.tickets;
-        userProfile.tickets.forEach((before, idx) => {
-          const after = finalTickets[idx];
-          if (after && before.status === "PENDING" && after.status !== before.status) {
+        const afterById = new Map(finalTickets.map((t) => [t.id, t]));
+        userProfile.tickets.forEach((before) => {
+          const after = afterById.get(before.id);
+          if (after && (before.status === "PENDING" || before.status === "SETTLING") && (after.status === "WON" || after.status === "LOST")) {
             if (after.status === "WON") {
               addToast({ type: "win", title: "🏆 Ticket Won!", message: `+$${(after.settledPayout ?? after.potentialPayout).toFixed(2)} payout`, duration: 5000 });
-            } else if (after.status === "LOST") {
+            } else {
               addToast({ type: "loss", title: "Ticket Lost", message: `-$${after.stake.toFixed(2)} stake lost`, duration: 3000 });
             }
           }
@@ -236,13 +237,16 @@ export function buildHandleAdvanceRound(deps: UseRoundAdvanceDeps) {
         totalWinPayoutSum = settled.totalWinPayoutSum;
       }
 
-      // 2a. Toast won/lost regular tickets (only for newly settled tickets)
+      // 2a. Toast won/lost regular tickets (only for newly settled tickets,
+      // matched by id — order can differ after merges).
       if (!autoSettled) {
-        finalTickets.forEach((ticket, idx) => {
-          if (ticketsForSettlement[idx]?.status === "PENDING") {
+        const beforeById = new Map(ticketsForSettlement.map((t) => [t.id, t]));
+        finalTickets.forEach((ticket) => {
+          const b = beforeById.get(ticket.id);
+          if ((b?.status === "PENDING" || b?.status === "SETTLING") && (ticket.status === "WON" || ticket.status === "LOST")) {
             if (ticket.status === "WON") {
               addToast({ type: "win", title: "🏆 Ticket Won!", message: `+$${(ticket.settledPayout ?? ticket.potentialPayout).toFixed(2)} payout`, duration: 5000 });
-            } else if (ticket.status === "LOST") {
+            } else {
               addToast({ type: "loss", title: "Ticket Lost", message: `-$${ticket.stake.toFixed(2)} stake lost`, duration: 3000 });
             }
           }
@@ -343,7 +347,8 @@ export function buildHandleAdvanceRound(deps: UseRoundAdvanceDeps) {
       }
     }
 
-    // 6. Club ownership passive income
+    // 6. Club ownership passive income (every owned club earns, not just the
+    // active one — multi-club owners hold several `ownedTeamIds`).
     let ownershipRevenue = 0;
     let ownershipRevenueDetail: {
       fixtureId: string;
@@ -352,33 +357,35 @@ export function buildHandleAdvanceRound(deps: UseRoundAdvanceDeps) {
       result: "WIN" | "DRAW" | "LOSS";
       scoreline: string;
     }[] = [];
+    let ownershipReportTeam = "";
 
-    if (userProfile.ownedTeamId) {
-      const ownedTeam = updatedTeamsList.find((t) => t.id === userProfile.ownedTeamId);
-      if (ownedTeam?.ownership) {
-        const baseIncome = ownedTeam.ownership.passiveIncomePerMatch;
-        completedFixtures.forEach((fix) => {
-          const isHome = fix.homeTeamId === userProfile.ownedTeamId;
-          const isAway = fix.awayTeamId === userProfile.ownedTeamId;
-          if (!isHome && !isAway) return;
-          const hScore = Math.floor(fix.homeScore);
-          const aScore = Math.floor(fix.awayScore);
-          const ownedScored = isHome ? hScore : aScore;
-          const oppScored = isHome ? aScore : hScore;
-          let result: "WIN" | "DRAW" | "LOSS" = "DRAW";
-          let bonus = 0;
-          if (ownedScored > oppScored) { result = "WIN"; bonus = Math.round(baseIncome * 0.25); }
-          else if (ownedScored < oppScored) { result = "LOSS"; bonus = -Math.round(baseIncome * 0.10); }
-          ownershipRevenue += baseIncome + bonus;
-          ownershipRevenueDetail.push({
-            fixtureId: fix.id,
-            baseIncome,
-            bonus,
-            result,
-            scoreline: isHome ? `${hScore}-${aScore}` : `${aScore}-${hScore}`,
-          });
+    const earningClubIds = ownedIds.length > 0 ? ownedIds : [];
+    for (const clubId of earningClubIds) {
+      const ownedTeam = updatedTeamsList.find((t) => t.id === clubId);
+      if (!ownedTeam?.ownership) continue;
+      if (!ownershipReportTeam) ownershipReportTeam = ownedTeam.name;
+      const baseIncome = ownedTeam.ownership.passiveIncomePerMatch;
+      completedFixtures.forEach((fix) => {
+        const isHome = fix.homeTeamId === clubId;
+        const isAway = fix.awayTeamId === clubId;
+        if (!isHome && !isAway) return;
+        const hScore = Math.floor(fix.homeScore);
+        const aScore = Math.floor(fix.awayScore);
+        const ownedScored = isHome ? hScore : aScore;
+        const oppScored = isHome ? aScore : hScore;
+        let result: "WIN" | "DRAW" | "LOSS" = "DRAW";
+        let bonus = 0;
+        if (ownedScored > oppScored) { result = "WIN"; bonus = Math.round(baseIncome * 0.25); }
+        else if (ownedScored < oppScored) { result = "LOSS"; bonus = -Math.round(baseIncome * 0.10); }
+        ownershipRevenue += baseIncome + bonus;
+        ownershipRevenueDetail.push({
+          fixtureId: fix.id,
+          baseIncome,
+          bonus,
+          result,
+          scoreline: isHome ? `${hScore}-${aScore}` : `${aScore}-${hScore}`,
         });
-      }
+      });
     }
 
     // 7. Settle outstanding transfer bids via the pure bid-lifecycle state
@@ -447,20 +454,43 @@ export function buildHandleAdvanceRound(deps: UseRoundAdvanceDeps) {
       if (creditResult.ok) nextBalance = creditResult.profile.balance;
     }
 
-    const finalNetProfit = Math.round(finalTickets.reduce((acc, t) => {
-      if (t.status === "WON") return acc + ((t.settledPayout ?? t.potentialPayout) - t.stake);
-      if (t.status === "LOST") return acc - t.stake;
-      if (t.status === "CASHED_OUT") return acc + ((t.cashedOutAmount ?? 0) - t.stake);
-      return acc;
-    }, 0) * 100) / 100;
+    // netProfit is cumulative across ALL money movement (casino, VIP,
+    // transfers, deposits are added incrementally where they happen), so only
+    // the newly-settled tickets' P&L is folded in here — recomputing from
+    // tickets alone would wipe every non-betting gain/loss.
+    const ticketProfit = (t: BetTicket): number => {
+      if (t.status === "WON") return (t.settledPayout ?? t.potentialPayout) - t.stake;
+      if (t.status === "LOST") return -t.stake;
+      if (t.status === "CASHED_OUT") return (t.cashedOutAmount ?? 0) - t.stake;
+      return 0;
+    };
+    const beforeById = new Map(userProfile.tickets.map((t) => [t.id, t]));
+    let roundTicketDelta = 0;
+    finalTickets.forEach((t) => {
+      const b = beforeById.get(t.id);
+      if ((b?.status === "PENDING" || b?.status === "SETTLING") && t.status !== "PENDING" && t.status !== "SETTLING") {
+        roundTicketDelta += ticketProfit(t);
+      }
+    });
+    const beforeBbById = new Map((userProfile.betBuilderTickets || []).map((t) => [t.id, t]));
+    finalBbTickets.forEach((t) => {
+      const b = beforeBbById.get(t.id);
+      if (b?.status === "PENDING" && (t.status === "WON" || t.status === "LOST")) {
+        roundTicketDelta += t.status === "WON" ? t.potentialPayout - t.stake : -t.stake;
+      }
+    });
+    const finalNetProfit = Math.round((userProfile.netProfit + roundTicketDelta) * 100) / 100;
 
     // 8. Evaluate betting challenges against this round's settled bets
-    const settledThisRound = finalTickets.filter(
-      (t, idx) => userProfile.tickets[idx]?.status === "PENDING" && t.status !== "PENDING",
-    );
-    const settledBbThisRound = finalBbTickets.filter(
-      (t, idx) => (userProfile.betBuilderTickets || [])[idx]?.status === "PENDING" && t.status !== "PENDING",
-    );
+    // (matched by ticket id — server/client order can differ after merges).
+    const settledThisRound = finalTickets.filter((t) => {
+      const b = beforeById.get(t.id);
+      return (b?.status === "PENDING" || b?.status === "SETTLING") && t.status !== "PENDING" && t.status !== "SETTLING";
+    });
+    const settledBbThisRound = finalBbTickets.filter((t) => {
+      const b = beforeBbById.get(t.id);
+      return b?.status === "PENDING" && t.status !== "PENDING";
+    });
     const evaluatedChallenges = evaluateChallenges(
       userProfile.challenges ?? [],
       settledThisRound,
@@ -504,12 +534,11 @@ export function buildHandleAdvanceRound(deps: UseRoundAdvanceDeps) {
 
     setUserProfile(nextProfile);
 
-    if (ownershipRevenue > 0 && ownershipRevenueDetail.length > 0 && userProfile.ownedTeamId) {
-      const ownedTeam = updatedTeamsList.find((t) => t.id === userProfile.ownedTeamId);
+    if (ownershipRevenue > 0 && ownershipRevenueDetail.length > 0) {
       setOwnerRevenueReport({
         revenue: ownershipRevenue,
         fixtures: ownershipRevenueDetail,
-        teamName: ownedTeam?.name || "Your Club",
+        teamName: ownershipReportTeam || "Your Clubs",
       });
     }
 

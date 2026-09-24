@@ -61,14 +61,13 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
     try { return JSON.parse(localStorage.getItem("fs_casino_logs_v6") || "[]"); } catch { return []; }
   });
 
-  const saveLogs = (newLogs: RollingLog[]) => {
-    setLogs(newLogs);
-    localStorage.setItem("fs_casino_logs_v6", JSON.stringify(newLogs));
-  };
-
   const addLog = (game: string, amount: number, multiplier: number, status: "WIN"|"LOSS"|"JOKER"|"FREEZE", details: string) => {
     const freshLog: RollingLog = { id: "log_" + Date.now() + "_" + Math.floor(Math.random() * 1000), game, timestamp: Date.now(), amount, multiplier, status, details };
-    saveLogs([freshLog, ...logs].slice(0, 15));
+    setLogs((prev) => {
+      const next = [freshLog, ...prev].slice(0, 15);
+      localStorage.setItem("fs_casino_logs_v6", JSON.stringify(next));
+      return next;
+    });
   };
 
   const currentGame = GAMES_LIST.find(g => g.id === activeGame);
@@ -133,7 +132,7 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
             <div className="bg-[#0b0e14] border border-white/5 rounded-2xl p-4 flex flex-col shrink-0">
               <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">VIP MEMBERS CLUB</span>
               <h3 className="text-xs font-bold text-slate-100 mt-0.5">Hi, Manager {username}!</h3>
-              <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">16 premium games. All bets logged to leaderboard.</p>
+              <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">16 premium games. Wins pay straight to your wallet.</p>
               <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-white/5 text-[10px] font-mono text-slate-400">
                 <div><span className="text-slate-500 block">GAMES</span><span className="font-bold text-slate-100">16</span></div>
                 <div><span className="text-slate-500 block">SESSIONS</span><span className="font-bold text-slate-100">{logs.length}</span></div>

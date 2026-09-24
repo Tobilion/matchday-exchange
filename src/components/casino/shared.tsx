@@ -56,7 +56,7 @@ export const StakeSlider: React.FC<StakeSliderProps> = ({
       {isEmpty ? (
         <div className="w-full h-7 flex items-center justify-center bg-red-500/10 border border-red-500/20 rounded-xl">
           <span className="text-[10px] text-red-400 font-mono uppercase font-bold">
-            ⚠️ No balance – claim emergency cash above
+            ⚠️ No balance – top up via the Wallet to keep playing
           </span>
         </div>
       ) : (

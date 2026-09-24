@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { DICE_MULTI_OVER_UNDER, DICE_MULTI_EXACT } from "./constants";
@@ -11,18 +11,36 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
   const [commentary, setCommentary] = useState<string>("Pick Over/Under/Exact 7, set wager and click ROLL to duel!");
 
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  const rollingRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rollStakeRef = useRef(0);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (rollingRef.current && rollStakeRef.current > 0) {
+      onUpdateBalanceRef.current(rollStakeRef.current);
+      rollingRef.current = false;
+    }
+  }, []);
 
   const handleRoll = () => {
-    if (rolling) return;
+    if (rolling || rollingRef.current) return;
     if (balance < safeStake) {
       setCommentary("❌ Insufficient balance.");
       return;
     }
-    onUpdateBalance(-safeStake);
+    rollingRef.current = true;
+    rollStakeRef.current = safeStake;
+    const roundStake = rollStakeRef.current;
+    const roundMode = targetMode;
+    onUpdateBalance(-roundStake);
     setRolling(true);
     setCommentary("Rolling dice cups...");
 
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      rollingRef.current = false;
       setRolling(false);
 
       const d1 = Math.floor(Math.random() * 6) + 1;
@@ -33,10 +51,10 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
       let success = false;
       let multiplier = DICE_MULTI_OVER_UNDER;
 
-      if (targetMode === "OVER_7") {
+      if (roundMode === "OVER_7") {
         success = sum > 7;
         multiplier = DICE_MULTI_OVER_UNDER;
-      } else if (targetMode === "UNDER_7") {
+      } else if (roundMode === "UNDER_7") {
         success = sum < 7;
         multiplier = DICE_MULTI_OVER_UNDER;
       } else {
@@ -45,13 +63,13 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
       }
 
       if (success) {
-        const winVal = safeStake * multiplier;
+        const winVal = roundStake * multiplier;
         onUpdateBalance(winVal);
-        setCommentary(`🎉 ${d1} + ${d2} = ${sum} — ${targetMode.replace("_", " ")} HIT! Won $${formatMoney(winVal)} (${multiplier}x)!`);
-        addLog("Over/Under Dice", safeStake, multiplier, "WIN", `Sum was ${sum} (Guessed ${targetMode})`);
+        setCommentary(`🎉 ${d1} + ${d2} = ${sum} — ${roundMode.replace("_", " ")} HIT! Won $${formatMoney(winVal)} (${multiplier}x)!`);
+        addLog("Over/Under Dice", roundStake, multiplier, "WIN", `Sum was ${sum} (Guessed ${roundMode})`);
       } else {
-        setCommentary(`💔 ${d1} + ${d2} = ${sum} — ${targetMode.replace("_", " ")} MISSED!`);
-        addLog("Over/Under Dice", safeStake, 0, "LOSS", `Sum was ${sum} (Guessed ${targetMode})`);
+        setCommentary(`💔 ${d1} + ${d2} = ${sum} — ${roundMode.replace("_", " ")} MISSED!`);
+        addLog("Over/Under Dice", roundStake, 0, "LOSS", `Sum was ${sum} (Guessed ${roundMode})`);
       }
     }, 1100);
   };

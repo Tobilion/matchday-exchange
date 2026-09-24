@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { HILO_HOUSE_EDGE as HOUSE_EDGE, HILO_MAX_STEPS as MAX_STEPS } from "./constants";
@@ -29,6 +29,21 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
   const [phase, setPhase] = useState<"idle"|"playing"|"done">("idle");
   const [resolving, setResolving] = useState(false);
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  // Round stake captured at start — all logs/payouts use this, never the live
+  // `safeStake` (which shrinks after the deduct re-renders).
+  const roundStakeRef = useRef(0);
+  const liveRef = useRef(false);
+  const busyRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (liveRef.current && roundStakeRef.current > 0) {
+      onUpdateBalanceRef.current(roundStakeRef.current);
+      liveRef.current = false;
+    }
+  }, []);
 
   const curRank = currentCard ? VAL_RANK[currentCard.val] : 0;
   const hiCount = higherCount(curRank);
@@ -37,48 +52,65 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
   const loMulti = stepMulti(loCount);
 
   const startGame = () => {
+    if (liveRef.current || busyRef.current) return;
     if (balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
-    onUpdateBalance(-safeStake);
+    busyRef.current = true;
+    roundStakeRef.current = safeStake;
+    onUpdateBalance(-roundStakeRef.current);
+    liveRef.current = true;
     const card = randomCard();
-    setCurrentCard(card); setStreak(0); setPool(safeStake); setPhase("playing");
+    setCurrentCard(card); setStreak(0); setPool(roundStakeRef.current); setPhase("playing");
     setMessage(`Current card: ${card.val}${card.suit}. Higher or Lower? (payout scales with the odds)`);
+    busyRef.current = false;
   };
 
   const guess = (dir: "higher" | "lower") => {
-    if (phase !== "playing" || !currentCard || resolving) return;
+    if (phase !== "playing" || !liveRef.current || !currentCard || resolving || busyRef.current) return;
     const stepCount = dir === "higher" ? higherCount(curRank) : lowerCount(curRank);
     if (stepCount === 0) return; // impossible guess (e.g. Higher on a King)
     const multi = stepMulti(stepCount);
+    const roundStake = roundStakeRef.current;
+    const rankAtGuess = curRank;
+    const streakAtGuess = streak;
+    const poolAtGuess = pool;
+    busyRef.current = true;
     setResolving(true);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       const next = randomCard();
       const nextRank = VAL_RANK[next.val];
-      const correct = dir === "higher" ? nextRank > curRank : nextRank < curRank; // ties lose
+      const correct = dir === "higher" ? nextRank > rankAtGuess : nextRank < rankAtGuess; // ties lose
       if (!correct) {
-        addLog("Hi-Lo Ladder", safeStake, 0, "LOSS", `Lost on streak ${streak+1}: drew ${next.val}${next.suit}`);
-        setMessage(`💔 Drawn ${next.val}${next.suit}! Streak broken at level ${streak+1}. Lost $${formatMoney(safeStake)}.`);
-        setCurrentCard(next); setPhase("done"); setResolving(false); return;
+        addLog("Hi-Lo Ladder", roundStake, 0, "LOSS", `Lost on streak ${streakAtGuess+1}: drew ${next.val}${next.suit}`);
+        setMessage(`💔 Drawn ${next.val}${next.suit}! Streak broken at level ${streakAtGuess+1}. Lost $${formatMoney(roundStake)}.`);
+        setCurrentCard(next); setPhase("done"); setResolving(false); liveRef.current = false; busyRef.current = false; return;
       }
-      const newStreak = streak + 1;
-      const newPool = pool * multi;
+      const newStreak = streakAtGuess + 1;
+      const newPool = poolAtGuess * multi;
       setCurrentCard(next); setStreak(newStreak); setPool(newPool);
       if (newStreak >= MAX_STEPS) {
         onUpdateBalance(newPool);
-        addLog("Hi-Lo Ladder", safeStake, newPool / safeStake, "WIN", `Max streak! ${next.val}${next.suit}`);
-        setMessage(`🏆 MAX STREAK! ${MAX_STEPS} correct! You win $${formatMoney(newPool)} (${(newPool/safeStake).toFixed(2)}x)!`);
-        setPhase("done"); setResolving(false); return;
+        addLog("Hi-Lo Ladder", roundStake, newPool / roundStake, "WIN", `Max streak! ${next.val}${next.suit}`);
+        setMessage(`🏆 MAX STREAK! ${MAX_STEPS} correct! You win $${formatMoney(newPool)} (${(newPool/roundStake).toFixed(2)}x)!`);
+        setPhase("done"); setResolving(false); liveRef.current = false; busyRef.current = false; return;
       }
-      setMessage(`✅ ${next.val}${next.suit}! Level ${newStreak}/${MAX_STEPS} — Pool: $${formatMoney(newPool)} (${(newPool/safeStake).toFixed(2)}x). Continue or Cashout?`);
+      setMessage(`✅ ${next.val}${next.suit}! Level ${newStreak}/${MAX_STEPS} — Pool: $${formatMoney(newPool)} (${(newPool/roundStake).toFixed(2)}x). Continue or Cashout?`);
       setResolving(false);
+      busyRef.current = false;
     }, 600);
   };
 
   const cashout = () => {
-    if (phase !== "playing" || streak === 0) return;
+    if (phase !== "playing" || !liveRef.current || busyRef.current || streak === 0) return;
+    busyRef.current = true;
+    liveRef.current = false;
+    if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+    const roundStake = roundStakeRef.current;
     onUpdateBalance(pool);
-    addLog("Hi-Lo Ladder", safeStake, pool / safeStake, "WIN", `Cashed out at streak ${streak}`);
+    addLog("Hi-Lo Ladder", roundStake, pool / roundStake, "WIN", `Cashed out at streak ${streak}`);
     setMessage(`💰 Cashed out $${formatMoney(pool)} after ${streak} correct guesses!`);
     setPhase("done");
+    busyRef.current = false;
   };
 
   return (
@@ -88,7 +120,7 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
         <div className="flex items-center justify-between mb-2">
           <div className="text-[9px] font-mono text-slate-500 uppercase font-bold">STREAK PROGRESS</div>
           <div className="text-[9px] font-mono text-emerald-400 font-bold">
-            {phase === "playing" ? `POOL $${formatMoney(pool)} (${(pool/safeStake).toFixed(2)}x)` : `MAX ${MAX_STEPS} LEVELS`}
+            {phase === "playing" ? `POOL $${formatMoney(pool)} (${roundStakeRef.current > 0 ? (pool/roundStakeRef.current).toFixed(2) : "1.00"}x)` : `MAX ${MAX_STEPS} LEVELS`}
           </div>
         </div>
         <div className="flex gap-1.5 flex-wrap">
@@ -145,7 +177,7 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
           {streak > 0 && (
             <button onClick={cashout}
               className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs py-2.5 rounded-2xl transition-all active:scale-95 cursor-pointer uppercase block text-center">
-              💰 CASHOUT ${formatMoney(pool)} ({(pool/safeStake).toFixed(2)}x)
+              💰 CASHOUT ${formatMoney(pool)} ({roundStakeRef.current > 0 ? (pool/roundStakeRef.current).toFixed(2) : "1.00"}x)
             </button>
           )}
         </div>

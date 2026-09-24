@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BetBuilderSelection } from "../types";
+import { BetBuilderSelection, Profile } from "../types";
 import { ROUND_LABELS } from "../data/tournament";
 import { useProfile } from "../hooks/useProfile";
 import { useSimulation } from "../hooks/useSimulation";
@@ -81,13 +81,13 @@ export default function Dashboard() {
     }
   };
 
-  const transferMarketHook = useTransferMarket({ userProfile, setUserProfile, persist, teams });
+  const transferMarketHook = useTransferMarket({ userProfile, setUserProfile, persist, teams, gameMode, activeSlot });
   const { transferListings, setTransferListings, userBids, setUserBids, transferToast, handlePlaceUserBid, handleWithdrawBid, handleRefreshListings, showTransferToast } = transferMarketHook;
 
   const simHook = useSimulation({ teams, userProfile, gameMode, activeSlot, fixtures, setFixtures, setActiveTab });
   const { isSimulating, ticks, setTicks, setIsSimulating } = simHook;
 
-  const challengesHook = useChallenges({ userProfile, setUserProfile, persist });
+  const challengesHook = useChallenges({ userProfile, setUserProfile, persist, gameMode, activeSlot });
 
   const bettingHook = useBetting({ userProfile, setUserProfile, fixtures, teams, tipsters, tipsterTickets, gameMode, activeSlot, setCollapsedSlip });
   const { selectedBets, setSelectedBets } = bettingHook;
@@ -138,15 +138,25 @@ export default function Dashboard() {
     }
   }, [userProfile?.currentRoundIndex, fixtures, selectedFixtureId]);
 
+  // Backfill a ledger line when a balance change arrives without one (e.g.
+  // legacy saves). Capped and persisted so history can't grow unbounded or
+  // evaporate on reload.
   useEffect(() => {
     if (!userProfile) return;
-    const last = userProfile.bankrollHistory?.[userProfile.bankrollHistory.length - 1];
-    if (!last || Math.abs(last.balance - userProfile.balance) > 0.01) {
-      setUserProfile((prev) => {
-        if (!prev) return prev;
-        return { ...prev, bankrollHistory: [...(prev.bankrollHistory || []), { timestamp: Date.now(), balance: prev.balance, detail: "Update" }] };
-      });
+    const hist = userProfile.bankrollHistory ?? [];
+    if (hist.length > 500) {
+      const trimmed: Profile = { ...userProfile, bankrollHistory: hist.slice(-500) };
+      setUserProfile(trimmed);
+      persist(trimmed);
+      return;
     }
+    const last = hist[hist.length - 1];
+    if (!last || Math.abs(last.balance - userProfile.balance) > 0.01) {
+      const next: Profile = { ...userProfile, bankrollHistory: [...hist, { timestamp: Date.now(), balance: userProfile.balance, detail: "Update" }].slice(-500) };
+      setUserProfile(next);
+      persist(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile?.balance]);
 
   useEffect(() => {
@@ -251,7 +261,7 @@ export default function Dashboard() {
               ownedTeamId={userProfile.ownedTeamId} ownedTeamIds={userProfile.ownedTeamIds}
               teams={teams} balance={userProfile.balance}
               onUpdateOwnership={profileHook.handleUpdateClubOwnership} onUpgradeFacility={profileHook.handleUpgradeFacility}
-              onUpdateBalance={(delta) => { if (userProfile) { const next = { ...userProfile, balance: Math.max(0, (userProfile.balance ?? 0) + delta) }; setUserProfile(next); persist(next); }}}
+              onUpdateBalance={profileHook.handleUpdateBalanceCasino}
             />
           )}
           {activeTab === "transfers" && userProfile.ownedTeamId && (
@@ -281,7 +291,7 @@ export default function Dashboard() {
       </div>
 
       {transferToast && showTransferToast && <div className="fixed bottom-4 left-4 z-50 bg-slate-800 text-xs px-3 py-2 rounded-xl border border-white/10">{transferToast}</div>}
-      {showWalletModal && <WalletModal balance={userProfile.balance} onConfirmTransaction={profileHook.handleConfirmWalletTransaction} onClose={() => setShowWalletModal(false)} />}
+      {showWalletModal && <WalletModal balance={userProfile.balance} onConfirmTransaction={profileHook.handleConfirmWalletTransaction} onClose={() => setShowWalletModal(false)} grantScopeKey={gameMode ? `${gameMode.toLowerCase()}_slot${activeSlot}` : undefined} />}
       {showWinnerCelebration && <WinnerCelebrationModal gameMode={gameMode} balance={userProfile.balance} championName={champion.name} championCrest={champion.crest} onClose={() => setShowWinnerCelebration(false)} onResetRound={handleResetAndReloadProfile} />}
       {ownerRevenueReport && <OwnerRevenueModal teamName={ownerRevenueReport.teamName} revenue={ownerRevenueReport.revenue} fixtures={ownerRevenueReport.fixtures} onClose={() => setOwnerRevenueReport(null)} />}
       {globalEntity && <GlobalEntityPreviewModal globalEntity={globalEntity} teams={teams} onClose={() => setGlobalEntity(null)} onChangeEntity={(e) => setGlobalEntity(e)} onNavigateToTeams={() => { setGlobalEntity(null); setActiveTab("teams"); }} />}

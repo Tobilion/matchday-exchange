@@ -11,10 +11,16 @@ import {
 } from "../types";
 import { persistStateToCache } from "../utils/storage";
 import { credit, debit, round2 } from "../utils/wallet";
-import { computeAccaOdds } from "../utils/betBuilderUtils";
+import { computeAccaOdds, settleBetBuilderTicket } from "../utils/betBuilderUtils";
 import { settlePendingTickets } from "../utils/betSettlement";
 import { addToast } from "../hooks/useToast";
-import { bootstrapWallet, placeBetOnServer, cashOutOnServer, settleOnServer, placeBetBuilderOnServer, type ServerFailure } from "../utils/apiClient";
+import { bootstrapWallet, placeBetOnServer, cashOutOnServer, settleOnServer, placeBetBuilderOnServer, overwriteWalletOnServer, type ServerFailure } from "../utils/apiClient";
+
+/** Ticket identity for offline/server merge + toast matching. */
+function ticketKey(t: BetTicket): string {
+  const sels = t.selections.map((s) => `${s.fixtureId}|${s.marketType}|${s.selectionId}|${s.odds}`).join(";");
+  return `${t.type}|${t.stake}|${sels}`;
+}
 
 interface UseBettingDeps {
   userProfile: Profile | null;
@@ -48,20 +54,91 @@ export function useBetting(deps: UseBettingDeps) {
   // Once a call comes back "unreachable" we stop retrying the server for the
   // rest of the session (each attempt still has to time out first, so this
   // avoids a repeated ~1.2s stall on every bet when there's simply no server
-  // running — the overwhelmingly common case for local/offline play).
+  // running — the overwhelmingly common case for local/offline play). The
+  // latch resets on save-slot change so waking the server (or switching to a
+  // slot it knows) is picked up without a page reload.
   const serverAvailable = useRef<boolean | null>(null);
+  const serverSlotKey = useRef<string>("");
 
   useEffect(() => {
     if (!userProfile || !gameMode) return;
+    const slotKey = `${gameMode}_slot${activeSlot}`;
+    if (serverSlotKey.current !== slotKey) {
+      serverSlotKey.current = slotKey;
+      serverAvailable.current = null;
+    }
+    // Capture the profile that is current for THIS slot at effect time — the
+    // async bootstrap below must merge against this snapshot, never a newer
+    // render's profile (which may already belong to another slot).
+    const snapshot = userProfile;
     let cancelled = false;
-    bootstrapWallet({ gameMode, slot: activeSlot }, userProfile).then((result) => {
+    bootstrapWallet({ gameMode, slot: activeSlot }, snapshot).then(async (result) => {
       if (cancelled) return;
       serverAvailable.current = result.ok;
-      // If the server already had a profile for this slot (i.e. this isn't
-      // the very first contact), its balance/tickets are now the truth —
-      // reconcile local state to match so the two never silently diverge.
-      if (result.ok && JSON.stringify(result.profile) !== JSON.stringify(userProfile)) {
-        setUserProfile(result.profile);
+      if (!result.ok) return;
+      const server = result.profile;
+      if (JSON.stringify(server) === JSON.stringify(snapshot)) return;
+      // Merge, don't overwrite: the server missed everything that happened
+      // while it was unreachable (casino wins, VIP, transfers, offline bets).
+      // Fresh-campaign case: local is a brand-new profile for this slot —
+      // the server copy is stale, replace it wholesale.
+      const localIsFresh =
+        snapshot.tickets.length === 0 && snapshot.currentRoundIndex === 0 &&
+        (server.tickets.length > 0 || server.currentRoundIndex > 0 ||
+          Math.abs(server.balance - snapshot.balance) > 0.01);
+      if (localIsFresh) {
+        const over = await overwriteWalletOnServer({ gameMode, slot: activeSlot }, snapshot);
+        if (!cancelled && over.ok) serverAvailable.current = true;
+        return; // local is already correct on screen
+      }
+      // Timeout-duplicate dedup: a local ticket with identical content placed
+      // within 15s of a server ticket is the same intent sent twice (server
+      // wrote it, client timed out and minted a local copy). Drop the local copy.
+      const serverKeys = new Map<string, number>();
+      server.tickets.forEach((t) => {
+        const k = ticketKey(t);
+        serverKeys.set(k, Math.min(serverKeys.get(k) ?? Infinity, t.timestamp));
+      });
+      let refundForDupes = 0;
+      const localOnly = snapshot.tickets.filter((t) => {
+        if (server.tickets.some((s) => s.id === t.id)) return false;
+        const st = serverKeys.get(ticketKey(t));
+        if (st !== undefined && Math.abs(t.timestamp - st) < 15000) {
+          if (t.status === "PENDING" || t.status === "SETTLING") refundForDupes += t.stake;
+          return false;
+        }
+        return true;
+      });
+      const mergedTickets: BetTicket[] = [
+        ...server.tickets,
+        ...localOnly.filter((t) => !server.tickets.some((s) => s.id === t.id)),
+      ];
+      // Net local-only balance effect (offline wins/spends + local-only ticket
+      // stakes already deducted locally), minus refunded duplicates.
+      const balanceDelta = Math.round((snapshot.balance - server.balance + refundForDupes) * 100) / 100;
+      if (Math.abs(balanceDelta) < 0.01 && mergedTickets.length === server.tickets.length) {
+        if (!cancelled) setUserProfile(server);
+        return;
+      }
+      const merged: Profile = {
+        ...server,
+        balance: Math.round((server.balance + balanceDelta) * 100) / 100,
+        tickets: mergedTickets,
+        bankrollHistory: [...(server.bankrollHistory ?? []), ...(snapshot.bankrollHistory ?? []).filter((h) =>
+          !(server.bankrollHistory ?? []).some((sh) => sh.timestamp === h.timestamp && sh.detail === h.detail),
+        )].slice(-500),
+      };
+      const over = await overwriteWalletOnServer({ gameMode, slot: activeSlot }, merged);
+      if (cancelled) return;
+      if (over.ok) {
+        setUserProfile(over.profile);
+        persist(over.profile);
+      } else {
+        // Server refused the merge — apply it locally so offline progress is
+        // never wiped; the next successful server call reconciles again.
+        const localMerged: Profile = { ...snapshot, tickets: mergedTickets, balance: Math.round((snapshot.balance + refundForDupes) * 100) / 100 };
+        setUserProfile(localMerged);
+        persist(localMerged);
       }
     });
     return () => { cancelled = true; };
@@ -238,16 +315,48 @@ export function useBetting(deps: UseBettingDeps) {
       }
       const failure = result as ServerFailure;
       if (failure.reason === "rejected") {
-        // The server WAS reached and it has the real, authoritative balance
-        // — trust its answer rather than falling through to local logic,
-        // which could be operating on a stale/out-of-sync balance by now.
-        serverAvailable.current = true;
-        alert(failure.error);
-        return;
+        // 409 "no server-side profile yet" (server wiped/restarted) is
+        // recoverable: seed it from the current local profile and retry once
+        // instead of blocking the bet with a raw error.
+        if ((failure as { status?: number }).status === 409 && userProfile) {
+          const boot = await bootstrapWallet({ gameMode, slot: activeSlot }, userProfile);
+          if (boot.ok) {
+            const retry = await placeBetOnServer(
+              { gameMode, slot: activeSlot },
+              { type, totalStake, selectedBets, selectionStakes },
+            );
+            if (retry.ok) {
+              serverAvailable.current = true;
+              setUserProfile(retry.profile);
+              setSelectedBets([]);
+              persist(retry.profile);
+              return;
+            }
+            const retryFailure = retry as ServerFailure;
+            if (retryFailure.reason === "rejected") {
+              serverAvailable.current = true;
+              alert(retryFailure.error);
+              return;
+            }
+          } else if ((boot as ServerFailure).reason !== "unreachable") {
+            serverAvailable.current = true;
+            alert((boot as { error?: string }).error ?? "Server error.");
+            return;
+          }
+          serverAvailable.current = false;
+        } else {
+          // The server WAS reached and it has the real, authoritative balance
+          // — trust its answer rather than falling through to local logic,
+          // which could be operating on a stale/out-of-sync balance by now.
+          serverAvailable.current = true;
+          alert(failure.error);
+          return;
+        }
+      } else {
+        // "unreachable": no server running (or it just went away) — fall back
+        // to local computation exactly as before this feature existed.
+        serverAvailable.current = false;
       }
-      // "unreachable": no server running (or it just went away) — fall back
-      // to local computation exactly as before this feature existed.
-      serverAvailable.current = false;
     }
 
     placeBetLocally(type, totalStake, selectionStakes);
@@ -310,11 +419,40 @@ export function useBetting(deps: UseBettingDeps) {
       }
       const failure = result as ServerFailure;
       if (failure.reason === "rejected") {
-        serverAvailable.current = true;
-        alert(failure.error);
-        return;
+        if ((failure as { status?: number }).status === 409 && userProfile) {
+          const boot = await bootstrapWallet({ gameMode, slot: activeSlot }, userProfile);
+          if (boot.ok) {
+            const retry = await cashOutOnServer({ gameMode, slot: activeSlot }, ticketId, fixtures);
+            if (retry.ok) {
+              serverAvailable.current = true;
+              addToast({
+                type: "cashout", title: "💸 Cashed Out",
+                message: `$${retry.cashedOutAmount.toFixed(2)} added to wallet`, duration: 4000,
+              });
+              setUserProfile(retry.profile);
+              persist(retry.profile);
+              return;
+            }
+            const retryFailure = retry as ServerFailure;
+            if (retryFailure.reason === "rejected") {
+              serverAvailable.current = true;
+              alert(retryFailure.error);
+              return;
+            }
+          } else if ((boot as ServerFailure).reason !== "unreachable") {
+            serverAvailable.current = true;
+            alert((boot as { error?: string }).error ?? "Server error.");
+            return;
+          }
+          serverAvailable.current = false; // unreachable — fall back below
+        } else {
+          serverAvailable.current = true;
+          alert(failure.error);
+          return;
+        }
+      } else {
+        serverAvailable.current = false; // unreachable — fall back below
       }
-      serverAvailable.current = false; // unreachable — fall back below
     }
 
     cashOutLocally(ticketId, offerAmount);
@@ -323,6 +461,11 @@ export function useBetting(deps: UseBettingDeps) {
     }
   };
 
+  // In-flight guard: the auto-settle effect fires on every fixtures change,
+  // and rapid FT updates could otherwise overlap two closures on the same
+  // stale profile (lost-update → missing payout in offline mode).
+  const settlingNow = useRef(false);
+
   /**
    * Auto-settles any PENDING ticket whose fixtures have all reached FT, without
    * waiting for a round advance. This prevents tickets from sitting in a
@@ -330,14 +473,14 @@ export function useBetting(deps: UseBettingDeps) {
    * nothing is settleable so it is safe to call from an effect on every tick.
    */
   const settleFinishedTickets = async () => {
-    if (!userProfile) return;
+    if (!userProfile || settlingNow.current) return;
     const ftFixtures = fixtures.filter((f) => f.status === "FT");
     if (ftFixtures.length === 0) return;
 
     const settleableIds = userProfile.tickets
       .filter(
         (t) =>
-          t.status === "PENDING" &&
+          (t.status === "PENDING" || t.status === "SETTLING") &&
           t.selections.every((sel) =>
             ftFixtures.some((f) => f.id === sel.fixtureId),
           ),
@@ -348,6 +491,8 @@ export function useBetting(deps: UseBettingDeps) {
     );
     if (settleableIds.length === 0 && !bbSettleable) return;
 
+    settlingNow.current = true;
+    try {
     // Mark SETTLING: transient status that prevents double settlement if the
     // round-advance effect fires before the async setState batch (or the
     // server round-trip below) settles.
@@ -359,57 +504,97 @@ export function useBetting(deps: UseBettingDeps) {
     setUserProfile(markingProfile);
     persist(markingProfile);
 
+    // Toast by ticket id (not array index) — server/client order can differ
+    // after timeout-duplicate merges.
+    const toastSettled = (before: BetTicket[], after: BetTicket[]) => {
+      const beforeById = new Map(before.map((t) => [t.id, t]));
+      after.forEach((ticket) => {
+        const b = beforeById.get(ticket.id);
+        if ((b?.status === "SETTLING" || b?.status === "PENDING") && (ticket.status === "WON" || ticket.status === "LOST")) {
+          if (ticket.status === "WON") {
+            addToast({ type: "win", title: "🏆 Ticket Won!", message: `+$${(ticket.settledPayout ?? ticket.potentialPayout).toFixed(2)} payout`, duration: 5000 });
+          } else {
+            addToast({ type: "loss", title: "Ticket Lost", message: `-$${ticket.stake.toFixed(2)} stake lost`, duration: 3000 });
+          }
+        }
+      });
+    };
+
     if (gameMode && serverAvailable.current !== false) {
       const result = await settleOnServer({ gameMode, slot: activeSlot }, ftFixtures);
       if (result.ok) {
         serverAvailable.current = true;
-        result.profile.tickets.forEach((ticket, idx) => {
-          if (markingTickets[idx]?.status === "SETTLING" && ticket.status !== "SETTLING") {
-            if (ticket.status === "WON") {
-              addToast({ type: "win", title: "🏆 Ticket Won!", message: `+$${(ticket.settledPayout ?? ticket.potentialPayout).toFixed(2)} payout`, duration: 5000 });
-            } else if (ticket.status === "LOST") {
-              addToast({ type: "loss", title: "Ticket Lost", message: `-$${ticket.stake.toFixed(2)} stake lost`, duration: 3000 });
-            }
-          }
-        });
+        toastSettled(markingTickets, result.profile.tickets);
         setUserProfile(result.profile);
         persist(result.profile);
         return;
       }
       const failure = result as ServerFailure;
       if (failure.reason === "rejected") {
-        serverAvailable.current = true;
-        // Nothing sensible to do but leave the SETTLING marks as-is and try
-        // again next tick — don't fall through to local settlement, which
-        // would credit a balance the server (now authoritative) doesn't know about.
-        return;
+        // 409 "no server-side profile yet" (server restarted/wiped, or the
+        // bootstrap race) is recoverable: seed the server from the current
+        // local profile (which already carries the SETTLING marks) and retry
+        // once. The server's settle handles SETTLING tickets, so nothing gets
+        // stuck or double-paid. Any other rejection is authoritative.
+        if ((failure as { status?: number }).status === 409) {
+          const boot = await bootstrapWallet({ gameMode, slot: activeSlot }, markingProfile);
+          if (boot.ok) {
+            const retry = await settleOnServer({ gameMode, slot: activeSlot }, ftFixtures);
+            if (retry.ok) {
+              serverAvailable.current = true;
+              toastSettled(markingTickets, retry.profile.tickets);
+              setUserProfile(retry.profile);
+              persist(retry.profile);
+              return;
+            }
+            const retryFailure = retry as ServerFailure;
+            if (retryFailure.reason === "unreachable") serverAvailable.current = false;
+            else { serverAvailable.current = true; return; }
+          } else if ((boot as ServerFailure).reason === "unreachable") {
+            serverAvailable.current = false;
+          } else {
+            serverAvailable.current = true;
+            return;
+          }
+        } else {
+          serverAvailable.current = true;
+          return;
+        }
+      } else {
+        serverAvailable.current = false; // unreachable — fall back below
       }
-      serverAvailable.current = false; // unreachable — fall back below
     }
 
-    // Local settlement (server unavailable) — original logic, unchanged.
+    // Local settlement (server unavailable) — also settles Bet Builder tickets
+    // so offline behavior matches the server path (previously BB tickets only
+    // settled on round advance, diverging timing/amounts).
     const { finalTickets, totalWinPayoutSum } = settlePendingTickets(
       markingTickets,
       ftFixtures,
     );
-
-    finalTickets.forEach((ticket, idx) => {
-      if (markingTickets[idx]?.status === "SETTLING" && ticket.status !== "SETTLING") {
-        if (ticket.status === "WON") {
-          addToast({ type: "win", title: "🏆 Ticket Won!", message: `+$${(ticket.settledPayout ?? ticket.potentialPayout).toFixed(2)} payout`, duration: 5000 });
-        } else if (ticket.status === "LOST") {
-          addToast({ type: "loss", title: "Ticket Lost", message: `-$${ticket.stake.toFixed(2)} stake lost`, duration: 3000 });
-        }
-      }
+    let bbPayoutSum = 0;
+    const finalBbTickets = (userProfile.betBuilderTickets ?? []).map((ticket) => {
+      if (ticket.status !== "PENDING") return ticket;
+      const match = ftFixtures.find((f) => f.id === ticket.fixtureId);
+      if (!match) return ticket;
+      const result = settleBetBuilderTicket(ticket, match);
+      if (result === "WON") bbPayoutSum += ticket.potentialPayout;
+      return { ...ticket, status: result };
     });
+
+    toastSettled(markingTickets, finalTickets);
 
     const nextProfile: Profile = {
       ...userProfile,
-      balance: credit(userProfile.balance, totalWinPayoutSum),
+      balance: credit(credit(userProfile.balance, totalWinPayoutSum), bbPayoutSum),
       tickets: finalTickets,
+      betBuilderTickets: finalBbTickets,
     };
     setUserProfile(nextProfile);
     persist(nextProfile);
+    } finally {
+      settlingNow.current = false;
+    }
   };
 
   /** Local (client-only) Bet Builder placement — the ORIGINAL logic, used when the server isn't reachable. */
@@ -451,6 +636,8 @@ export function useBetting(deps: UseBettingDeps) {
     return true;
   };
 
+  const placingBuilder = useRef(false);
+
   /**
    * NOTE: `combinedOdds` here is a display value the caller already computed
    * (used for the local-fallback path only). When the server is reachable it
@@ -463,8 +650,9 @@ export function useBetting(deps: UseBettingDeps) {
     stake: number,
     combinedOdds: number,
   ): Promise<boolean> => {
-    if (!userProfile) return false;
-
+    if (!userProfile || placingBuilder.current) return false;
+    placingBuilder.current = true;
+    try {
     if (gameMode && serverAvailable.current !== false) {
       const result = await placeBetBuilderOnServer({ gameMode, slot: activeSlot }, { fixtureId, selections, stake });
       if (result.ok) {
@@ -475,14 +663,42 @@ export function useBetting(deps: UseBettingDeps) {
       }
       const failure = result as ServerFailure;
       if (failure.reason === "rejected") {
-        serverAvailable.current = true;
-        alert(failure.error);
-        return false;
+        if ((failure as { status?: number }).status === 409) {
+          const boot = await bootstrapWallet({ gameMode, slot: activeSlot }, userProfile);
+          if (boot.ok) {
+            const retry = await placeBetBuilderOnServer({ gameMode, slot: activeSlot }, { fixtureId, selections, stake });
+            if (retry.ok) {
+              serverAvailable.current = true;
+              setUserProfile(retry.profile);
+              persist(retry.profile);
+              return true;
+            }
+            const retryFailure = retry as ServerFailure;
+            if (retryFailure.reason === "rejected") {
+              serverAvailable.current = true;
+              alert(retryFailure.error);
+              return false;
+            }
+          } else if ((boot as ServerFailure).reason !== "unreachable") {
+            serverAvailable.current = true;
+            alert((boot as { error?: string }).error ?? "Server error.");
+            return false;
+          }
+          serverAvailable.current = false;
+        } else {
+          serverAvailable.current = true;
+          alert(failure.error);
+          return false;
+        }
+      } else {
+        serverAvailable.current = false; // unreachable — fall back below
       }
-      serverAvailable.current = false; // unreachable — fall back below
     }
 
     return placeBetBuilderLocally(fixtureId, selections, stake, combinedOdds);
+    } finally {
+      placingBuilder.current = false;
+    }
   };
 
   return {

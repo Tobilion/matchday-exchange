@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { SPIN_MULTIPLIER } from "./constants";
@@ -12,14 +12,30 @@ export const SpinTheBottleGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
   const [commentary, setCommentary] = useState<string>("Tap Spin to rotate the championship bottle. Center freeze carries a 2% house advantage.");
 
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  const spinningRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spinStakeRef = useRef(0);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (spinningRef.current && spinStakeRef.current > 0) {
+      onUpdateBalanceRef.current(spinStakeRef.current);
+      spinningRef.current = false;
+    }
+  }, []);
 
   const handleSpin = () => {
-    if (spinning) return;
+    if (spinning || spinningRef.current) return;
     if (balance < safeStake) {
       setCommentary("❌ Insufficient balance.");
       return;
     }
-    onUpdateBalance(-safeStake);
+    spinningRef.current = true;
+    spinStakeRef.current = safeStake;
+    const roundStake = spinStakeRef.current;
+    const roundSide = betSide;
+    onUpdateBalance(-roundStake);
     setSpinning(true);
     setResult(null);
     setCommentary("Champagne cork is loose... Spinning the bottle at hyper-speed!");
@@ -30,7 +46,9 @@ export const SpinTheBottleGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
     const targetSpinDegrees = baseDegrees + extraCycles;
     setRotationDegrees(targetSpinDegrees);
 
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      spinningRef.current = false;
       setSpinning(false);
 
       const rand = Math.random() * 100;
@@ -53,15 +71,15 @@ export const SpinTheBottleGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
 
       if (finalRes === "FREEZE") {
         setCommentary("❄️ UNFORTUNATE! The bottle froze on the center line! You lose your stake! 🏠 HOUSE WINS!!");
-        addLog("Spin the Bottle", safeStake, 0, "LOSS", "Center Freeze — you lose");
-      } else if (finalRes === betSide) {
-        const payout = safeStake * SPIN_MULTIPLIER;
+        addLog("Spin the Bottle", roundStake, 0, "LOSS", "Center Freeze — you lose");
+      } else if (finalRes === roundSide) {
+        const payout = roundStake * SPIN_MULTIPLIER;
         onUpdateBalance(payout);
         setCommentary(`🎉 EXCELLENT! Bottle nozzle points ${finalRes}! You won $${formatMoney(payout)} (${SPIN_MULTIPLIER}x)!`);
-        addLog("Spin the Bottle", safeStake, SPIN_MULTIPLIER, "WIN", `Nozzle pointed ${finalRes}`);
+        addLog("Spin the Bottle", roundStake, SPIN_MULTIPLIER, "WIN", `Nozzle pointed ${finalRes}`);
       } else {
-        setCommentary(`💔 MISSED! Nozzle points ${finalRes}, but you backed ${betSide}.`);
-        addLog("Spin the Bottle", safeStake, 0, "LOSS", `Nozzle pointed ${finalRes}`);
+        setCommentary(`💔 MISSED! Nozzle points ${finalRes}, but you backed ${roundSide}.`);
+        addLog("Spin the Bottle", roundStake, 0, "LOSS", `Nozzle pointed ${finalRes}`);
       }
     }, 1800);
   };

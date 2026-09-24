@@ -30,7 +30,13 @@ import {
   validateBetBuilderSelections,
   settleBetBuilderTicket,
 } from "../src/utils/betBuilderUtils";
-import { bootstrapProfile, readProfile, writeProfile } from "./store";
+import { bootstrapProfile, deleteProfile, overwriteProfile, readProfile, writeProfile } from "./store";
+
+// Casino payouts can legitimately exceed 100k (Keno 5000x, Slots 100x, Hi-Lo
+// 120x), so the per-call cap is set high enough to never eat a real jackpot
+// while still blocking absurd money-printer values. Matches MAX_BALANCE below.
+const MAX_WALLET_TX = 50_000_000;
+const MAX_WALLET_BALANCE = 1e15;
 
 const app = express();
 
@@ -342,13 +348,11 @@ app.post("/api/bets/settle", (req, res) => {
 });
 
 /**
- * Generic wallet credit for revenue sources that aren't bet settlement
- * (club-ownership passive income, transfer-bid outbid refunds). These are
- * derived from team/fixture state the client already holds (not a value a
- * modified client could invent out of thin air the way a fabricated payout
- * could), but routing them through here means the server's stored balance —
- * not a client-side sum — stays the one number everything else is checked
- * against. `reason` is stored for the bankroll history log.
+ * Generic wallet delta for non-bet revenue (casino wins/losses, wallet
+ * deposits/withdrawals, club-ownership income, transfer-bid refunds,
+ * challenge rewards, VIP purchases). Routes through the server so its stored
+ * balance — not a client-side sum — stays the one number everything else is
+ * checked against. `reason` is stored for the bankroll history log.
  */
 app.post("/api/wallet/credit", (req, res) => {
   const ctx = requireProfile(req, res);
@@ -356,20 +360,50 @@ app.post("/api/wallet/credit", (req, res) => {
   const { gameMode, slot, profile } = ctx;
 
   const { amount, reason }: { amount: number; reason?: string } = req.body;
-  if (!Number.isFinite(amount)) {
-    res.status(400).json({ error: "amount must be a finite number." });
+  if (!Number.isFinite(amount) || Math.abs(amount) > MAX_WALLET_TX) {
+    res.status(400).json({ error: `amount must be finite and within ±${MAX_WALLET_TX.toLocaleString()}.` });
     return;
   }
 
+  const nextBalance =
+    amount >= 0
+      ? Math.min(MAX_WALLET_BALANCE, round2(profile.balance + amount))
+      : round2(Math.max(0, profile.balance + amount));
   const nextProfile: Profile = {
     ...profile,
-    balance: amount >= 0 ? credit(profile.balance, amount) : profile.balance - Math.min(-amount, profile.balance),
+    balance: nextBalance,
     bankrollHistory: reason
-      ? [...(profile.bankrollHistory ?? []), { timestamp: Date.now(), balance: profile.balance + amount, detail: reason }]
+      ? [...(profile.bankrollHistory ?? []), { timestamp: Date.now(), balance: nextBalance, detail: reason }].slice(-500)
       : profile.bankrollHistory,
   };
   writeProfile(gameMode, slot, nextProfile);
   res.json({ profile: nextProfile });
+});
+
+/**
+ * Overwrites the server slot (new campaign / season reset). Without this the
+ * stale server profile would resurrect on the next bootstrap and wipe the
+ * fresh local campaign.
+ */
+app.post("/api/wallet/overwrite", (req, res) => {
+  const { gameMode, slot, profile } = req.body ?? {};
+  if (!isGameMode(gameMode) || typeof slot !== "number" || !profile) {
+    res.status(400).json({ error: "gameMode, slot, and profile are required." });
+    return;
+  }
+  const canonical = overwriteProfile(gameMode, slot, profile as Profile);
+  res.json({ profile: canonical });
+});
+
+/** Deletes the server slot (save deletion). */
+app.post("/api/wallet/delete", (req, res) => {
+  const { gameMode, slot } = req.body ?? {};
+  if (!isGameMode(gameMode) || typeof slot !== "number") {
+    res.status(400).json({ error: "gameMode and numeric slot are required." });
+    return;
+  }
+  deleteProfile(gameMode, slot);
+  res.json({ ok: true });
 });
 
 // Exported (not started here) so tests/server-settlement.test.ts can mount

@@ -6,6 +6,7 @@ import {
 import { initializeNewTournament, initializeNewLeague, generateNextRoundFixtures } from "../data/tournament";
 import { generateTipsterBetsForRound, INITIAL_TIPSTERS } from "../data/tipsters";
 import { generateTransferListings, applyUserWinsToOwnedTeam } from "../engine/transferEngine";
+import { deleteWalletOnServer, overwriteWalletOnServer } from "../utils/apiClient";
 import type { FootysimMatch } from "../engine/footysimBridge";
 
 interface GameContextValue {
@@ -65,6 +66,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const parsedTipsters = loadTipsters(keys);
         const parsedTickets = loadTipsterTickets(keys);
         if (!parsedProfile || !parsedTeams || !parsedFixtures || !parsedTipsters) {
+          // Back up whatever is there before regenerating — a single corrupt
+          // or tampered key no longer silently wipes the campaign with no
+          // trace; the backup key holds the raw values for inspection.
+          try {
+            Object.values(keys).forEach((k) => {
+              const raw = localStorage.getItem(k);
+              if (raw) localStorage.setItem(`${k}_corrupt_backup`, raw);
+            });
+          } catch {}
           handleResetAndGenerate();
           return;
         }
@@ -73,6 +83,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setTipsters(parsedTipsters);
         setTipsterTickets(parsedTickets ?? {});
       } catch {
+        try {
+          Object.values(keys).forEach((k) => {
+            const raw = localStorage.getItem(k);
+            if (raw) localStorage.setItem(`${k}_corrupt_backup`, raw);
+          });
+        } catch {}
         handleResetAndGenerate();
       }
     } else {
@@ -97,20 +113,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
 
     const keys = getKeysForMode(gameMode, activeSlot);
-    let existingProfile: Profile | null = null;
-    let existingTipsters: Tipster[] = INITIAL_TIPSTERS;
-    try {
-      const rawProfile = localStorage.getItem(keys.profile);
-      if (rawProfile) {
-        const parsed = JSON.parse(rawProfile);
-        existingProfile = parsed?.data ?? parsed;
-      }
-      const rawTipsters = localStorage.getItem(keys.tipsters);
-      if (rawTipsters) {
-        const parsed = JSON.parse(rawTipsters);
-        existingTipsters = (parsed?.data ?? parsed) ?? INITIAL_TIPSTERS;
-      }
-    } catch {}
+    // Verified loads only — raw parses here would resurrect tampered balances
+    // into the fresh campaign (verifySave returns null on hash mismatch).
+    const existingProfile: Profile | null = loadProfile(keys);
+    const loadedTipsters = loadTipsters(keys);
+    const existingTipsters: Tipster[] = loadedTipsters ?? INITIAL_TIPSTERS;
     const base = existingProfile ?? ({} as Profile);
     const profile: Profile = {
       username: base.username ?? "",
@@ -129,6 +136,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     const nextTipsterTickets = generateTipsterBetsForRound(existingTipsters, freshFixtures, freshTeams);
     persistStateToCache(gameMode, activeSlot, profile, freshTeams, freshFixtures, existingTipsters, nextTipsterTickets);
+    // Mirror the reset to the server so its stale tickets/balance can't
+    // resurrect on the next bootstrap and wipe this reset. Fire-and-forget:
+    // offline this resolves unreachable and local remains truth.
+    overwriteWalletOnServer({ gameMode, slot: activeSlot }, profile);
 
     setTeams(freshTeams);
     setFixtures(freshFixtures);
@@ -159,6 +170,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const tipsterBets = generateTipsterBetsForRound([], fresh.fixtures, fresh.teams);
     localStorage.setItem(keys.tipsters, JSON.stringify(signSave(INITIAL_TIPSTERS, keys.tipsters)));
     localStorage.setItem(keys.tipsterTickets, JSON.stringify(signSave(tipsterBets, keys.tipsterTickets)));
+    // Seed the server slot too — otherwise the next bootstrap returns the
+    // previous campaign's profile and overwrites this fresh one on screen.
+    overwriteWalletOnServer({ gameMode: mode, slot }, initialProfile);
     setGameMode(mode);
     setTeams(fresh.teams);
     setFixtures(fresh.fixtures);
@@ -187,6 +201,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(k);
       localStorage.removeItem(`${k}_schema`);
     });
+    deleteWalletOnServer({ gameMode: mode, slot });
   }, []);
 
   const applyFootysimResult = useCallback((fixtureId: string, m: FootysimMatch) => {

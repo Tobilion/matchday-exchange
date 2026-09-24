@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { PLINKO_BINS as bins } from "./constants";
@@ -10,14 +10,29 @@ export const PlinkoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addL
   const [commentary, setCommentary] = useState<string>("Drop a golden chip down the triangle pegboard into payout bins!");
 
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  const droppingRef = useRef(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const dropStakeRef = useRef(0);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (droppingRef.current && dropStakeRef.current > 0) {
+      onUpdateBalanceRef.current(dropStakeRef.current);
+      droppingRef.current = false;
+    }
+  }, []);
 
   const handleDrop = () => {
-    if (dropping) return;
+    if (dropping || droppingRef.current) return;
     if (balance < safeStake) {
       setCommentary("❌ Insufficient balance.");
       return;
     }
-    onUpdateBalance(-safeStake);
+    droppingRef.current = true;
+    dropStakeRef.current = safeStake;
+    const roundStake = dropStakeRef.current;
+    onUpdateBalance(-roundStake);
     setDropping(true);
     setPegPath([]);
     setCommentary("Chip is bouncing on the pegboard... watch the drift!");
@@ -28,22 +43,24 @@ export const PlinkoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addL
     }
 
     let step = 0;
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setPegPath(path.slice(0, step + 1));
       step += 1;
 
       if (step >= 7) {
-        clearInterval(interval);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        droppingRef.current = false;
         setDropping(false);
 
         const rightBouncesCount = path.reduce((acc, v) => acc + v, 0);
         const binIdx = Math.min(7, rightBouncesCount);
         const hitBin = bins[binIdx];
-        const winPayout = safeStake * hitBin.multi;
-        onUpdateBalance(winPayout);
+        const winPayout = roundStake * hitBin.multi;
+        if (winPayout > 0) onUpdateBalance(winPayout);
 
         setCommentary(`💎 Landed in ${hitBin.label} bin! Return: $${formatMoney(winPayout)}`);
-        addLog("Golden Boot Plinko", hitBin.multi >= 1.0 ? safeStake : safeStake * (1 - hitBin.multi), hitBin.multi, hitBin.multi >= 1.0 ? "WIN" : "LOSS", `Landed in ${hitBin.label} slot`);
+        addLog("Golden Boot Plinko", hitBin.multi >= 1.0 ? roundStake : roundStake * (1 - hitBin.multi), hitBin.multi, hitBin.multi >= 1.0 ? "WIN" : "LOSS", `Landed in ${hitBin.label} slot`);
       }
     }, 280);
   };

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GameProps, StakeSlider } from "./shared";
 import { formatMoney } from "../../utils";
 import { WHEEL_SEGMENTS as SEGMENTS } from "./constants";
@@ -24,10 +24,26 @@ export const WheelOfWealthGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
   const [message, setMessage] = useState("Place stake and SPIN the Wheel of Wealth!");
   const totalRotRef = useRef(0);
   const safeStake = Math.max(1, Math.min(stake, Math.max(1, balance)));
+  const spinningRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spinStakeRef = useRef(0);
+  const onUpdateBalanceRef = useRef(onUpdateBalance);
+  onUpdateBalanceRef.current = onUpdateBalance;
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (spinningRef.current && spinStakeRef.current > 0) {
+      onUpdateBalanceRef.current(spinStakeRef.current);
+      spinningRef.current = false;
+    }
+  }, []);
 
   const spin = () => {
-    if (spinning || balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
-    onUpdateBalance(-safeStake);
+    if (spinning || spinningRef.current) return;
+    if (balance < safeStake) { setMessage("❌ Insufficient balance."); return; }
+    spinningRef.current = true;
+    spinStakeRef.current = safeStake;
+    const roundStake = spinStakeRef.current;
+    onUpdateBalance(-roundStake);
     setSpinning(true); setResult(null); setMessage("🎡 Spinning...");
     const segIdx = pickSegment();
     const seg = SEGMENTS[segIdx];
@@ -37,19 +53,21 @@ export const WheelOfWealthGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
     const newRot = totalRotRef.current + spins * 360 + (360 - segCenter);
     totalRotRef.current = newRot;
     setRotation(newRot);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      spinningRef.current = false;
       setSpinning(false); setResult(seg);
-      const payout = safeStake * seg.multiplier;
-      onUpdateBalance(payout);
+      const payout = roundStake * seg.multiplier;
+      if (payout > 0) onUpdateBalance(payout);
       if (seg.multiplier > 1) {
-        setMessage(`✅ ${seg.label}! Win $${formatMoney(payout)} (+$${formatMoney(payout - safeStake)} profit)!`);
-        addLog("Wheel of Wealth", safeStake, seg.multiplier, "WIN", `${seg.label} segment`);
+        setMessage(`✅ ${seg.label}! Win $${formatMoney(payout)} (+$${formatMoney(payout - roundStake)} profit)!`);
+        addLog("Wheel of Wealth", roundStake, seg.multiplier, "WIN", `${seg.label} segment`);
       } else if (seg.multiplier === 1) {
         setMessage(`🤝 1x — Stake returned!`);
-        addLog("Wheel of Wealth", safeStake, 1, "WIN", "Returned stake");
+        addLog("Wheel of Wealth", roundStake, 1, "WIN", "Returned stake");
       } else {
-        setMessage(`❌ ${seg.label} — Lost $${formatMoney(safeStake - payout)}${payout > 0 ? ` (got $${formatMoney(payout)} back)` : ""}.`);
-        addLog("Wheel of Wealth", safeStake - payout, seg.multiplier, "LOSS", `${seg.label} segment`);
+        setMessage(`❌ ${seg.label} — Lost $${formatMoney(roundStake - payout)}${payout > 0 ? ` (got $${formatMoney(payout)} back)` : ""}.`);
+        addLog("Wheel of Wealth", roundStake - payout, seg.multiplier, "LOSS", `${seg.label} segment`);
       }
     }, 4000);
   };
