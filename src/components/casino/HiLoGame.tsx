@@ -116,9 +116,9 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
   return (
     <div className="space-y-4 select-none">
       {/* Streak progress */}
-      <div className="bg-black/40 border border-white/5 rounded-xl p-3">
+      <div className="th-inset border th-border rounded-xl p-3">
         <div className="flex items-center justify-between mb-2">
-          <div className="text-[9px] font-mono text-slate-500 uppercase font-bold">STREAK PROGRESS</div>
+          <div className="text-[9px] font-mono th-muted uppercase font-bold">STREAK PROGRESS</div>
           <div className="text-[9px] font-mono text-emerald-400 font-bold">
             {phase === "playing" ? `POOL $${formatMoney(pool)} (${roundStakeRef.current > 0 ? (pool/roundStakeRef.current).toFixed(2) : "1.00"}x)` : `MAX ${MAX_STEPS} LEVELS`}
           </div>
@@ -126,9 +126,9 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
         <div className="flex gap-1.5 flex-wrap">
           {Array.from({ length: MAX_STEPS }, (_, i) => (
             <div key={i} className={`flex-1 min-w-[2rem] text-center py-1.5 rounded-lg border text-[9px] font-mono font-black transition-all ${
-              i < streak ? "bg-emerald-500/20 border-emerald-500 text-emerald-400" :
+              i < streak ? "th-acc-soft th-border-acc text-emerald-400" :
               i === streak && phase === "playing" ? "bg-amber-500/20 border-amber-500 text-amber-400 animate-pulse" :
-              "bg-white/2 border-white/5 text-slate-600"
+              "th-wash th-border th-faint"
             }`}>
               L{i+1}
             </div>
@@ -144,13 +144,13 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
             <span className={`text-2xl ${isRed(currentCard.suit) ? "text-red-600" : "text-slate-900"}`}>{currentCard.suit}</span>
           </div>
         ) : (
-          <div className="w-20 h-28 rounded-xl border-2 border-white/10 bg-gradient-to-br from-blue-900 to-blue-950 flex items-center justify-center">
+          <div className="w-20 h-28 rounded-xl border-2 th-border bg-gradient-to-br from-blue-900 to-blue-950 flex items-center justify-center">
             <span className="text-blue-400/40 text-3xl">🂠</span>
           </div>
         )}
       </div>
 
-      <p className="text-xs text-center text-slate-300 bg-white/5 border border-white/5 rounded-xl py-2.5 px-3 font-bold leading-snug">{message}</p>
+      <p className="text-xs text-center th-sub th-wash border th-border rounded-xl py-2.5 px-3 font-bold leading-snug">{message}</p>
 
       {phase === "idle" || phase === "done" ? (
         <div className="space-y-3">
@@ -164,12 +164,12 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <button onClick={() => guess("higher")} disabled={resolving || hiCount === 0}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm py-4 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase flex flex-col items-center leading-tight">
+              className="bg-emerald-600 hover:bg-emerald-500 th-text font-black text-sm py-4 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase flex flex-col items-center leading-tight">
               <span>▲ HIGHER</span>
               <span className="text-[10px] font-mono opacity-90">{hiCount === 0 ? "—" : `x${hiMulti.toFixed(2)}`}</span>
             </button>
             <button onClick={() => guess("lower")} disabled={resolving || loCount === 0}
-              className="bg-blue-700 hover:bg-blue-600 text-white font-black text-sm py-4 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase flex flex-col items-center leading-tight">
+              className="bg-blue-700 hover:bg-blue-600 th-text font-black text-sm py-4 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase flex flex-col items-center leading-tight">
               <span>▼ LOWER</span>
               <span className="text-[10px] font-mono opacity-90">{loCount === 0 ? "—" : `x${loMulti.toFixed(2)}`}</span>
             </button>
@@ -182,7 +182,8 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
           )}
         </div>
       )}
-      <div className="text-[9px] text-slate-600 font-mono text-center">Ties lose • payout scales with card odds • up to {MAX_STEPS} levels • RTP ~97%</div>
+      <div className="text-[9px] th-faint font-mono text-center">Ties lose • payout scales with card odds • up to {MAX_STEPS} levels • RTP ~97%</div>
     </div>
   );
 };
+

@@ -27,7 +27,7 @@ export const WinnerCelebrationModal: React.FC<WinnerCelebrationModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white h-8 w-8 rounded-full flex flex-col items-center justify-center cursor-pointer text-xs border border-white/5 transition-colors"
+          className="absolute top-4 right-4 th-wash hover:th-wash2 th-muted hover:th-text h-8 w-8 rounded-full flex flex-col items-center justify-center cursor-pointer text-xs border th-border transition-colors"
           title="Close and inspect slip results"
         >
           ✕
@@ -40,22 +40,22 @@ export const WinnerCelebrationModal: React.FC<WinnerCelebrationModalProps> = ({
           </h1>
         </div>
 
-        <div className="bg-black/30 border border-white/5 rounded-2xl p-4">
+        <div className="th-inset border th-border rounded-2xl p-4">
           <TeamCrest team={championCrest} size={64} className="mx-auto block" />
-          <h2 className="text-sm font-bold text-slate-100 mt-2 truncate">
+          <h2 className="text-sm font-bold th-text mt-2 truncate">
             {championName}
           </h2>
-          <p className="text-[10px] text-slate-400 font-mono uppercase mt-1">
+          <p className="text-[10px] th-muted font-mono uppercase mt-1">
             {gameMode === "LEAGUE" ? "League Title Winner" : "Tournament Cup Champions"}
           </p>
         </div>
 
         <div className="space-y-3 pt-2">
           <div className="text-left">
-            <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest block">
+            <span className="text-[9px] font-mono font-bold th-muted uppercase tracking-widest block">
               Next Season Setup Trajectory
             </span>
-            <p className="text-[10px] text-slate-400 leading-tight mt-1">
+            <p className="text-[10px] th-muted leading-tight mt-1">
               Would you like to continue with your accumulated manager records (balance & analytics) or start a completely fresh season?
             </p>
           </div>
@@ -64,7 +64,7 @@ export const WinnerCelebrationModal: React.FC<WinnerCelebrationModalProps> = ({
             {/* Carry Over */}
             <button
               onClick={() => onResetRound(true)}
-              className="bg-emerald-500/10 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/25 rounded-2xl p-3 text-left font-sans flex flex-col justify-between h-[105px] transition-all hover:scale-[1.02] cursor-pointer"
+              className="th-acc-soft hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border th-border-acc rounded-2xl p-3 text-left font-sans flex flex-col justify-between h-[105px] transition-all hover:scale-[1.02] cursor-pointer"
             >
               <span className="text-xs font-black uppercase tracking-wider block leading-snug">Continue<br />Records</span>
               <span className="text-[8.5px] font-mono opacity-80 leading-snug">Preserves balance (${formatMoney(balance, 0)}) & analytics sheets.</span>
@@ -73,7 +73,7 @@ export const WinnerCelebrationModal: React.FC<WinnerCelebrationModalProps> = ({
             {/* Fresh Start */}
             <button
               onClick={() => onResetRound(false)}
-              className="bg-white/3 hover:bg-white/10 hover:text-white text-slate-300 border border-white/10 rounded-2xl p-3 text-left font-sans flex flex-col justify-between h-[105px] transition-all hover:scale-[1.02] cursor-pointer"
+              className="th-wash hover:th-wash2 hover:th-text th-sub border th-border rounded-2xl p-3 text-left font-sans flex flex-col justify-between h-[105px] transition-all hover:scale-[1.02] cursor-pointer"
             >
               <span className="text-xs font-black uppercase tracking-wider block leading-snug">Fresh<br />Start</span>
               <span className="text-[8.5px] font-mono opacity-80 leading-snug">Resets budget to $1,000 and clears all history.</span>
@@ -83,7 +83,7 @@ export const WinnerCelebrationModal: React.FC<WinnerCelebrationModalProps> = ({
 
         <button
           onClick={onClose}
-          className="w-full py-2 border border-slate-500/20 hover:border-slate-500/40 text-slate-400 hover:text-slate-300 rounded-xl text-xs font-bold transition-all cursor-pointer"
+          className="w-full py-2 border border-slate-500/20 hover:border-slate-500/40 th-muted hover:th-sub rounded-xl text-xs font-bold transition-all cursor-pointer"
         >
           Close & Inspect Last Bets
         </button>
@@ -91,3 +91,4 @@ export const WinnerCelebrationModal: React.FC<WinnerCelebrationModalProps> = ({
     </div>
   );
 };
+

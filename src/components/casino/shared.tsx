@@ -43,7 +43,7 @@ export const StakeSlider: React.FC<StakeSliderProps> = ({
   return (
     <div className="space-y-2 select-none">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-slate-400 font-sans uppercase font-semibold tracking-wide">
+        <span className="th-muted font-sans uppercase font-semibold tracking-wide">
           {label ?? "WAGER STAKE"}
         </span>
         <span className="font-mono text-emerald-400 font-black text-sm">
@@ -71,9 +71,9 @@ export const StakeSlider: React.FC<StakeSliderProps> = ({
             onChange={(e) => setStake(Number(e.target.value))}
             className="w-full h-2 rounded-full accent-emerald-500 cursor-pointer disabled:opacity-40"
           />
-          <div className="flex justify-between text-[9px] font-mono text-slate-500">
+          <div className="flex justify-between text-[9px] font-mono th-muted">
             <span>${min}</span>
-            <span className="text-slate-600">{pct.toFixed(0)}% of balance</span>
+            <span className="th-faint">{pct.toFixed(0)}% of balance</span>
             <span>${max.toLocaleString()}</span>
           </div>
         </>
@@ -81,3 +81,4 @@ export const StakeSlider: React.FC<StakeSliderProps> = ({
     </div>
   );
 };
+

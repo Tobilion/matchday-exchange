@@ -56,16 +56,16 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in flex-1 overflow-y-auto no-scrollbar p-1 pb-16" id="league-standings-section">
       {/* 1. Standings Table Part */}
-      <div className="lg:col-span-2 glass-panel border border-white/5 rounded-2xl p-5 flex flex-col space-y-4 shadow-xl select-none">
-        <div className="flex items-center justify-between pb-2 border-b border-white/5">
+      <div className="lg:col-span-2 glass-panel border th-border rounded-2xl p-5 flex flex-col space-y-4 shadow-xl select-none">
+        <div className="flex items-center justify-between pb-2 border-b th-border">
           <div>
-            <h3 className="text-lg font-sans font-medium text-slate-100 flex items-center gap-2">
+            <h3 className="text-lg font-sans font-medium th-text flex items-center gap-2">
               <Award className="text-emerald-400" size={18} />
               Elite Super League Standings
             </h3>
-            <p className="text-xs text-slate-400 mt-1">Real-time standings based on played matchday outcomes</p>
+            <p className="text-xs th-muted mt-1">Real-time standings based on played matchday outcomes</p>
           </div>
-          <div className="text-xs font-mono bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full">
+          <div className="text-xs font-mono th-acc-soft border th-border-acc text-emerald-400 px-2.5 py-1 rounded-full">
             Matchday {currentRoundIndex + 1} of 15
           </div>
         </div>
@@ -74,7 +74,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
         <div className="overflow-x-auto font-sans">
           <table className="w-full text-left text-sm select-none">
             <thead>
-              <tr className="text-slate-400 text-xs font-mono uppercase bg-white/2 border-b border-white/5">
+              <tr className="th-muted text-xs font-mono uppercase th-wash border-b th-border">
                 <th className="py-2.5 px-3 text-center w-12">Pos</th>
                 <th className="py-2.5 px-2">Club</th>
                 <th className="py-2.5 px-2 text-center w-12">P</th>
@@ -83,7 +83,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                 <th className="py-2.5 px-2 text-center w-10">L</th>
                 <th className="py-2.5 px-2 text-center w-16">GD</th>
                 <th className="py-2.5 px-3 text-center w-16 text-emerald-400 font-bold">Pts</th>
-                <th className="py-2.5 px-3 text-center w-28 text-slate-400">Form</th>
+                <th className="py-2.5 px-3 text-center w-28 th-muted">Form</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -93,7 +93,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                 const isELSpot = idx >= 4 && idx < 6; // Next 2 → Europa League
                 const isRelegation = idx >= n - 3; // Bottom 3 → relegated
 
-                let rankStyle = "bg-slate-800 text-slate-300";
+                let rankStyle = "th-solid2 th-sub";
                 if (isCLSpot) rankStyle = "bg-blue-500/20 text-blue-300 border border-blue-500/30 shadow-[0_0_8px_rgba(59,130,246,0.1)]";
                 else if (isELSpot) rankStyle = "bg-orange-500/10 text-orange-300 border border-orange-500/20";
                 else if (isRelegation) rankStyle = "bg-red-500/10 text-red-300 border border-red-500/20";
@@ -101,7 +101,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                 return (
                   <tr 
                     key={team.id} 
-                    className="hover:bg-white/2 transition-colors duration-150 group cursor-pointer"
+                    className="hover:th-wash transition-colors duration-150 group cursor-pointer"
                     onClick={() => triggerEntity("team", team.id)}
                   >
                     {/* Rank Badge */}
@@ -115,7 +115,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                     <td className="py-3 px-2 font-medium">
                       <div className="flex items-center gap-2.5 font-sans">
                         <TeamCrest team={team} size={20} />
-                        <span className="text-slate-200 group-hover:text-white transition-colors">
+                        <span className="th-text group-hover:th-text transition-colors">
                           {team.name}
                         </span>
                         {idx === 0 && currentRoundIndex === 14 && (
@@ -127,11 +127,11 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                     </td>
 
                     {/* Stats */}
-                    <td className="py-3 px-2 text-center text-slate-300 font-mono">{team.played}</td>
-                    <td className="py-3 px-2 text-center text-slate-400 font-mono">{team.wonMatches}</td>
-                    <td className="py-3 px-2 text-center text-slate-400 font-mono">{team.drawnMatches}</td>
-                    <td className="py-3 px-2 text-center text-slate-400 font-mono">{team.lostMatches}</td>
-                    <td className={`py-3 px-2 text-center font-mono ${team.gd > 0 ? "text-emerald-400" : team.gd < 0 ? "text-rose-400" : "text-slate-400"}`}>
+                    <td className="py-3 px-2 text-center th-sub font-mono">{team.played}</td>
+                    <td className="py-3 px-2 text-center th-muted font-mono">{team.wonMatches}</td>
+                    <td className="py-3 px-2 text-center th-muted font-mono">{team.drawnMatches}</td>
+                    <td className="py-3 px-2 text-center th-muted font-mono">{team.lostMatches}</td>
+                    <td className={`py-3 px-2 text-center font-mono ${team.gd > 0 ? "text-emerald-400" : team.gd < 0 ? "text-rose-400" : "th-muted"}`}>
                       {team.gd > 0 ? `+${team.gd}` : team.gd}
                     </td>
 
@@ -159,7 +159,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap gap-x-4 gap-y-2 pt-3 border-t border-white/5 text-[11px] text-slate-400 select-none">
+        <div className="flex flex-wrap gap-x-4 gap-y-2 pt-3 border-t th-border text-[11px] th-muted select-none">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded bg-blue-500/20 border border-blue-500/30"></span>
             Champions League (Spots 1-4)
@@ -176,28 +176,28 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
       </div>
 
       {/* 2. Matchdays Fixture List Part */}
-      <div className="glass-panel border border-white/5 rounded-2xl p-5 flex flex-col space-y-4 shadow-xl select-none">
-        <div className="flex items-center justify-between pb-2 border-b border-white/5">
-          <h3 className="text-sm font-sans font-medium text-slate-100 flex items-center gap-1.5">
-            <Calendar className="text-slate-400" size={16} />
+      <div className="glass-panel border th-border rounded-2xl p-5 flex flex-col space-y-4 shadow-xl select-none">
+        <div className="flex items-center justify-between pb-2 border-b th-border">
+          <h3 className="text-sm font-sans font-medium th-text flex items-center gap-1.5">
+            <Calendar className="th-muted" size={16} />
             Matchday Fixtures
           </h3>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setSelectedMatchday(m => Math.max(0, m - 1))}
               disabled={selectedMatchday === 0}
-              className="p-1 rounded bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition"
+              className="p-1 rounded th-wash border th-border th-muted hover:th-text hover:th-wash2 disabled:opacity-30 disabled:pointer-events-none transition"
               title="Previous Matchday"
             >
               <ChevronLeft size={16} />
             </button>
-            <span className="text-xs font-mono text-slate-300 min-w-20 text-center">
+            <span className="text-xs font-mono th-sub min-w-20 text-center">
               Day {selectedMatchday + 1} of 15
             </span>
             <button
               onClick={() => setSelectedMatchday(m => Math.min(14, m + 1))}
               disabled={selectedMatchday === 14}
-              className="p-1 rounded bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition"
+              className="p-1 rounded th-wash border th-border th-muted hover:th-text hover:th-wash2 disabled:opacity-30 disabled:pointer-events-none transition"
               title="Next Matchday"
             >
               <ChevronRight size={16} />
@@ -218,8 +218,8 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                 key={fixture.id} 
                 className={`p-3 rounded-xl border transition-all duration-150 flex flex-col space-y-2 cursor-pointer ${
                   fixture.roundIndex === currentRoundIndex
-                    ? "bg-emerald-500/5 border-emerald-500/15 hover:border-emerald-500/30"
-                    : "bg-white/2 border-white/5 hover:border-white/10"
+                    ? "th-acc-soft th-border-acc hover:th-border-acc"
+                    : "th-wash th-border hover:th-border"
                 }`}
                 onClick={() => {
                   setInspectedMatch(fixture);
@@ -232,7 +232,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                     fixture.status === "LIVE"
                       ? "text-rose-500 animate-pulse font-bold"
                       : fixture.status === "FT"
-                        ? "text-slate-400"
+                        ? "th-muted"
                         : "text-emerald-400"
                   }`}>
                     {fixture.status === "LIVE" 
@@ -243,7 +243,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                     }
                   </span>
                   {fixture.roundIndex === currentRoundIndex && (
-                    <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full uppercase text-[9px] font-bold">
+                    <span className="th-acc-soft text-emerald-400 border th-border-acc px-1.5 py-0.5 rounded-full uppercase text-[9px] font-bold">
                       Current Day
                     </span>
                   )}
@@ -254,19 +254,19 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                   {/* Home Team */}
                   <div className="flex items-center gap-2 w-[42%]">
                     <TeamCrest team={home} size={18} />
-                    <span className="text-slate-200 text-xs truncate max-w-[80px]" title={home.name}>
+                    <span className="th-text text-xs truncate max-w-[80px]" title={home.name}>
                       {home.shortName}
                     </span>
                   </div>
 
                   {/* Score */}
-                  <div className="flex-1 text-center font-mono text-xs font-bold text-slate-100 flex items-center justify-center gap-1.5 min-w-16">
+                  <div className="flex-1 text-center font-mono text-xs font-bold th-text flex items-center justify-center gap-1.5 min-w-16">
                     {fixture.status !== "SCHEDULED" ? (
-                      <span className="bg-white/5 border border-white/10 px-2 py-0.5 rounded text-slate-200">
+                      <span className="th-wash border th-border px-2 py-0.5 rounded th-text">
                         {fixture.homeScore} - {fixture.awayScore}
                       </span>
                     ) : (
-                      <span className="text-slate-400 text-[10px] font-normal uppercase bg-white/2 border border-white/5 px-2 py-0.5 rounded">
+                      <span className="th-muted text-[10px] font-normal uppercase th-wash border th-border px-2 py-0.5 rounded">
                         vs
                       </span>
                     )}
@@ -274,7 +274,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
 
                   {/* Away Team */}
                   <div className="flex items-center gap-2 w-[42%] justify-end">
-                    <span className="text-slate-200 text-xs truncate max-w-[80px] text-right" title={away.name}>
+                    <span className="th-text text-xs truncate max-w-[80px] text-right" title={away.name}>
                       {away.shortName}
                     </span>
                     <TeamCrest team={away} size={18} />
@@ -296,28 +296,28 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
 
         return (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-fade-in text-center select-none font-sans">
-            <div className="relative bg-[#070b11] border border-white/10 rounded-3xl p-6 max-w-sm w-full mx-auto my-auto shadow-2xl space-y-5 flex flex-col text-slate-100">
+            <div className="relative th-solid border th-border rounded-3xl p-6 max-w-sm w-full mx-auto my-auto shadow-2xl space-y-5 flex flex-col th-text">
               
               {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setInspectedMatch(null)}
-                className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white h-8 w-8 rounded-full flex items-center justify-center cursor-pointer text-xs transition-colors border border-white/5"
+                className="absolute top-4 right-4 th-wash hover:th-wash2 th-muted hover:th-text h-8 w-8 rounded-full flex items-center justify-center cursor-pointer text-xs transition-colors border th-border"
               >
                 ✕
               </button>
 
               <div className="text-center font-sans">
-                <span className="text-[9px] font-mono tracking-widest text-[#10b981] font-extrabold uppercase">
+                <span className="text-[9px] font-mono tracking-widest th-muted font-extrabold uppercase">
                   {inspectedMatch.status === "SCHEDULED" ? "UPCOMING LINEUPS" : "COMPLETED REPORT"}
                 </span>
-                <h3 className="text-sm font-black text-slate-100 uppercase tracking-widest mt-1">
+                <h3 className="text-sm font-black th-text uppercase tracking-widest mt-1">
                   Match Details
                 </h3>
               </div>
 
               {/* Scoreboard line */}
-              <div className="bg-black/45 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
+              <div className="th-inset border th-border rounded-2xl p-4 flex items-center justify-between">
                 {/* Home Team (Click to Dossier) */}
                 <div 
                   onClick={() => {
@@ -328,14 +328,14 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                   title={`View ${homeTeam.name} dossier`}
                 >
                   <TeamCrest team={homeTeam as any} size={36} className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
-                  <span className="text-[11px] font-bold text-slate-300 group-hover:text-emerald-450 line-clamp-2 leading-tight">
+                  <span className="text-[11px] font-bold th-sub group-hover:text-emerald-450 line-clamp-2 leading-tight">
                     {homeTeam.name}
                   </span>
                 </div>
 
                 {/* Score */}
                 <div className="flex flex-col items-center justify-center w-[24%]">
-                  <span className="text-xl font-black font-mono text-slate-100">
+                  <span className="text-xl font-black font-mono th-text">
                     {inspectedMatch.status === "SCHEDULED" ? "VS" : `${homeGoals} - ${awayGoals}`}
                   </span>
                   {inspectedMatch.homeScore % 1 !== 0 && inspectedMatch.status !== "SCHEDULED" && (
@@ -353,7 +353,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                   title={`View ${awayTeam.name} dossier`}
                 >
                   <TeamCrest team={awayTeam as any} size={36} className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
-                  <span className="text-[11px] font-bold text-slate-300 group-hover:text-emerald-450 line-clamp-2 leading-tight">
+                  <span className="text-[11px] font-bold th-sub group-hover:text-emerald-450 line-clamp-2 leading-tight">
                     {awayTeam.name}
                   </span>
                 </div>
@@ -362,13 +362,13 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
               {/* Dynamic Goal Scorer logs list */}
               {inspectedMatch.status !== "SCHEDULED" && (
                 <div className="space-y-1.5 text-left">
-                  <span className="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-widest block">
+                  <span className="text-[8px] font-mono font-bold th-muted uppercase tracking-widest block">
                     GOAL EVENT LOG & TIMELINE
                   </span>
                   
                   <div className="max-h-[110px] overflow-y-auto no-scrollbar space-y-1 text-xs font-mono">
                     {goalEvents.length === 0 ? (
-                      <div className="text-center text-slate-600 text-[10px] py-3 italic">
+                      <div className="text-center th-faint text-[10px] py-3 italic">
                         No goals were scored. Goalless match.
                       </div>
                     ) : (
@@ -377,9 +377,9 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                         return (
                           <div 
                             key={eIdx}
-                            className={`flex items-center gap-1.5 text-[11px] ${isHomeScorer ? "justify-start text-left text-slate-300" : "justify-end text-right text-slate-300"}`}
+                            className={`flex items-center gap-1.5 text-[11px] ${isHomeScorer ? "justify-start text-left th-sub" : "justify-end text-right th-sub"}`}
                           >
-                            <span className="text-slate-500 font-bold">[{evt.minute}']</span>
+                            <span className="th-muted font-bold">[{evt.minute}']</span>
                             <span className="truncate">⚽ {evt.commentary.split(" scored")[0].split(" - ")[0]}</span>
                           </div>
                         );
@@ -391,22 +391,22 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
 
               {/* Match detailed statistics comparison */}
               {inspectedMatch.status !== "SCHEDULED" && (
-                <div className="space-y-2 border-t border-white/5 pt-3 select-none text-left font-mono">
-                  <span className="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-widest block">
+                <div className="space-y-2 border-t th-border pt-3 select-none text-left font-mono">
+                  <span className="text-[8px] font-mono font-bold th-muted uppercase tracking-widest block">
                     TEAM STATS COMPARISON
                   </span>
-                  <div className="grid grid-cols-3 text-center text-[11px] font-mono text-slate-300">
+                  <div className="grid grid-cols-3 text-center text-[11px] font-mono th-sub">
                     <div>
-                      <span className="text-[12px] font-bold text-slate-100 block">{inspectedMatch.stats?.home?.shots || 0} ({inspectedMatch.stats?.home?.shotsOnTarget || 0})</span>
-                      <span className="text-[8px] text-slate-500 block uppercase mt-0.5">Shots(SOT)</span>
+                      <span className="text-[12px] font-bold th-text block">{inspectedMatch.stats?.home?.shots || 0} ({inspectedMatch.stats?.home?.shotsOnTarget || 0})</span>
+                      <span className="text-[8px] th-muted block uppercase mt-0.5">Shots(SOT)</span>
                     </div>
                     <div>
-                      <span className="text-[12px] font-bold text-slate-100 block">{inspectedMatch.stats?.home?.passes || 0} vs {inspectedMatch.stats?.away?.passes || 0}</span>
-                      <span className="text-[8px] text-slate-500 block uppercase mt-0.5 font-sans">Passes</span>
+                      <span className="text-[12px] font-bold th-text block">{inspectedMatch.stats?.home?.passes || 0} vs {inspectedMatch.stats?.away?.passes || 0}</span>
+                      <span className="text-[8px] th-muted block uppercase mt-0.5 font-sans">Passes</span>
                     </div>
                     <div>
-                      <span className="text-[12px] font-bold text-slate-100 block">{inspectedMatch.stats?.away?.shots || 0} ({inspectedMatch.stats?.away?.shotsOnTarget || 0})</span>
-                      <span className="text-[8px] text-slate-500 block uppercase mt-0.5">Shots(SOT)</span>
+                      <span className="text-[12px] font-bold th-text block">{inspectedMatch.stats?.away?.shots || 0} ({inspectedMatch.stats?.away?.shotsOnTarget || 0})</span>
+                      <span className="text-[8px] th-muted block uppercase mt-0.5">Shots(SOT)</span>
                     </div>
                   </div>
                 </div>
@@ -418,3 +418,4 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
     </div>
   );
 };
+

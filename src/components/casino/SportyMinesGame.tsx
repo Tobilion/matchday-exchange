@@ -166,12 +166,12 @@ export const SportyMinesGame: React.FC<GameProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex justify-center select-none">
-        <div className="grid grid-cols-5 gap-1.5 bg-black/60 p-3 border border-white/5 rounded-2xl w-full max-w-xs">
+        <div className="grid grid-cols-5 gap-1.5 th-inset p-3 border th-border rounded-2xl w-full max-w-xs">
           {grid.length === 0
             ? Array.from({ length: totalCells }).map((_, index) => (
                 <div
                   key={index}
-                  className="aspect-square bg-slate-900/60 border border-white/5 rounded-lg flex items-center justify-center text-slate-700 text-[10px] opacity-30"
+                  className="aspect-square th-solid border th-border rounded-lg flex items-center justify-center th-faint text-[10px] opacity-30"
                 >
                   {index + 1}
                 </div>
@@ -183,11 +183,11 @@ export const SportyMinesGame: React.FC<GameProps> = ({
                   className={`aspect-square rounded-lg flex items-center justify-center border transition-all text-sm ${
                     cell.revealed
                       ? cell.mine
-                        ? "bg-red-700/80 border-red-500 text-white"
-                        : "bg-emerald-500/20 border-emerald-500/60 text-emerald-400"
+                        ? "bg-red-700/80 border-red-500 th-text"
+                        : "th-acc-soft th-border-acc text-emerald-400"
                       : inGame
-                        ? "bg-slate-800 border-white/10 hover:border-emerald-500/50 hover:bg-slate-700 text-slate-300 cursor-pointer"
-                        : "bg-slate-900/40 border-white/5 text-slate-600 cursor-default"
+                        ? "th-solid2 th-border hover:th-border-acc hover:th-track th-sub cursor-pointer"
+                        : "th-solid th-border th-faint cursor-default"
                   }`}
                 >
                   {cell.revealed ? (
@@ -197,7 +197,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
                       "🪖"
                     )
                   ) : (
-                    <span className="text-[9px] font-mono text-slate-500">
+                    <span className="text-[9px] font-mono th-muted">
                       {idx + 1}
                     </span>
                   )}
@@ -206,14 +206,14 @@ export const SportyMinesGame: React.FC<GameProps> = ({
         </div>
       </div>
 
-      <p className="text-[11px] leading-relaxed text-slate-300 text-center bg-white/2 p-2.5 rounded-xl border border-white/5 select-none font-mono">
+      <p className="text-[11px] leading-relaxed th-sub text-center th-wash p-2.5 rounded-xl border th-border select-none font-mono">
         {commentary}
       </p>
 
       {!inGame && (
         <div className="space-y-3">
           <div className="space-y-1">
-            <span className="text-[10px] text-slate-500 font-mono block">
+            <span className="text-[10px] th-muted font-mono block">
               MINE DENSITY (5×5 grid)
             </span>
             <div className="flex gap-1.5">
@@ -224,11 +224,11 @@ export const SportyMinesGame: React.FC<GameProps> = ({
                   className={`flex-1 py-2 px-2 rounded-xl border text-xs font-mono font-bold transition-all ${
                     mineCount === density
                       ? "bg-amber-500/20 border-amber-500 text-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.15)]"
-                      : "bg-white/2 border-white/5 text-slate-400 hover:border-white/10 cursor-pointer"
+                      : "th-wash th-border th-muted hover:th-border cursor-pointer"
                   }`}
                 >
                   <div>{density} 💣</div>
-                  <div className="text-[8px] font-mono text-slate-500 mt-0.5">
+                  <div className="text-[8px] font-mono th-muted mt-0.5">
                     ~{getMultiplier(3, density).toFixed(1)}x@3
                   </div>
                 </button>
@@ -248,7 +248,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
 
       {inGame ? (
         <>
-          <div className="bg-black/30 border border-white/5 rounded-xl p-2.5 flex justify-between text-xs font-mono">
+          <div className="th-inset border th-border rounded-xl p-2.5 flex justify-between text-xs font-mono">
             <span>
               Revealed: <b className="text-emerald-400">{revealedCount}</b> safe
               cells
@@ -272,7 +272,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
         <button
           onClick={handleStartGame}
           disabled={balance <= 0}
-          className="w-full bg-blue-500 hover:bg-blue-400 text-white font-sans font-black text-xs py-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer uppercase tracking-wider"
+          className="w-full bg-blue-500 hover:bg-blue-400 th-text font-sans font-black text-xs py-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer uppercase tracking-wider"
         >
           💣 START SOCCERMINES (${safeStake.toLocaleString()})
         </button>
@@ -280,3 +280,4 @@ export const SportyMinesGame: React.FC<GameProps> = ({
     </div>
   );
 };
+

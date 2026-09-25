@@ -30,11 +30,11 @@ export const PitchFormation: React.FC<PitchFormationProps> = ({ players }) => {
         className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 group z-10"
         style={{ left, top }}
       >
-        <div className="w-10 h-10 rounded-full bg-emerald-700 border-2 border-emerald-400 flex flex-col items-center justify-center text-white font-black text-[10px] shadow-[0_0_15px_rgba(52,211,153,0.3)] transition-transform group-hover:scale-110 cursor-default">
+        <div className="w-10 h-10 rounded-full bg-emerald-700 border-2 border-emerald-400 flex flex-col items-center justify-center th-text font-black text-[10px] shadow-[0_0_15px_rgba(52,211,153,0.3)] transition-transform group-hover:scale-110 cursor-default">
           <span className="text-[8px] opacity-80">{p.position}</span>
           <span>{p.rating}</span>
         </div>
-        <div className="bg-slate-900 border border-emerald-500/30 rounded px-1.5 py-0.5 text-[9px] font-bold text-white font-sans max-w-[80px] truncate text-center uppercase tracking-tighter">
+        <div className="th-solid border th-border-acc rounded px-1.5 py-0.5 text-[9px] font-bold th-text font-sans max-w-[80px] truncate text-center uppercase tracking-tighter">
           {p.name.split(" ").pop()}
         </div>
       </div>
@@ -42,18 +42,18 @@ export const PitchFormation: React.FC<PitchFormationProps> = ({ players }) => {
   };
 
   return (
-    <div className="relative w-full aspect-[4/3] max-h-[500px] border-2 border-emerald-500/30 rounded-lg overflow-hidden bg-[#1f3725]">
+    <div className="relative w-full aspect-[4/3] max-h-[500px] border-2 th-border-acc rounded-lg overflow-hidden bg-[#1f3725]">
       {/* Pitch Lines */}
-      <div className="absolute inset-x-0 top-1/2 h-0 border-t-2 border-white/20"></div>
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white/20 rounded-full"></div>
+      <div className="absolute inset-x-0 top-1/2 h-0 border-t-2 th-border2"></div>
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 th-border2 rounded-full"></div>
       
       {/* Penalty boxes */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[15%] border-x-2 border-b-2 border-white/20"></div>
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-[15%] border-x-2 border-t-2 border-white/20"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[15%] border-x-2 border-b-2 th-border2"></div>
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-[15%] border-x-2 border-t-2 th-border2"></div>
       
       {/* Goal boxes */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[20%] h-[5%] border-x-2 border-b-2 border-white/20"></div>
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[20%] h-[5%] border-x-2 border-t-2 border-white/20"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[20%] h-[5%] border-x-2 border-b-2 th-border2"></div>
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[20%] h-[5%] border-x-2 border-t-2 th-border2"></div>
 
       {gk && renderNode(gk, "50%", "88%")}
       {defs.map((p, i) => {
@@ -71,3 +71,4 @@ export const PitchFormation: React.FC<PitchFormationProps> = ({ players }) => {
     </div>
   );
 };
+

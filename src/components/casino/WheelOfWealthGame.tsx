@@ -107,19 +107,20 @@ export const WheelOfWealthGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
       </div>
 
       {result && (
-        <div className={`text-center py-2 rounded-xl border font-black text-sm ${result.multiplier >= 5 ? "bg-emerald-500/20 border-emerald-500 text-emerald-400" : result.multiplier === 0 ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400"}`}>
+        <div className={`text-center py-2 rounded-xl border font-black text-sm ${result.multiplier >= 5 ? "th-acc-soft th-border-acc text-emerald-400" : result.multiplier === 0 ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400"}`}>
           {result.label} → {result.multiplier}x
         </div>
       )}
 
-      <p className="text-xs text-center text-slate-300 bg-white/5 border border-white/5 rounded-xl py-2.5 px-3 font-bold">{message}</p>
+      <p className="text-xs text-center th-sub th-wash border th-border rounded-xl py-2.5 px-3 font-bold">{message}</p>
 
       <StakeSlider balance={balance} stake={safeStake} setStake={setStake} disabled={spinning} label="SPIN STAKE" />
       <button onClick={spin} disabled={spinning || balance <= 0}
         className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm py-3 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase block text-center">
         {spinning ? "🎡 SPINNING..." : "🎡 SPIN THE WHEEL"}
       </button>
-      <div className="text-[9px] text-slate-600 font-mono text-center">12 segments • Max 20x • RTP ~96%</div>
+      <div className="text-[9px] th-faint font-mono text-center">12 segments • Max 20x • RTP ~96%</div>
     </div>
   );
 };
+

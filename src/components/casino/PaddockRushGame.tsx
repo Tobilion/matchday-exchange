@@ -140,7 +140,7 @@ export const PaddockRushGame: React.FC<GameProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="bg-[#070b11] border border-white/5 rounded-2xl p-6 flex flex-col justify-between items-center relative overflow-hidden h-52 select-none">
+      <div className="th-solid border th-border rounded-2xl p-6 flex flex-col justify-between items-center relative overflow-hidden h-52 select-none">
         <div className="absolute inset-0 bg-blue-500/2 mix-blend-color-dodge opacity-30 pointer-events-none"></div>
         <div className="my-auto z-10 flex flex-col items-center">
           <span
@@ -154,16 +154,16 @@ export const PaddockRushGame: React.FC<GameProps> = ({
           >
             {multiplier.toFixed(2)}x
           </span>
-          <span className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mt-1">
+          <span className="text-[10px] th-muted font-mono uppercase tracking-widest mt-1">
             CURRENT MULTIPLIER
           </span>
         </div>
-        <div className="w-full h-8 bg-black/60 border border-white/5 rounded-full flex items-center justify-between px-3 overflow-hidden relative z-10">
+        <div className="w-full h-8 th-inset border th-border rounded-full flex items-center justify-between px-3 overflow-hidden relative z-10">
           <div
             className="h-full bg-emerald-500 transition-all rounded-full absolute left-0 top-0 duration-75"
             style={{ width: `${Math.min(100, (multiplier / 20) * 100)}%` }}
           ></div>
-          <span className="text-[10px] font-mono text-slate-300 z-10 uppercase font-bold">
+          <span className="text-[10px] font-mono th-sub z-10 uppercase font-bold">
             START 1.0x
           </span>
           <span className="text-[10px] font-mono text-amber-400 z-10 font-black">
@@ -172,7 +172,7 @@ export const PaddockRushGame: React.FC<GameProps> = ({
         </div>
       </div>
 
-      <p className="text-[11px] leading-relaxed text-slate-300 text-center bg-white/2 p-2.5 rounded-xl border border-white/5 select-none">
+      <p className="text-[11px] leading-relaxed th-sub text-center th-wash p-2.5 rounded-xl border th-border select-none">
         {commentary}
       </p>
 
@@ -197,7 +197,7 @@ export const PaddockRushGame: React.FC<GameProps> = ({
         <button
           onClick={startCrashGame}
           disabled={balance <= 0}
-          className="w-full bg-blue-500 hover:bg-blue-400 text-white font-sans font-black text-xs py-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer uppercase tracking-widest"
+          className="w-full bg-blue-500 hover:bg-blue-400 th-text font-sans font-black text-xs py-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer uppercase tracking-widest"
         >
           🏃 LAUNCH MASCOT RUSH (${safeStake.toLocaleString()})
         </button>
@@ -205,3 +205,4 @@ export const PaddockRushGame: React.FC<GameProps> = ({
     </div>
   );
 };
+

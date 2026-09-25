@@ -8,9 +8,9 @@ interface ThemeToggleProps {
 }
 
 const OPTIONS: { id: AppTheme; label: string; dot: string; title: string }[] = [
-  { id: "matte", label: "Matte", dot: "bg-[#0b0e14] border-white/30", title: "Matte black (default)" },
-  { id: "navy", label: "Navy", dot: "bg-[#0d1530] border-blue-300/50", title: "Navy blue dark" },
-  { id: "cream", label: "Cream", dot: "bg-[#f6f1e7] border-amber-900/30", title: "Cream light" },
+  { id: "matte", label: "Matte", dot: "bg-[#0b0e14] th-border2", title: "Matte black (default)" },
+  { id: "navy", label: "Navy", dot: "bg-[#0d1530] th-border2", title: "Navy blue dark" },
+  { id: "cream", label: "Cream", dot: "bg-[#f6f1e7] th-border2", title: "Cream light" },
 ];
 
 /** Three-way theme switcher. Full labels on the entry screen, dot-only when compact (header). */
@@ -19,7 +19,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, onChange, compa
     <div
       role="radiogroup"
       aria-label="Color theme"
-      className={`flex items-center gap-1 rounded-xl border border-white/10 bg-black/30 p-1 ${
+      className={`flex items-center gap-1 rounded-xl border th-border th-inset p-1 ${
         compact ? "" : "w-fit"
       }`}
     >
@@ -35,8 +35,8 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, onChange, compa
             onClick={() => onChange(opt.id)}
             className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
               active
-                ? "bg-emerald-500/20 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.15)]"
-                : "text-slate-400 hover:text-slate-200"
+                ? "th-acc-soft th-acc shadow-[0_0_8px_rgba(16,185,129,0.15)]"
+                : "th-muted hover:th-text"
             }`}
           >
             <span className={`h-3 w-3 rounded-full border ${opt.dot}`} />
@@ -47,3 +47,4 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, onChange, compa
     </div>
   );
 };
+

@@ -194,7 +194,7 @@ export default function Dashboard() {
   if (!userProfile) return null;
 
   return (
-    <div id="app" className="h-screen w-screen bg-gradient-to-br from-[#0b0e14] via-[#05070a] to-[#121620] text-slate-100 flex flex-col overflow-hidden font-sans animate-fade-in">
+    <div id="app" className="h-screen w-screen bg-gradient-to-br from-[#0b0e14] via-[#05070a] to-[#121620] th-text flex flex-col overflow-hidden font-sans animate-fade-in">
       <Header
         activeTab={activeTab} setActiveTab={setActiveTab}
         username={userProfile.username} balance={userProfile.balance}
@@ -303,7 +303,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {transferToast && showTransferToast && <div className="fixed bottom-4 left-4 z-50 bg-slate-800 text-xs px-3 py-2 rounded-xl border border-white/10">{transferToast}</div>}
+      {transferToast && showTransferToast && <div className="fixed bottom-4 left-4 z-50 th-solid2 text-xs px-3 py-2 rounded-xl border th-border">{transferToast}</div>}
       {showWalletModal && <WalletModal balance={userProfile.balance} onConfirmTransaction={profileHook.handleConfirmWalletTransaction} onClose={() => setShowWalletModal(false)} grantScopeKey={gameMode ? `${gameMode.toLowerCase()}_slot${activeSlot}` : undefined} />}
       {showWinnerCelebration && <WinnerCelebrationModal gameMode={gameMode} balance={userProfile.balance} championName={champion.name} championCrest={champion.crest} onClose={() => setShowWinnerCelebration(false)} onResetRound={handleResetAndReloadProfile} />}
       {ownerRevenueReport && <OwnerRevenueModal teamName={ownerRevenueReport.teamName} revenue={ownerRevenueReport.revenue} fixtures={ownerRevenueReport.fixtures} onClose={() => setOwnerRevenueReport(null)} />}

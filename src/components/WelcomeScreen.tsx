@@ -117,44 +117,44 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   };
 
   return (
-    <div className="h-screen w-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black text-slate-100 overflow-y-auto overflow-x-hidden font-sans select-none relative" id="welcome-gate-screen">
+    <div className="h-screen w-screen th-app overflow-y-auto overflow-x-hidden font-sans select-none relative" id="welcome-gate-screen">
       <div className="min-h-full w-full flex flex-col items-center justify-center gap-4 p-4 py-12 relative">
         {/* Background visual graphics - football pitch subtle glows */}
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full th-acc-soft blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none"></div>
 
         <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-12 gap-8 z-10 my-auto items-stretch">
         
         {/* Left Side: Brand Concept Panel */}
-        <div className="md:col-span-5 flex flex-col justify-between p-8 rounded-3xl bg-slate-900/40 border border-white/5 backdrop-blur-md relative">
+        <div className="md:col-span-5 flex flex-col justify-between p-8 rounded-3xl th-solid border th-border backdrop-blur-md relative">
           
           <div className="space-y-6 relative z-10">
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl th-acc-soft border th-border-acc text-emerald-400">
               <Sparkles size={20} className="animate-pulse" />
             </div>
             
             <div className="space-y-2">
-              <h1 className="text-3xl font-black uppercase tracking-wider text-slate-100 font-sans leading-none">
+              <h1 className="text-3xl font-black uppercase tracking-wider th-text font-sans leading-none">
                 Matchday <span className="text-emerald-400">Exchange</span>
               </h1>
-              <p className="text-xs text-slate-400 font-mono tracking-widest uppercase">
+              <p className="text-xs th-muted font-mono tracking-widest uppercase">
                 Campaign Seeding Arena
               </p>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs th-muted leading-relaxed">
               Step into the ultimate visual betting and matches simulator. Take charge of a football club championship campaign as a general manager and elite bet predictor.
             </p>
 
             <div className="flex items-center gap-2">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-slate-500 font-bold">Theme</span>
+              <span className="text-[9px] font-mono uppercase tracking-widest th-muted font-bold">Theme</span>
               <ThemeToggle theme={theme} onChange={setTheme} />
             </div>
           </div>
 
           {/* Quick Stats Panel / Resume options if they already exist */}
-          <div className="pt-6 border-t border-white/5 mt-6 space-y-4 relative z-10 max-h-[340px] overflow-y-auto no-scrollbar">
-            <h4 className="text-xs font-mono text-slate-405 uppercase tracking-widest block font-bold">
+          <div className="pt-6 border-t th-border mt-6 space-y-4 relative z-10 max-h-[340px] overflow-y-auto no-scrollbar">
+            <h4 className="text-xs font-mono th-muted uppercase tracking-widest block font-bold">
               Active Saved Sessions (Slots)
             </h4>
             
@@ -177,12 +177,12 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                       const expanded = expandedKey === key;
                       const ring = isLastPlayed
                         ? (accent === "amber" ? "border-amber-500/40" : "border-blue-400/40")
-                        : "border-white/5";
+                        : "th-border";
                       const dot = exists
                         ? (accent === "amber" ? "bg-amber-500 animate-pulse" : "bg-blue-400 animate-pulse")
-                        : "bg-slate-700";
+                        : "th-track";
                       return (
-                        <div key={`${slotMode}-slot-${slot}`} className={`rounded-xl bg-white/2 border text-[11px] overflow-hidden ${ring}`}>
+                        <div key={`${slotMode}-slot-${slot}`} className={`rounded-xl th-wash border text-[11px] overflow-hidden ${ring}`}>
                           <button
                             type="button"
                             onClick={() => setExpandedKey(expanded ? null : key)}
@@ -191,13 +191,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                           >
                             <div className="flex items-center gap-2 min-w-0">
                               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
-                              <span className="font-bold text-slate-305">Slot {slot}</span>
+                              <span className="font-bold th-sub">Slot {slot}</span>
                               {isLastPlayed ? (
                                 <span className={`text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${accent === "amber" ? "bg-amber-500/20 text-amber-300" : "bg-blue-500/20 text-blue-300"}`}>
                                   Last Played
                                 </span>
                               ) : (
-                                <span className="text-[9px] font-mono text-slate-500">
+                                <span className="text-[9px] font-mono th-muted">
                                   {exists ? "Active Save" : "Empty Slot"}
                                 </span>
                               )}
@@ -207,34 +207,34 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                                 </span>
                               )}
                             </div>
-                            <ChevronDown size={12} className={`text-slate-500 shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} />
+                            <ChevronDown size={12} className={`th-muted shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} />
                           </button>
                           {expanded && (
-                            <div className="px-2 pb-2 pt-0.5 space-y-2 border-t border-white/5">
+                            <div className="px-2 pb-2 pt-0.5 space-y-2 border-t th-border">
                               {exists ? (
                                 <>
                                   <div className="grid grid-cols-2 gap-1.5 pt-1.5">
-                                    <div className="rounded-lg bg-black/25 border border-white/5 px-2 py-1.5">
-                                      <p className="text-[8px] font-mono uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                                    <div className="rounded-lg th-inset border th-border px-2 py-1.5">
+                                      <p className="text-[8px] font-mono uppercase tracking-widest th-muted flex items-center gap-1">
                                         <Wallet size={9} /> Wallet
                                       </p>
                                       <p className="text-[12px] font-mono font-bold text-emerald-400">
                                         ${summary.balance.toLocaleString()}
                                       </p>
                                     </div>
-                                    <div className="rounded-lg bg-black/25 border border-white/5 px-2 py-1.5">
-                                      <p className="text-[8px] font-mono uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                                    <div className="rounded-lg th-inset border th-border px-2 py-1.5">
+                                      <p className="text-[8px] font-mono uppercase tracking-widest th-muted flex items-center gap-1">
                                         <CalendarDays size={9} /> Stage
                                       </p>
-                                      <p className="text-[11px] font-bold text-slate-200 truncate">{summary.stageLabel}</p>
+                                      <p className="text-[11px] font-bold th-text truncate">{summary.stageLabel}</p>
                                     </div>
-                                    <div className="rounded-lg bg-black/25 border border-white/5 px-2 py-1.5 col-span-2">
-                                      <p className="text-[8px] font-mono uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                                    <div className="rounded-lg th-inset border th-border px-2 py-1.5 col-span-2">
+                                      <p className="text-[8px] font-mono uppercase tracking-widest th-muted flex items-center gap-1">
                                         <Swords size={9} /> Campaign
                                       </p>
-                                      <p className="text-[10px] text-slate-300">
-                                        <span className="font-bold text-slate-100">{summary.username}</span>
-                                        <span className="text-slate-500"> · {summary.gamesPlayed} played · {summary.betsPlaced} bets</span>
+                                      <p className="text-[10px] th-sub">
+                                        <span className="font-bold th-text">{summary.username}</span>
+                                        <span className="th-muted"> · {summary.gamesPlayed} played · {summary.betsPlaced} bets</span>
                                       </p>
                                     </div>
                                   </div>
@@ -258,11 +258,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                                 </>
                               ) : (
                                 <div className="pt-1.5 flex items-center justify-between gap-2">
-                                  <span className="text-[9px] font-mono text-slate-500 uppercase">Available — start fresh here</span>
+                                  <span className="text-[9px] font-mono th-muted uppercase">Available — start fresh here</span>
                                   <button
                                     type="button"
                                     onClick={() => { setMode(slotMode); setSelectedSlot(slot); }}
-                                    className="bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 font-bold px-2 py-1 rounded-lg transition-all text-[9.5px] cursor-pointer"
+                                    className="th-wash hover:th-wash2 border th-border th-text font-bold px-2 py-1 rounded-lg transition-all text-[9.5px] cursor-pointer"
                                   >
                                     Use this slot
                                   </button>
@@ -281,20 +281,20 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         </div>
 
         {/* Right Side: Setup Form Panel */}
-        <div className="md:col-span-7 flex flex-col justify-center p-8 rounded-3xl glass-panel-heavy border border-white/10 shadow-2xl relative">
+        <div className="md:col-span-7 flex flex-col justify-center p-8 rounded-3xl glass-panel-heavy border th-border shadow-2xl relative">
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-1">
-              <h2 className="text-xl font-bold text-slate-100 font-sans tracking-tight">
+              <h2 className="text-xl font-bold th-text font-sans tracking-tight">
                 Create Manager Profile
               </h2>
-              <p className="text-xs text-slate-400 font-medium">Configure your initial parameters to enter the lobby</p>
+              <p className="text-xs th-muted font-medium">Configure your initial parameters to enter the lobby</p>
             </div>
 
             {/* Input 1: Username */}
             <div className="space-y-2">
-              <label className="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-bold">
-                <User size={12} className="text-slate-400" />
+              <label className="text-xs font-mono th-muted uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                <User size={12} className="th-muted" />
                 Manager Username
               </label>
               <div className="relative">
@@ -304,15 +304,15 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   onChange={(e) => setUsername(e.target.value.slice(0, 15))}
                   placeholder="Enter manager name..."
                   required
-                  className="w-full bg-white/3 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all font-medium"
+                  className="w-full th-wash border th-border rounded-xl px-4 py-3 text-sm th-text placeholder:th-muted focus:outline-none focus:th-border-acc focus:ring-1 focus:ring-emerald-500/20 transition-all font-medium"
                 />
               </div>
             </div>
 
             {/* Input 2: Starting Balance presets */}
             <div className="space-y-2">
-              <label className="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-bold">
-                <Coins size={12} className="text-slate-400" />
+              <label className="text-xs font-mono th-muted uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                <Coins size={12} className="th-muted" />
                 Starting Budget Balance
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -325,8 +325,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                       onClick={() => setBalance(val)}
                       className={`py-2 rounded-lg text-xs font-bold font-mono transition-all border ${
                         isSelected
-                          ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.1)]"
-                          : "bg-white/2 border-white/5 text-slate-400 hover:border-white/10 hover:text-slate-305 cursor-pointer"
+                          ? "th-acc-soft th-border-acc th-acc shadow-[0_0_8px_rgba(16,185,129,0.1)]"
+                          : "th-wash th-border th-muted hover:th-border hover:th-sub cursor-pointer"
                       }`}
                     >
                       ${val.toLocaleString()}
@@ -338,7 +338,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
             {/* Input 3: Game Campaign Selection Cards */}
             <div className="space-y-2.5">
-              <label className="text-xs font-mono text-slate-400 uppercase tracking-wider font-bold">
+              <label className="text-xs font-mono th-muted uppercase tracking-wider font-bold">
                 Select Simulation Campaign Mode
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -348,21 +348,21 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   onClick={() => setMode("TOURNAMENT")}
                   className={`p-4 rounded-2xl border transition-all duration-205 cursor-pointer flex flex-col space-y-2 relative select-none ${
                     mode === "TOURNAMENT"
-                      ? "bg-slate-900 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.1)] text-white"
-                      : "bg-white/2 border-white/5 text-slate-400 hover:border-white/10 hover:bg-white/3"
+                      ? "th-solid border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.1)] th-text"
+                      : "th-wash th-border th-muted hover:th-border hover:th-wash"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <Trophy className={mode === "TOURNAMENT" ? "text-amber-500" : "text-slate-400"} size={18} />
+                    <Trophy className={mode === "TOURNAMENT" ? "text-amber-500" : "th-muted"} size={18} />
                     {mode === "TOURNAMENT" && (
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
                     )}
                   </div>
                   <div>
-                    <h3 className={`text-sm font-bold ${mode === "TOURNAMENT" ? "text-slate-100" : "text-slate-300"}`}>
+                    <h3 className={`text-sm font-bold ${mode === "TOURNAMENT" ? "th-text" : "th-sub"}`}>
                       Knockout Tournament
                     </h3>
-                    <p className="text-[10.5px] text-slate-400 mt-1 leading-relaxed">
+                    <p className="text-[10.5px] th-muted mt-1 leading-relaxed">
                       Play through a grand 16-team custom bracket. One loss and you are eliminated. Perfect cup rules!
                     </p>
                   </div>
@@ -373,21 +373,21 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   onClick={() => setMode("LEAGUE")}
                   className={`p-4 rounded-2xl border transition-all duration-205 cursor-pointer flex flex-col space-y-2 relative select-none ${
                     mode === "LEAGUE"
-                      ? "bg-slate-900 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.1)] text-white"
-                      : "bg-white/2 border-white/5 text-slate-400 hover:border-white/10 hover:bg-white/3"
+                      ? "th-solid border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.1)] th-text"
+                      : "th-wash th-border th-muted hover:th-border hover:th-wash"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <Award className={mode === "LEAGUE" ? "text-blue-400" : "text-slate-400"} size={18} />
+                    <Award className={mode === "LEAGUE" ? "text-blue-400" : "th-muted"} size={18} />
                     {mode === "LEAGUE" && (
                       <span className="w-2.5 h-2.5 rounded-full bg-blue-450 animate-pulse"></span>
                     )}
                   </div>
                   <div>
-                    <h3 className={`text-sm font-bold ${mode === "LEAGUE" ? "text-slate-100" : "text-slate-300"}`}>
+                    <h3 className={`text-sm font-bold ${mode === "LEAGUE" ? "th-text" : "th-sub"}`}>
                       Elite League Table
                     </h3>
-                    <p className="text-[10.5px] text-slate-400 mt-1 leading-relaxed">
+                    <p className="text-[10.5px] th-muted mt-1 leading-relaxed">
                       Participate in a 15-round, 16-club league. Accumulate points, monitor goal stats, and aim for 1st place!
                     </p>
                   </div>
@@ -398,7 +398,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
             {/* Input 4: Active Write Target Slot Selection */}
             <div className="space-y-2">
-              <label className="text-xs font-mono text-slate-400 uppercase tracking-wider block font-bold">
+              <label className="text-xs font-mono th-muted uppercase tracking-wider block font-bold">
                 Select Active Write Slot
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -412,8 +412,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                       onClick={() => setSelectedSlot(slotNum)}
                       className={`py-2 rounded-xl text-xs font-bold font-mono transition-all border flex flex-col items-center justify-center gap-0.5 ${
                         isSelected
-                          ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-350 shadow-[0_0_12px_rgba(16,185,129,0.1)]"
-                          : "bg-white/2 border-white/5 text-slate-400 hover:border-white/10 hover:text-slate-300 cursor-pointer"
+                          ? "th-acc-soft th-border-acc th-acc shadow-[0_0_12px_rgba(16,185,129,0.1)]"
+                          : "th-wash th-border th-muted hover:th-border hover:th-sub cursor-pointer"
                       }`}
                     >
                       <span className="text-[11px]">Slot {slotNum}</span>
@@ -440,11 +440,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       </div>
 
       {/* Credit — shown every time the app loads (before entering the app), so it's never blocked by in-game UI */}
-      <div className="z-10 flex items-center gap-2.5 text-[11px] text-slate-500">
+      <div className="z-10 flex items-center gap-2.5 text-[11px] th-muted">
         <span>
-          Built by <span className="font-semibold text-slate-300">Tobiloba Jagun</span>
+          Built by <span className="font-semibold th-sub">Tobiloba Jagun</span>
         </span>
-        <div className="flex overflow-hidden rounded-lg border border-white/10">
+        <div className="flex overflow-hidden rounded-lg border th-border">
           {LINKS.map((link) => {
             const Icon = link.icon;
             return (
@@ -455,7 +455,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 rel="noopener noreferrer"
                 aria-label={link.label}
                 title={link.label}
-                className="flex h-7 w-8 items-center justify-center bg-white/5 text-slate-300 border-r border-white/10 last:border-r-0 hover:bg-white/10 hover:text-white transition-colors"
+                className="flex h-7 w-8 items-center justify-center th-wash th-sub border-r th-border last:border-r-0 hover:th-wash2 hover:th-text transition-colors"
               >
                 <Icon className="size-3.5" />
               </a>
@@ -467,14 +467,14 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
       {/* Overwrite Confirmation Modal — starting a new campaign on an occupied slot */}
       {overwriteConfirmation && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-900 border border-amber-500/30 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl shadow-amber-500/10 animate-fade-in text-center flex flex-col items-center">
+        <div className="fixed inset-0 th-inset backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="th-solid border border-amber-500/30 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl shadow-amber-500/10 animate-fade-in text-center flex flex-col items-center">
             <div className="h-12 w-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mb-2">
               <Trash2 size={24} />
             </div>
-            <h3 className="text-lg font-black text-slate-100 uppercase tracking-widest font-sans">Overwrite Save?</h3>
-            <p className="text-xs text-slate-400">
-              <span className="text-white font-bold">Slot {selectedSlot}</span> ({mode}) already holds a campaign
+            <h3 className="text-lg font-black th-text uppercase tracking-widest font-sans">Overwrite Save?</h3>
+            <p className="text-xs th-muted">
+              <span className="th-text font-bold">Slot {selectedSlot}</span> ({mode}) already holds a campaign
               {summaries[`${mode}:${selectedSlot}`]?.exists
                 ? <> — <span className="text-emerald-400 font-mono font-bold">${summaries[`${mode}:${selectedSlot}`].balance.toLocaleString()}</span>, {summaries[`${mode}:${selectedSlot}`].stageLabel}</>
                 : null}
@@ -484,7 +484,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               <button
                 type="button"
                 onClick={() => setOverwriteConfirmation(false)}
-                className="py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+                className="py-2.5 rounded-xl border th-border hover:th-wash text-xs font-bold th-sub transition-colors cursor-pointer"
               >
                 Keep Save
               </button>
@@ -507,19 +507,19 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmation && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-900 border border-red-500/30 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl shadow-red-500/10 animate-fade-in text-center flex flex-col items-center">
+        <div className="fixed inset-0 th-inset backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="th-solid border border-red-500/30 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl shadow-red-500/10 animate-fade-in text-center flex flex-col items-center">
             <div className="h-12 w-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mb-2">
               <Trash2 size={24} />
             </div>
-            <h3 className="text-lg font-black text-slate-100 uppercase tracking-widest font-sans">Delete Save?</h3>
-            <p className="text-xs text-slate-400">
-              Are you sure you want to permanently delete the <span className="text-white font-bold">{deleteConfirmation.mode}</span> save in <span className="text-white font-bold">Slot {deleteConfirmation.slot}</span>? This action cannot be undone.
+            <h3 className="text-lg font-black th-text uppercase tracking-widest font-sans">Delete Save?</h3>
+            <p className="text-xs th-muted">
+              Are you sure you want to permanently delete the <span className="th-text font-bold">{deleteConfirmation.mode}</span> save in <span className="th-text font-bold">Slot {deleteConfirmation.slot}</span>? This action cannot be undone.
             </p>
             <div className="grid grid-cols-2 gap-3 w-full pt-4">
               <button
                 onClick={() => setDeleteConfirmation(null)}
-                className="py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-xs font-bold text-slate-300 transition-colors"
+                className="py-2.5 rounded-xl border th-border hover:th-wash text-xs font-bold th-sub transition-colors"
               >
                 Cancel
               </button>
@@ -540,3 +540,4 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
     </div>
   );
 };
+

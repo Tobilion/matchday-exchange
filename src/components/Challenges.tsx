@@ -32,10 +32,10 @@ export const Challenges: React.FC<ChallengesProps> = ({
   return (
     <div className="mb-5">
       <div className="flex items-center justify-between mb-2.5">
-        <h3 className="text-xs font-black tracking-widest text-slate-400 uppercase">
+        <h3 className="text-xs font-black tracking-widest th-muted uppercase">
           🎯 Betting Challenges
         </h3>
-        <span className="text-[9px] text-slate-500 font-mono uppercase">
+        <span className="text-[9px] th-muted font-mono uppercase">
           Complete missions to earn bonus cash
         </span>
       </div>
@@ -53,16 +53,16 @@ export const Challenges: React.FC<ChallengesProps> = ({
                 isCompleted
                   ? "border-yellow-400/40 bg-yellow-400/5"
                   : isExpired
-                  ? "border-white/5 opacity-50"
-                  : "border-white/10"
+                  ? "th-border opacity-50"
+                  : "th-border"
               }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-xs font-black text-white truncate">
+                  <p className="text-xs font-black th-text truncate">
                     {TYPE_ICONS[c.type]} {c.title}
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5 leading-snug">{c.description}</p>
+                  <p className="text-[10px] th-muted mt-0.5 leading-snug">{c.description}</p>
                 </div>
                 <span className="shrink-0 text-[10px] font-black text-emerald-400 font-mono">
                   +{formatMoney(c.reward)}
@@ -70,7 +70,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
               </div>
 
               <div>
-                <div className="flex justify-between text-[9px] font-mono text-slate-500 mb-1">
+                <div className="flex justify-between text-[9px] font-mono th-muted mb-1">
                   <span>
                     {c.progress}/{c.target}
                   </span>
@@ -78,7 +78,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                     {isExpired ? "EXPIRED" : isCompleted ? "DONE" : `${roundsLeft} round${roundsLeft === 1 ? "" : "s"} left`}
                   </span>
                 </div>
-                <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                <div className="h-1.5 th-inset rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${
                       isCompleted ? "bg-yellow-400" : isExpired ? "bg-slate-600" : "bg-emerald-500"
@@ -99,7 +99,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
               {isExpired && (
                 <button
                   onClick={() => onDismiss?.(c.id)}
-                  className="w-full text-[10px] font-bold tracking-widest uppercase text-slate-500 bg-white/5 rounded-md py-1.5 cursor-pointer hover:bg-white/10"
+                  className="w-full text-[10px] font-bold tracking-widest uppercase th-muted th-wash rounded-md py-1.5 cursor-pointer hover:th-wash2"
                 >
                   Expired — Dismiss
                 </button>
@@ -111,3 +111,4 @@ export const Challenges: React.FC<ChallengesProps> = ({
     </div>
   );
 };
+

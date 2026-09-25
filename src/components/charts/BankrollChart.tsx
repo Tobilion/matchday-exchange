@@ -25,7 +25,7 @@ export const BankrollChart: React.FC<BankrollChartProps> = ({ history, startingB
 
   if (pts.length < 2) {
     return (
-      <div className="w-full h-[120px] flex items-center justify-center text-slate-600 text-xs font-mono">
+      <div className="w-full h-[120px] flex items-center justify-center th-faint text-xs font-mono">
         No bankroll data yet — place bets to start tracking.
       </div>
     );
@@ -122,15 +122,16 @@ export const BankrollChart: React.FC<BankrollChartProps> = ({ history, startingB
       {/* Tooltip */}
       {hoveredPt && (
         <div
-          className="absolute top-0 pointer-events-none z-10 bg-[#0b0e14] border border-white/10 rounded-lg px-2.5 py-1.5 text-[10px] font-mono shadow-xl"
+          className="absolute top-0 pointer-events-none z-10 th-solid border th-border rounded-lg px-2.5 py-1.5 text-[10px] font-mono shadow-xl"
           style={{ left: Math.min(hoveredX / W * 100, 75) + "%", transform: "translateX(-50%)" }}
         >
           <p className={`font-bold ${hoveredPt.balance >= startingBalance ? "text-emerald-400" : "text-red-400"}`}>
             ${hoveredPt.balance.toLocaleString()}
           </p>
-          <p className="text-slate-500">{hoveredPt.detail}</p>
+          <p className="th-muted">{hoveredPt.detail}</p>
         </div>
       )}
     </div>
   );
 };
+

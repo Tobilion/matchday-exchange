@@ -86,8 +86,8 @@ export const SpinTheBottleGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
 
   return (
     <div className="space-y-4">
-      <div className="bg-[#070b11] border border-white/5 rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden h-56 select-none">
-        <div className="absolute inset-x-0 top-0 h-1/2 bg-emerald-500/5 border-b border-white/5 flex items-start justify-center pt-2">
+      <div className="th-solid border th-border rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden h-56 select-none">
+        <div className="absolute inset-x-0 top-0 h-1/2 th-acc-soft border-b th-border flex items-start justify-center pt-2">
           <span className="text-[9px] font-mono font-bold tracking-widest text-emerald-500/60">UPPER GREEN ZONE</span>
         </div>
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-blue-500/5 flex items-end justify-center pb-2">
@@ -111,28 +111,28 @@ export const SpinTheBottleGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
         </div>
       </div>
 
-      <p className="text-[11px] leading-relaxed text-slate-300 text-center bg-white/2 p-2.5 rounded-xl border border-white/5 select-none">{commentary}</p>
+      <p className="text-[11px] leading-relaxed th-sub text-center th-wash p-2.5 rounded-xl border th-border select-none">{commentary}</p>
 
       <div className="grid grid-cols-2 gap-3 shrink-0">
         <button
           onClick={() => setBetSide("UP")}
           disabled={spinning}
           className={`py-3 rounded-2xl font-sans font-bold text-xs border transition-all active:scale-95 cursor-pointer flex flex-col items-center ${
-            betSide === "UP" ? "bg-emerald-500/20 border-emerald-500 text-emerald-400" : "bg-white/2 border-white/5 text-slate-400 hover:border-white/10"
+            betSide === "UP" ? "th-acc-soft th-border-acc text-emerald-400" : "th-wash th-border th-muted hover:th-border"
           }`}
         >
           <span className="font-sans font-black">BACK UPPER</span>
-          <span className="text-[9px] font-mono text-slate-400 mt-1 uppercase">Green Sector</span>
+          <span className="text-[9px] font-mono th-muted mt-1 uppercase">Green Sector</span>
         </button>
         <button
           onClick={() => setBetSide("DOWN")}
           disabled={spinning}
           className={`py-3 rounded-2xl font-sans font-bold text-xs border transition-all active:scale-95 cursor-pointer flex flex-col items-center ${
-            betSide === "DOWN" ? "bg-blue-500/20 border-blue-500 text-blue-400" : "bg-white/2 border-white/5 text-slate-400 hover:border-white/10"
+            betSide === "DOWN" ? "bg-blue-500/20 border-blue-500 text-blue-400" : "th-wash th-border th-muted hover:th-border"
           }`}
         >
           <span className="font-sans font-black">BACK LOWER</span>
-          <span className="text-[9px] font-mono text-slate-400 mt-1 uppercase">Blue Sector</span>
+          <span className="text-[9px] font-mono th-muted mt-1 uppercase">Blue Sector</span>
         </button>
       </div>
 
@@ -148,3 +148,4 @@ export const SpinTheBottleGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
     </div>
   );
 };
+

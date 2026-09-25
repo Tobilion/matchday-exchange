@@ -32,7 +32,7 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
         <p className="text-2xl font-black text-yellow-400 tracking-widest uppercase">
           {career.prestigeTitle}
         </p>
-        <p className="text-[10px] text-slate-500 font-mono uppercase mt-1">
+        <p className="text-[10px] th-muted font-mono uppercase mt-1">
           Prestige Level {career.prestigeLevel} • {career.totalSeasonsPlayed} season
           {career.totalSeasonsPlayed === 1 ? "" : "s"} played
         </p>
@@ -42,24 +42,24 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
       {live && (
         <div className="glass-card border border-emerald-400/20 rounded-2xl p-4 bg-gradient-to-b from-emerald-400/5 to-transparent">
           <div className="flex justify-between items-center mb-3">
-            <p className="text-[9px] font-black tracking-widest text-emerald-400 uppercase">Current Season — In Progress</p>
-            <span className="text-[9px] font-mono text-slate-500 uppercase">{gameMode}</span>
+            <p className="text-[9px] font-black tracking-widest th-muted uppercase">Current Season — In Progress</p>
+            <span className="text-[9px] font-mono th-muted uppercase">{gameMode}</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
             <div>
-              <p className="text-[8px] text-slate-500 uppercase font-bold">Bets Placed</p>
-              <p className="text-lg font-black font-mono text-white mt-0.5">{live.totalBetsPlaced}</p>
+              <p className="text-[8px] th-muted uppercase font-bold">Bets Placed</p>
+              <p className="text-lg font-black font-mono th-text mt-0.5">{live.totalBetsPlaced}</p>
             </div>
             <div>
-              <p className="text-[8px] text-slate-500 uppercase font-bold">Bets Won</p>
+              <p className="text-[8px] th-muted uppercase font-bold">Bets Won</p>
               <p className="text-lg font-black font-mono text-emerald-400 mt-0.5">{live.totalBetsWon}</p>
             </div>
             <div>
-              <p className="text-[8px] text-slate-500 uppercase font-bold">Win Rate</p>
-              <p className="text-lg font-black font-mono text-white mt-0.5">{live.winRate}%</p>
+              <p className="text-[8px] th-muted uppercase font-bold">Win Rate</p>
+              <p className="text-lg font-black font-mono th-text mt-0.5">{live.winRate}%</p>
             </div>
             <div>
-              <p className="text-[8px] text-slate-500 uppercase font-bold">Net Profit</p>
+              <p className="text-[8px] th-muted uppercase font-bold">Net Profit</p>
               <p className={`text-lg font-black font-mono mt-0.5 ${live.netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
                 {live.netProfit >= 0 ? "+" : ""}{formatMoney(live.netProfit)}
               </p>
@@ -70,49 +70,49 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
 
       {/* All-time stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="glass-card border border-white/5 rounded-2xl p-4">
-          <p className="text-[9px] font-black tracking-widest text-slate-500 uppercase">All-Time Profit</p>
+        <div className="glass-card border th-border rounded-2xl p-4">
+          <p className="text-[9px] font-black tracking-widest th-muted uppercase">All-Time Profit</p>
           <p className={`text-2xl font-black font-mono mt-1 ${career.allTimeProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
             {career.allTimeProfit >= 0 ? "+" : ""}{formatMoney(career.allTimeProfit)}
           </p>
         </div>
-        <div className="glass-card border border-white/5 rounded-2xl p-4">
-          <p className="text-[9px] font-black tracking-widest text-slate-500 uppercase">All-Time Win Rate</p>
-          <p className="text-2xl font-black font-mono text-white mt-1">{career.allTimeWinRate}%</p>
+        <div className="glass-card border th-border rounded-2xl p-4">
+          <p className="text-[9px] font-black tracking-widest th-muted uppercase">All-Time Win Rate</p>
+          <p className="text-2xl font-black font-mono th-text mt-1">{career.allTimeWinRate}%</p>
         </div>
-        <div className="glass-card border border-white/5 rounded-2xl p-4">
-          <p className="text-[9px] font-black tracking-widest text-slate-500 uppercase">Seasons Played</p>
-          <p className="text-2xl font-black font-mono text-white mt-1">{career.totalSeasonsPlayed}</p>
+        <div className="glass-card border th-border rounded-2xl p-4">
+          <p className="text-[9px] font-black tracking-widest th-muted uppercase">Seasons Played</p>
+          <p className="text-2xl font-black font-mono th-text mt-1">{career.totalSeasonsPlayed}</p>
         </div>
       </div>
 
       {/* Prestige progress */}
-      <div className="glass-card border border-white/5 rounded-2xl p-4">
+      <div className="glass-card border th-border rounded-2xl p-4">
         <div className="flex justify-between items-center mb-2">
-          <p className="text-[9px] font-black tracking-widest text-slate-400 uppercase">Prestige Progress</p>
-          <p className="text-[9px] text-slate-500 font-mono">
+          <p className="text-[9px] font-black tracking-widest th-muted uppercase">Prestige Progress</p>
+          <p className="text-[9px] th-muted font-mono">
             {isMaxLevel ? "MAX PRESTIGE" : `${seasonsIntoLevel}/${SEASONS_PER_LEVEL} seasons to next title`}
           </p>
         </div>
-        <div className="h-2 bg-black/40 rounded-full overflow-hidden">
+        <div className="h-2 th-inset rounded-full overflow-hidden">
           <div className="h-full bg-gradient-to-r from-yellow-500 to-amber-400 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
         </div>
       </div>
 
       {/* Season records table */}
-      <div className="glass-card border border-white/5 rounded-2xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-white/5">
-          <h3 className="text-xs font-black tracking-widest text-slate-400 uppercase">📜 Season Records</h3>
+      <div className="glass-card border th-border rounded-2xl overflow-hidden">
+        <div className="px-4 py-3 border-b th-border">
+          <h3 className="text-xs font-black tracking-widest th-muted uppercase">📜 Season Records</h3>
         </div>
         {career.records.length === 0 ? (
-          <p className="text-center text-sm text-slate-500 py-10">
+          <p className="text-center text-sm th-muted py-10">
             No completed seasons yet. Finish a tournament or league campaign to start your career log.
           </p>
         ) : (
           <div className="overflow-x-auto max-h-[340px] overflow-y-auto no-scrollbar">
             <table className="w-full text-left">
-              <thead className="sticky top-0 bg-[#12151d]">
-                <tr className="text-[9px] font-black tracking-widest text-slate-500 uppercase">
+              <thead className="sticky top-0 th-solid">
+                <tr className="text-[9px] font-black tracking-widest th-muted uppercase">
                   <th className="px-4 py-2.5">Season</th>
                   <th className="px-4 py-2.5">Mode</th>
                   <th className="px-4 py-2.5 text-right">Net Profit</th>
@@ -126,8 +126,8 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
                   return (
                     <tr
                       key={r.seasonNumber}
-                      className={`border-t border-white/5 text-xs font-mono ${
-                        isBest ? "bg-yellow-400/10 text-yellow-300" : "text-slate-300"
+                      className={`border-t th-border text-xs font-mono ${
+                        isBest ? "bg-yellow-400/10 text-yellow-300" : "th-sub"
                       }`}
                     >
                       <td className="px-4 py-2.5 font-black">
@@ -150,3 +150,4 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
     </div>
   );
 };
+

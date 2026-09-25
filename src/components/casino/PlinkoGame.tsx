@@ -67,8 +67,8 @@ export const PlinkoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addL
 
   return (
     <div className="space-y-4 select-none">
-      <div className="bg-[#05070a] border border-white/5 rounded-2xl p-4 flex flex-col justify-between items-center relative min-h-52">
-        <span className="text-[10px] font-mono text-slate-500 absolute top-2 right-2 uppercase">PEGBOARD</span>
+      <div className="th-app border th-border rounded-2xl p-4 flex flex-col justify-between items-center relative min-h-52">
+        <span className="text-[10px] font-mono th-muted absolute top-2 right-2 uppercase">PEGBOARD</span>
 
         <div className="my-auto space-y-2 text-center w-full max-w-xs flex flex-col items-center py-4">
           {[1, 2, 3, 4, 5, 6].map((row, rIdx) => (
@@ -79,7 +79,7 @@ export const PlinkoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addL
                   <span
                     key={pIdx}
                     className={`h-1.5 w-1.5 rounded-full block transition-colors duration-150 ${
-                      isTraversed ? "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)] scale-150" : "bg-slate-700"
+                      isTraversed ? "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)] scale-150" : "th-track"
                     }`}
                   ></span>
                 );
@@ -88,7 +88,7 @@ export const PlinkoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addL
           ))}
         </div>
 
-        <div className="grid grid-cols-8 gap-1 w-full text-center mt-3 pt-3 border-t border-white/5 font-mono">
+        <div className="grid grid-cols-8 gap-1 w-full text-center mt-3 pt-3 border-t th-border font-mono">
           {bins.map((bin, bIdx) => (
             <div key={bIdx} className={`py-1.5 rounded text-[9px] font-bold border ${bin.color}`}>
               {bin.label}
@@ -97,7 +97,7 @@ export const PlinkoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addL
         </div>
       </div>
 
-      <p className="text-[11px] leading-relaxed text-slate-300 text-center bg-white/2 p-2.5 rounded-xl border border-white/5 font-mono">{commentary}</p>
+      <p className="text-[11px] leading-relaxed th-sub text-center th-wash p-2.5 rounded-xl border th-border font-mono">{commentary}</p>
 
       <StakeSlider balance={balance} stake={safeStake} setStake={setStake} disabled={dropping} label="STAKE PLINKO WAGER" />
 
@@ -118,3 +118,4 @@ function pxMatch(rowIdx: number, pegIdx: number, path: number[]): boolean {
   const positionAccum = pathPart.reduce((acc, v) => acc + v, 0);
   return pegIdx === positionAccum;
 }
+

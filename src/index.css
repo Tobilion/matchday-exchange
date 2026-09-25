@@ -19,6 +19,7 @@
   --muted: #8b93a3;
   --accent: #10b981;        /* Emerald green — through-line across all themes */
   --accent-2: #06b6d4;      /* Cyan */
+  --inset: rgba(0,0,0,0.35); /* sunken wells (tickers, stat rows) */
   --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
   --radius: 16px;
   --radius-lg: 24px;
@@ -30,14 +31,15 @@
 /* Navy blue dark variant — same emerald accent, cooler surfaces/glows. */
 :root[data-theme="navy"] {
   --bg: #060b1a;
-  --surface: #0d1530;
-  --surface-2: #142044;
-  --border: rgba(147,197,253,0.12);
-  --border-hover: rgba(147,197,253,0.24);
-  --text: #eef3ff;
-  --muted: #93a0c4;
+  --surface: #0c142c;
+  --surface-2: #131e3d;
+  --border: rgba(148,184,255,0.14);
+  --border-hover: rgba(148,184,255,0.28);
+  --text: #edf2ff;
+  --muted: #8fa0c7;
   --accent: #10b981;
   --accent-2: #38bdf8;
+  --inset: rgba(1,4,12,0.45);
   --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
   --radius: 16px;
   --radius-lg: 24px;
@@ -48,15 +50,16 @@
 
 /* Cream light theme — off-white background, ink text, emerald stays for money/CTAs. */
 :root[data-theme="cream"] {
-  --bg: #f6f1e7;
-  --surface: #fffdf7;
-  --surface-2: #efe7d6;
-  --border: rgba(60,45,15,0.12);
-  --border-hover: rgba(60,45,15,0.24);
-  --text: #1c1917;
-  --muted: #78716c;
-  --accent: #059669;
+  --bg: #f4efe4;
+  --surface: #fffdf8;
+  --surface-2: #eae1cd;
+  --border: rgba(74,58,28,0.16);
+  --border-hover: rgba(74,58,28,0.30);
+  --text: #201a12;
+  --muted: #6f6455;
+  --accent: #047857;
   --accent-2: #0e7490;
+  --inset: rgba(74,58,28,0.07);
   --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
   --radius: 16px;
   --radius-lg: 24px;
@@ -64,6 +67,34 @@
   --ease: cubic-bezier(0.25,0.46,0.45,0.94);
   color-scheme: light;
 }
+
+/* ── Semantic theme tokens ──────────────────────────────────────────────
+   `th-*` utilities resolve per data-theme and support Tailwind variants
+   (hover:, disabled:, placeholder:, sm: …). Matte values match the legacy
+   hardcoded palette exactly, so matte renders pixel-identical to before.
+   Accent (emerald) is reserved for money, odds prices, primary CTAs,
+   selections, active states and wins — everything else uses text tokens. */
+@utility th-app { background-color: var(--bg); color: var(--text); }
+@utility th-solid { background-color: var(--surface); }
+@utility th-solid2 { background-color: var(--surface-2); }
+@utility th-wash { background-color: color-mix(in srgb, var(--text) 6%, transparent); }
+@utility th-wash2 { background-color: color-mix(in srgb, var(--text) 11%, transparent); }
+@utility th-inset { background-color: var(--inset); }
+@utility th-track { background-color: color-mix(in srgb, var(--text) 14%, transparent); }
+@utility th-text { color: var(--text); }
+@utility th-sub { color: color-mix(in srgb, var(--text) 78%, transparent); }
+@utility th-muted { color: var(--muted); }
+@utility th-faint { color: color-mix(in srgb, var(--muted) 72%, transparent); }
+@utility th-border { border-color: var(--border); }
+@utility th-border2 { border-color: var(--border-hover); }
+@utility th-acc { color: var(--accent); }
+@utility th-acc-soft { background-color: color-mix(in srgb, var(--accent) 14%, transparent); }
+@utility th-selected {
+  background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+@utility th-border-acc { border-color: var(--accent); }
 
 @keyframes progress-bar {
   from { width: 100%; }
@@ -94,7 +125,7 @@ body {
 /* Header tab strip: thin visible scrollbar + faded edges so overflow is obvious */
 .scroll-fade {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-color: var(--border-hover) transparent;
   -webkit-mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
   mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
 }
@@ -102,67 +133,47 @@ body {
   height: 4px;
 }
 .scroll-fade::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--text) 20%, transparent);
   border-radius: 4px;
 }
 .scroll-fade::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* Glass panel classes */
+/* Glass panel classes — var-driven so all three themes inherit them. */
 .glass-panel {
-  background: rgba(22, 26, 35, 0.65);
+  background: color-mix(in srgb, var(--surface) 68%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 .glass-panel-heavy {
-  background: rgba(15, 18, 24, 0.85);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-hover);
+  box-shadow: var(--shadow);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
 }
 
 .glass-card-hover {
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card-hover:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  border-color: var(--border-hover);
   box-shadow: 0 8px 24px 0 rgba(16, 185, 129, 0.12);
 }
 
-/* Light-theme adaptations: dark translucent glass becomes white translucent
-   so panels stay readable on cream. Accent (emerald) is untouched. */
-:root[data-theme="cream"] .glass-panel {
-  background: rgba(255, 253, 247, 0.82);
-  border-color: rgba(60, 45, 15, 0.12);
-  box-shadow: 0 8px 32px 0 rgba(60, 45, 15, 0.1);
-}
-:root[data-theme="cream"] .glass-panel-heavy {
-  background: rgba(255, 253, 247, 0.94);
-  border-color: rgba(60, 45, 15, 0.14);
-  box-shadow: 0 12px 40px 0 rgba(60, 45, 15, 0.12);
-}
-:root[data-theme="cream"] .glass-card {
-  background: rgba(60, 45, 15, 0.03);
-  border-color: rgba(60, 45, 15, 0.08);
-}
-:root[data-theme="cream"] .glass-card-hover:hover {
-  background: rgba(60, 45, 15, 0.06);
-  border-color: rgba(60, 45, 15, 0.16);
-  box-shadow: 0 8px 24px 0 rgba(5, 150, 105, 0.14);
-}
+
 
 /* Custom glass scrollbar */
 .glass-scrollbar::-webkit-scrollbar {

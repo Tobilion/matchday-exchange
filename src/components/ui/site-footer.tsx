@@ -60,8 +60,8 @@ export const NameReveal = () => {
               tabIndex={isOpen ? 0 : -1}
               className={cn(
                 "flex h-8 flex-1 items-center justify-center",
-                "bg-black dark:bg-white text-white dark:text-black",
-                "border-r border-white/10 last:border-r-0 dark:border-black/10",
+                "bg-black dark:bg-white th-text dark:text-black",
+                "border-r th-border last:border-r-0 dark:border-black/10",
                 "hover:bg-gray-900 dark:hover:bg-gray-100",
                 index === 0 && "rounded-l-3xl",
                 index === LINKS.length - 1 && "rounded-r-3xl",
@@ -96,14 +96,14 @@ export const HeaderCredit = ({ className }: { className?: string }) => {
         type="button"
         onClick={() => setIsOpen((o) => !o)}
         aria-expanded={isOpen}
-        className="text-[10px] font-mono text-slate-500 hover:text-slate-300 whitespace-nowrap px-2 py-1.5 transition-colors cursor-pointer"
+        className="text-[10px] font-mono th-muted hover:th-sub whitespace-nowrap px-2 py-1.5 transition-colors cursor-pointer"
       >
         Built by <span className="underline underline-offset-2 decoration-dotted font-semibold">Tobiloba Jagun</span>
       </button>
       <div
         className={cn(
           "absolute right-0 top-full mt-1 z-50 flex overflow-hidden rounded-xl",
-          "border border-white/10 shadow-lg transition-all duration-200 origin-top-right",
+          "border th-border shadow-lg transition-all duration-200 origin-top-right",
           isOpen ? "opacity-100 scale-100" : "pointer-events-none opacity-0 scale-95"
         )}
       >
@@ -118,7 +118,7 @@ export const HeaderCredit = ({ className }: { className?: string }) => {
               aria-label={link.label}
               title={link.label}
               tabIndex={isOpen ? 0 : -1}
-              className="flex h-9 w-10 items-center justify-center bg-black text-white border-r border-white/10 last:border-r-0 hover:bg-gray-800 transition-colors"
+              className="flex h-9 w-10 items-center justify-center bg-black th-text border-r th-border last:border-r-0 hover:bg-gray-800 transition-colors"
             >
               <Icon className="size-4" />
             </a>
@@ -163,10 +163,10 @@ export const AvatarCredit = ({ username, className }: { username: string; classN
           isOpen ? "opacity-100 scale-100" : "pointer-events-none opacity-0 scale-95"
         )}
       >
-        <span className="text-[10px] font-mono text-slate-400 bg-slate-950/95 border border-white/10 rounded-lg px-2 py-1 whitespace-nowrap shadow-lg">
-          Built by <span className="font-semibold text-slate-200">Tobiloba Jagun</span>
+        <span className="text-[10px] font-mono th-muted bg-slate-950/95 border th-border rounded-lg px-2 py-1 whitespace-nowrap shadow-lg">
+          Built by <span className="font-semibold th-text">Tobiloba Jagun</span>
         </span>
-        <div className="flex overflow-hidden rounded-xl border border-white/10 shadow-lg">
+        <div className="flex overflow-hidden rounded-xl border th-border shadow-lg">
           {LINKS.map((link) => {
             const Icon = link.icon
             return (
@@ -178,7 +178,7 @@ export const AvatarCredit = ({ username, className }: { username: string; classN
                 aria-label={link.label}
                 title={link.label}
                 tabIndex={isOpen ? 0 : -1}
-                className="flex h-10 w-11 sm:h-9 sm:w-10 items-center justify-center bg-black text-white border-r border-white/10 last:border-r-0 hover:bg-gray-800 transition-colors touch-manipulation"
+                className="flex h-10 w-11 sm:h-9 sm:w-10 items-center justify-center bg-black th-text border-r th-border last:border-r-0 hover:bg-gray-800 transition-colors touch-manipulation"
               >
                 <Icon className="size-4" />
               </a>
@@ -205,3 +205,4 @@ export default function SiteFooter({ className }: { className?: string }) {
     </footer>
   )
 }
+

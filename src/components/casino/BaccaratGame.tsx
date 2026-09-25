@@ -17,7 +17,7 @@ function handPt(hand: Card[]): number { return hand.reduce((s,c) => (s + cardPt(
 function isRed(s: Suit) { return s === "♥" || s === "♦"; }
 
 const CardUI: React.FC<{ card: Card }> = ({ card }) => (
-  <div className="w-9 h-13 sm:w-10 sm:h-14 rounded-lg bg-white border border-white/10 flex flex-col items-start justify-start p-1 shadow-md">
+  <div className="w-9 h-13 sm:w-10 sm:h-14 rounded-lg bg-white border th-border flex flex-col items-start justify-start p-1 shadow-md">
     <span className={`text-[9px] font-black leading-none ${isRed(card.suit) ? "text-red-600" : "text-slate-900"}`}>{card.val}</span>
     <span className={`text-xs ${isRed(card.suit) ? "text-red-600" : "text-slate-900"}`}>{card.suit}</span>
   </div>
@@ -99,9 +99,9 @@ export const BaccaratGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
           { label: "PLAYER", hand: playerHand, pts: handPt(playerHand) },
           { label: "BANKER", hand: bankerHand, pts: handPt(bankerHand) },
         ].map(({ label, hand, pts }) => (
-          <div key={label} className="bg-black/40 border border-white/5 rounded-xl p-3">
+          <div key={label} className="th-inset border th-border rounded-xl p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[9px] font-mono text-slate-400 uppercase font-bold">{label}</span>
+              <span className="text-[9px] font-mono th-muted uppercase font-bold">{label}</span>
               {hand.length > 0 && <span className="text-lg font-black text-emerald-400 font-mono">{pts}</span>}
             </div>
             <div className="flex gap-1.5 min-h-[3.5rem]">
@@ -111,7 +111,7 @@ export const BaccaratGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
         ))}
       </div>
 
-      <p className="text-xs text-center text-slate-300 bg-white/5 border border-white/5 rounded-xl py-2.5 px-3 font-bold leading-snug">{message}</p>
+      <p className="text-xs text-center th-sub th-wash border th-border rounded-xl py-2.5 px-3 font-bold leading-snug">{message}</p>
 
       {/* Bet selection */}
       <div className="grid grid-cols-3 gap-2">
@@ -122,10 +122,10 @@ export const BaccaratGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
         ]).map(b => (
           <button key={b.side} onClick={() => { if (phase !== "dealing") { setBetSide(b.side); if (phase === "done") setPhase("idle"); } }}
             className={`py-2.5 rounded-xl border text-center transition-all cursor-pointer ${
-              betSide === b.side ? `bg-${b.color}-500/20 border-${b.color}-500 text-${b.color}-400 font-black` : "bg-white/3 border-white/5 text-slate-400 hover:border-white/20"
+              betSide === b.side ? `bg-${b.color}-500/20 border-${b.color}-500 text-${b.color}-400 font-black` : "th-wash th-border th-muted hover:th-border2"
             }`}>
             <div className="text-[11px] font-bold uppercase">{b.label}</div>
-            <div className="text-[9px] text-slate-500 font-mono">{b.odds}</div>
+            <div className="text-[9px] th-muted font-mono">{b.odds}</div>
           </button>
         ))}
       </div>
@@ -137,7 +137,8 @@ export const BaccaratGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
         className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm py-3 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase block text-center">
         🎴 {phase === "done" ? "NEW SHOE" : "DEAL"}
       </button>
-      <div className="text-[9px] text-slate-600 font-mono text-center">Tie pushes on side bets • Banker 5% commission • RTP ~98.9%</div>
+      <div className="text-[9px] th-faint font-mono text-center">Tie pushes on side bets • Banker 5% commission • RTP ~98.9%</div>
     </div>
   );
 };
+

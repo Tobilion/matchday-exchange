@@ -82,16 +82,16 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
   const renderFirstPlaceHero = (player: typeof allPlayers[0], metricLabel: string, metricValue: any, subLabel: string, labelBg: string) => {
     if (!player) return null;
     return (
-      <div className="bg-gradient-to-r from-emerald-500/10 via-emerald-600/5 to-transparent border border-emerald-500/30 p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 select-none relative overflow-hidden shadow-lg shadow-emerald-500/5 mb-4 animate-fade-in">
-        <div className="absolute right-0 top-0 text-7xl translate-y-2 translate-x-2 text-white/2 select-none pointer-events-none font-black opacity-10">
+      <div className="bg-gradient-to-r from-emerald-500/10 via-emerald-600/5 to-transparent border th-border-acc p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 select-none relative overflow-hidden shadow-lg shadow-emerald-500/5 mb-4 animate-fade-in">
+        <div className="absolute right-0 top-0 text-7xl translate-y-2 translate-x-2 th-text select-none pointer-events-none font-black opacity-10">
           👑
         </div>
         
         <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
           {/* Rank Badge */}
           <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-yellow-400 to-amber-500 p-0.5 flex items-center justify-center text-slate-950 shadow-md transform hover:scale-105 active:scale-95 transition-all">
-            <div className="bg-slate-900 text-amber-400 h-full w-full rounded-2xl flex flex-col items-center justify-center font-bold">
-              <span className="text-[9px] uppercase leading-none font-black tracking-widest text-slate-400 font-sans">RANK</span>
+            <div className="th-solid text-amber-400 h-full w-full rounded-2xl flex flex-col items-center justify-center font-bold">
+              <span className="text-[9px] uppercase leading-none font-black tracking-widest th-muted font-sans">RANK</span>
               <span className="text-xl font-sans leading-none mt-1 font-extrabold">#1</span>
             </div>
           </div>
@@ -107,28 +107,28 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
               </button>
               <h4 
                 onClick={() => triggerGlobalEntity("player", player.id)}
-                className="text-sm font-black text-slate-100 hover:text-emerald-400 cursor-pointer hover:underline transition-all font-sans tracking-tight"
+                className="text-sm font-black th-text hover:text-emerald-400 cursor-pointer hover:underline transition-all font-sans tracking-tight"
                 title="View Player Portrait Capabilities"
               >
                 {player.name}
               </h4>
             </div>
             
-            <p className="text-[10px] text-slate-400 font-mono">
-              Club: <span onClick={() => triggerGlobalEntity("team", player.teamCrest.id)} className="text-slate-300 hover:text-emerald-405 font-bold hover:underline cursor-pointer">{player.teamName}</span> • Position: <span className="font-bold text-emerald-400">{player.position}</span> (OVR {player.rating})
+            <p className="text-[10px] th-muted font-mono">
+              Club: <span onClick={() => triggerGlobalEntity("team", player.teamCrest.id)} className="th-sub hover:text-emerald-405 font-bold hover:underline cursor-pointer">{player.teamName}</span> • Position: <span className="font-bold text-emerald-400">{player.position}</span> (OVR {player.rating})
             </p>
           </div>
         </div>
 
         {/* Highlight Score column */}
-        <div className="text-center md:text-right bg-black/45 border border-white/5 py-3 px-5 rounded-xl min-w-[110px]">
+        <div className="text-center md:text-right th-inset border th-border py-3 px-5 rounded-xl min-w-[110px]">
           <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded leading-none ${labelBg}`}>
             {metricLabel}
           </span>
           <span className="text-2xl font-mono font-black text-emerald-400 mt-1 block leading-none">
             {metricValue}
           </span>
-          <span className="text-[9px] text-slate-404 font-mono mt-1 block uppercase">
+          <span className="text-[9px] th-muted font-mono mt-1 block uppercase">
             {subLabel}
           </span>
         </div>
@@ -229,14 +229,14 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
 
       {/* Bankroll Curve */}
       {userProfile && (userProfile.bankrollHistory?.length ?? 0) >= 2 && (
-        <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-4">
+        <div className="th-wash border th-border rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest">Bankroll Curve</p>
-              <p className="text-xs font-semibold text-slate-200 mt-0.5">Balance history across all activity</p>
+              <p className="text-[9px] font-mono font-bold th-muted uppercase tracking-widest">Bankroll Curve</p>
+              <p className="text-xs font-semibold th-text mt-0.5">Balance history across all activity</p>
             </div>
             <div className="text-right">
-              <p className="text-[9px] text-slate-500 font-mono">Current</p>
+              <p className="text-[9px] th-muted font-mono">Current</p>
               <p className={`text-sm font-black font-mono ${userProfile.balance >= 1000 ? "text-emerald-400" : "text-red-400"}`}>
                 ${userProfile.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
@@ -247,11 +247,11 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
       )}
 
       {/* Tab Switcher for Primary Content */}
-      <div className="flex bg-white/5 border border-white/10 rounded-xl p-1 mb-6 max-w-sm">
+      <div className="flex th-wash border th-border rounded-xl p-1 mb-6 max-w-sm">
         <button
           onClick={() => setPrimaryTab("finance")}
           className={`flex-1 py-1.5 text-xs font-bold font-mono uppercase tracking-wider rounded-lg transition-all ${
-            primaryTab === "finance" ? "bg-white/10 text-emerald-400 shadow" : "text-slate-400 hover:text-slate-200"
+            primaryTab === "finance" ? "th-wash2 text-emerald-400 shadow" : "th-muted hover:th-text"
           }`}
         >
           My Finance
@@ -259,7 +259,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
         <button
           onClick={() => setPrimaryTab("sports")}
           className={`flex-1 py-1.5 text-xs font-bold font-mono uppercase tracking-wider rounded-lg transition-all ${
-            primaryTab === "sports" ? "bg-white/10 text-emerald-400 shadow" : "text-slate-400 hover:text-slate-200"
+            primaryTab === "sports" ? "th-wash2 text-emerald-400 shadow" : "th-muted hover:th-text"
           }`}
         >
           Sports Stats
@@ -269,11 +269,11 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
       {primaryTab === "sports" ? (
       <>
       {/* Title */}
-      <div className="border-b border-white/5 pb-3">
-        <span className="text-[10px] text-emerald-400 font-mono tracking-widest block uppercase font-bold">
+      <div className="border-b th-border pb-3">
+        <span className="text-[10px] th-muted font-mono tracking-widest block uppercase font-bold">
           STATISTICAL DATABASE CENTRE
         </span>
-        <h2 className="text-sm font-bold text-slate-100 font-sans tracking-tight mt-1">
+        <h2 className="text-sm font-bold th-text font-sans tracking-tight mt-1">
           Player Leaderboards & Team Performance Metrics
 
         </h2>
@@ -281,28 +281,28 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
 
       {/* Tournament benchmarks Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="glass-card border border-white/5 rounded-2xl p-4 flex flex-col justify-between text-center select-none">
-          <span className="text-[9px] text-slate-400 font-bold uppercase font-sans">TOTAL MATCHES SIMULATED</span>
-          <span className="text-base font-black font-mono text-slate-200 mt-1">
+        <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
+          <span className="text-[9px] th-muted font-bold uppercase font-sans">TOTAL MATCHES SIMULATED</span>
+          <span className="text-base font-black font-mono th-text mt-1">
             {totalCompleted}
           </span>
-          <p className="text-[8px] text-slate-500 font-mono mt-1 uppercase">
+          <p className="text-[8px] th-muted font-mono mt-1 uppercase">
             COMPLETED OUTCOMES
           </p>
         </div>
 
-        <div className="glass-card border border-white/5 rounded-2xl p-4 flex flex-col justify-between text-center select-none">
-          <span className="text-[9px] text-slate-400 font-bold uppercase font-sans">TOTAL GOALS SCORED</span>
+        <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
+          <span className="text-[9px] th-muted font-bold uppercase font-sans">TOTAL GOALS SCORED</span>
           <span className="text-base font-black font-mono text-emerald-400 mt-1">
             {totalGoals}
           </span>
-          <p className="text-[8px] text-emerald-500/60 font-mono mt-1 uppercase">
+          <p className="text-[8px] th-faint font-mono mt-1 uppercase">
             AVG: {avgGoals} PER MATCH
           </p>
         </div>
 
-        <div className="glass-card border border-white/5 rounded-2xl p-4 flex flex-col justify-between text-center select-none">
-          <span className="text-[9px] text-slate-400 font-bold uppercase font-sans">YELLOW CAUTIONS SHOWN</span>
+        <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
+          <span className="text-[9px] th-muted font-bold uppercase font-sans">YELLOW CAUTIONS SHOWN</span>
           <span className="text-base font-black font-mono text-yellow-405 mt-1">
             {totalYellows}
           </span>
@@ -311,8 +311,8 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
           </p>
         </div>
 
-        <div className="glass-card border border-white/5 rounded-2xl p-4 flex flex-col justify-between text-center select-none">
-          <span className="text-[9px] text-slate-400 font-bold uppercase font-sans">RED CARDS / SEND-OFFS</span>
+        <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
+          <span className="text-[9px] th-muted font-bold uppercase font-sans">RED CARDS / SEND-OFFS</span>
           <span className="text-base font-black font-mono text-rose-455 mt-1">
             {totalReds}
           </span>
@@ -326,17 +326,17 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Top Player statistics Lists (Col-span 7) */}
-        <div className="lg:col-span-7 glass-panel-heavy rounded-2xl border border-white/10 overflow-hidden">
+        <div className="lg:col-span-7 glass-panel-heavy rounded-2xl border th-border overflow-hidden">
           {/* Tabs header */}
-          <div className="bg-white/5 border-b border-white/5 p-1 px-1.5 grid grid-cols-4 gap-1">
+          <div className="th-wash border-b th-border p-1 px-1.5 grid grid-cols-4 gap-1">
             {(["goals", "assists", "saves", "discipline"] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveStatTab(tab)}
                 className={`py-2 rounded-xl text-[10px] font-bold tracking-wider uppercase transition-all cursor-pointer ${
                   activeStatTab === tab
-                    ? "bg-white/10 text-emerald-400 border border-white/5 shadow-sm"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "th-wash2 text-emerald-400 border th-border shadow-sm"
+                    : "th-muted hover:th-text"
                 }`}
               >
                 {tab === "goals" ? "⚽ SCORERS" : tab === "assists" ? "🎯 ASSISTS" : tab === "saves" ? "🧤 SAVES" : "🟥 DISCIPLINE"}
@@ -345,7 +345,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
           </div>
 
           <div className="p-4">
-            <span className="text-[10px] text-slate-400 font-mono font-bold uppercase block tracking-wider mb-3 font-sans">
+            <span className="text-[10px] th-muted font-mono font-bold uppercase block tracking-wider mb-3 font-sans">
               {activeStatTab === "goals" && "GOLDEN BOOT • LEADERBOARD STANDING"}
               {activeStatTab === "assists" && "CREATIVE MAESTRO • TOP PASS DIRECTS"}
               {activeStatTab === "saves" && "GOLDEN GLOVE • GOALKEEPER REFLEX BLOCKS"}
@@ -359,28 +359,28 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                   {topScorers.length > 0 ? (
                     <>
                       {/* Hero First Person */}
-                      {renderFirstPlaceHero(topScorers[0], "GOLDEN BOOT", `${topScorers[0].goals} Goals`, "TOTAL SCORES", "bg-emerald-500/20 text-emerald-400")}
+                      {renderFirstPlaceHero(topScorers[0], "GOLDEN BOOT", `${topScorers[0].goals} Goals`, "TOTAL SCORES", "th-acc-soft text-emerald-400")}
                       
                       {/* Interactive toggle for the remaining top 5 */}
                       <button
                         onClick={() => toggleTop5("goals")}
-                        className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold font-mono text-slate-350 hover:text-white cursor-pointer transition-all flex items-center justify-center gap-2 select-none"
+                        className="w-full py-2.5 th-wash hover:th-wash2 border th-border rounded-xl text-xs font-bold font-mono th-sub hover:th-text cursor-pointer transition-all flex items-center justify-center gap-2 select-none"
                       >
                         {showTop5.goals ? "▲ Hide Remaining Positions" : "▼ Show Remaining top 5 positions"}
                       </button>
 
                       {/* Collapsible list */}
                       {showTop5.goals && (
-                        <div className="space-y-2 mt-2 animate-fade-in border-t border-white/5 pt-3">
+                        <div className="space-y-2 mt-2 animate-fade-in border-t th-border pt-3">
                           {topScorers.slice(1).map((p, idx) => (
                             <div 
                               key={p.id} 
                               onClick={() => triggerGlobalEntity("player", p.id)}
-                              className="bg-black/25 hover:bg-white/5 cursor-pointer border border-white/5 p-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all hover:border-emerald-500/30 select-none"
+                              className="th-inset hover:th-wash cursor-pointer border th-border p-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all hover:th-border-acc select-none"
                               title="Click to view capabilities portrait"
                             >
                               <div className="flex items-center gap-3">
-                                <span className="font-mono text-slate-500 font-black w-4 text-center">#{idx + 2}.</span>
+                                <span className="font-mono th-muted font-black w-4 text-center">#{idx + 2}.</span>
                                 <button 
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -392,14 +392,14 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                   <TeamCrest team={p.teamCrest} size={20} />
                                 </button>
                                 <div>
-                                  <span className="font-black text-slate-200 hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
-                                  <span className="text-[10px] text-slate-400 font-mono block">
+                                  <span className="font-black th-text hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
+                                  <span className="text-[10px] th-muted font-mono block">
                                     <span 
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         triggerGlobalEntity("team", p.teamCrest.id);
                                       }}
-                                      className="hover:underline hover:text-slate-200"
+                                      className="hover:underline hover:th-text"
                                     >
                                       {p.teamName}
                                     </span> • OVR {p.rating}
@@ -407,8 +407,8 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                 </div>
                               </div>
                               <div className="text-right">
-                                <span className="text-[13px] font-mono font-black text-emerald-450">{p.goals}</span>
-                                <span className="text-[9px] text-slate-500 font-mono block uppercase leading-none mt-0.5">Goals</span>
+                                <span className="text-[13px] font-mono font-black th-acc">{p.goals}</span>
+                                <span className="text-[9px] th-muted font-mono block uppercase leading-none mt-0.5">Goals</span>
                               </div>
                             </div>
                           ))}
@@ -416,7 +416,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                       )}
                     </>
                   ) : (
-                    <p className="text-center text-slate-500 text-xs py-8">Simulate matches to populate player lists!</p>
+                    <p className="text-center th-muted text-xs py-8">Simulate matches to populate player lists!</p>
                   )}
                 </>
               )}
@@ -429,22 +429,22 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                       
                       <button
                         onClick={() => toggleTop5("assists")}
-                        className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold font-mono text-slate-350 hover:text-white cursor-pointer transition-all flex items-center justify-center gap-2 select-none"
+                        className="w-full py-2.5 th-wash hover:th-wash2 border th-border rounded-xl text-xs font-bold font-mono th-sub hover:th-text cursor-pointer transition-all flex items-center justify-center gap-2 select-none"
                       >
                         {showTop5.assists ? "▲ Hide Remaining Positions" : "▼ Show Remaining top 5 positions"}
                       </button>
 
                       {showTop5.assists && (
-                        <div className="space-y-2 mt-2 animate-fade-in border-t border-white/5 pt-3">
+                        <div className="space-y-2 mt-2 animate-fade-in border-t th-border pt-3">
                           {topAssists.slice(1).map((p, idx) => (
                             <div 
                               key={p.id} 
                               onClick={() => triggerGlobalEntity("player", p.id)}
-                              className="bg-black/25 hover:bg-white/5 cursor-pointer border border-white/5 p-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all hover:border-emerald-500/30 select-none"
+                              className="th-inset hover:th-wash cursor-pointer border th-border p-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all hover:th-border-acc select-none"
                               title="Click to view capabilities portrait"
                             >
                               <div className="flex items-center gap-3">
-                                <span className="font-mono text-slate-500 font-black w-4 text-center">#{idx + 2}.</span>
+                                <span className="font-mono th-muted font-black w-4 text-center">#{idx + 2}.</span>
                                 <button 
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -456,14 +456,14 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                   <TeamCrest team={p.teamCrest} size={20} />
                                 </button>
                                 <div>
-                                  <span className="font-black text-slate-200 hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
-                                  <span className="text-[10px] text-slate-400 font-mono block">
+                                  <span className="font-black th-text hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
+                                  <span className="text-[10px] th-muted font-mono block">
                                     <span 
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         triggerGlobalEntity("team", p.teamCrest.id);
                                       }}
-                                      className="hover:underline hover:text-slate-200"
+                                      className="hover:underline hover:th-text"
                                     >
                                       {p.teamName}
                                     </span> • OVR {p.rating}
@@ -472,7 +472,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                               </div>
                               <div className="text-right">
                                 <span className="text-[13px] font-mono font-black text-sky-400">{p.assists}</span>
-                                <span className="text-[9px] text-slate-500 font-mono block uppercase leading-none mt-0.5">Assists</span>
+                                <span className="text-[9px] th-muted font-mono block uppercase leading-none mt-0.5">Assists</span>
                               </div>
                             </div>
                           ))}
@@ -480,7 +480,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                       )}
                     </>
                   ) : (
-                    <p className="text-center text-slate-500 text-xs py-8">Simulate matches to populate player lists!</p>
+                    <p className="text-center th-muted text-xs py-8">Simulate matches to populate player lists!</p>
                   )}
                 </>
               )}
@@ -489,26 +489,26 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                 <>
                   {topSaves.length > 0 ? (
                     <>
-                      {renderFirstPlaceHero(topSaves[0], "GOLDEN GLOVE", `${topSaves[0].saves} Saves`, "REFLEX BLOCKS", "bg-emerald-500/20 text-emerald-400")}
+                      {renderFirstPlaceHero(topSaves[0], "GOLDEN GLOVE", `${topSaves[0].saves} Saves`, "REFLEX BLOCKS", "th-acc-soft text-emerald-400")}
                       
                       <button
                         onClick={() => toggleTop5("saves")}
-                        className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold font-mono text-slate-350 hover:text-white cursor-pointer transition-all flex items-center justify-center gap-2 select-none"
+                        className="w-full py-2.5 th-wash hover:th-wash2 border th-border rounded-xl text-xs font-bold font-mono th-sub hover:th-text cursor-pointer transition-all flex items-center justify-center gap-2 select-none"
                       >
                         {showTop5.saves ? "▲ Hide Remaining Positions" : "▼ Show Remaining top 5 positions"}
                       </button>
 
                       {showTop5.saves && (
-                        <div className="space-y-2 mt-2 animate-fade-in border-t border-white/5 pt-3">
+                        <div className="space-y-2 mt-2 animate-fade-in border-t th-border pt-3">
                           {topSaves.slice(1).map((p, idx) => (
                             <div 
                               key={p.id} 
                               onClick={() => triggerGlobalEntity("player", p.id)}
-                              className="bg-black/25 hover:bg-white/5 cursor-pointer border border-white/5 p-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all hover:border-emerald-500/30 select-none"
+                              className="th-inset hover:th-wash cursor-pointer border th-border p-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all hover:th-border-acc select-none"
                               title="Click to view capabilities portrait"
                             >
                               <div className="flex items-center gap-3">
-                                <span className="font-mono text-slate-500 font-black w-4 text-center">#{idx + 2}.</span>
+                                <span className="font-mono th-muted font-black w-4 text-center">#{idx + 2}.</span>
                                 <button 
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -520,14 +520,14 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                   <TeamCrest team={p.teamCrest} size={20} />
                                 </button>
                                 <div>
-                                  <span className="font-black text-slate-200 hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
-                                  <span className="text-[10px] text-slate-400 font-mono block">
+                                  <span className="font-black th-text hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
+                                  <span className="text-[10px] th-muted font-mono block">
                                     <span 
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         triggerGlobalEntity("team", p.teamCrest.id);
                                       }}
-                                      className="hover:underline hover:text-slate-200"
+                                      className="hover:underline hover:th-text"
                                     >
                                       {p.teamName}
                                     </span> • OVR {p.rating}
@@ -535,8 +535,8 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                 </div>
                               </div>
                               <div className="text-right">
-                                <span className="text-[13px] font-mono font-black text-emerald-450">{p.saves}</span>
-                                <span className="text-[9px] text-slate-500 font-mono block uppercase leading-none mt-0.5">Saves</span>
+                                <span className="text-[13px] font-mono font-black th-acc">{p.saves}</span>
+                                <span className="text-[9px] th-muted font-mono block uppercase leading-none mt-0.5">Saves</span>
                               </div>
                             </div>
                           ))}
@@ -544,7 +544,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                       )}
                     </>
                   ) : (
-                    <p className="text-center text-slate-500 text-xs py-8">Simulate matches to populate player lists!</p>
+                    <p className="text-center th-muted text-xs py-8">Simulate matches to populate player lists!</p>
                   )}
                 </>
               )}
@@ -557,24 +557,24 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                       
                       <button
                         onClick={() => toggleTop5("discipline")}
-                        className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold font-mono text-slate-350 hover:text-white cursor-pointer transition-all flex items-center justify-center gap-2 select-none"
+                        className="w-full py-2.5 th-wash hover:th-wash2 border th-border rounded-xl text-xs font-bold font-mono th-sub hover:th-text cursor-pointer transition-all flex items-center justify-center gap-2 select-none"
                       >
                         {showTop5.discipline ? "▲ Hide Remaining Positions" : "▼ Show Remaining top 5 positions"}
                       </button>
 
                       {showTop5.discipline && (
-                        <div className="space-y-2 mt-2 animate-fade-in border-t border-white/5 pt-3">
+                        <div className="space-y-2 mt-2 animate-fade-in border-t th-border pt-3">
                           {topCards.slice(1).map((p, idx) => {
                             const score = getDisciplineScore(p);
                             return (
                               <div 
                                 key={p.id} 
                                 onClick={() => triggerGlobalEntity("player", p.id)}
-                                className="bg-black/25 hover:bg-white/5 cursor-pointer border border-white/5 p-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all hover:border-emerald-500/30 select-none"
+                                className="th-inset hover:th-wash cursor-pointer border th-border p-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all hover:th-border-acc select-none"
                                 title="Click to view capabilities portrait"
                               >
                                 <div className="flex items-center gap-3">
-                                  <span className="font-mono text-slate-500 font-black w-4 text-center">#{idx + 2}.</span>
+                                  <span className="font-mono th-muted font-black w-4 text-center">#{idx + 2}.</span>
                                   <button 
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -586,14 +586,14 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                     <TeamCrest team={p.teamCrest} size={20} />
                                   </button>
                                   <div>
-                                    <span className="font-black text-slate-200 hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
-                                    <span className="text-[10px] text-slate-400 font-mono block">
+                                    <span className="font-black th-text hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
+                                    <span className="text-[10px] th-muted font-mono block">
                                       <span 
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           triggerGlobalEntity("team", p.teamCrest.id);
                                         }}
-                                        className="hover:underline hover:text-slate-200"
+                                        className="hover:underline hover:th-text"
                                       >
                                         {p.teamName}
                                       </span> • Pos: {p.position}
@@ -602,12 +602,12 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                 </div>
                                 <div className="flex items-center gap-3 text-right">
                                   <div>
-                                    <span className="text-[8px] text-slate-505 font-mono block uppercase">SCORE</span>
+                                    <span className="text-[8px] th-muted font-mono block uppercase">SCORE</span>
                                     <span className="text-[12px] font-mono font-black text-rose-500 leading-none">{score} PTS</span>
                                   </div>
                                   <div className="text-[10px] font-bold font-mono">
                                     {p.yellowCards > 0 && <span className="bg-yellow-500 text-slate-900 px-1 rounded-sm mr-1 font-bold">🟨 {p.yellowCards}</span>}
-                                    {p.redCards > 0 && <span className="bg-red-600 text-slate-100 px-1 rounded-sm font-bold">🟥 {p.redCards}</span>}
+                                    {p.redCards > 0 && <span className="bg-red-600 th-text px-1 rounded-sm font-bold">🟥 {p.redCards}</span>}
                                   </div>
                                 </div>
                               </div>
@@ -617,7 +617,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                       )}
                     </>
                   ) : (
-                    <p className="text-center text-slate-500 text-xs py-8">Simulate matches to populate player lists!</p>
+                    <p className="text-center th-muted text-xs py-8">Simulate matches to populate player lists!</p>
                   )}
                 </>
               )}
@@ -626,20 +626,20 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
         </div>
 
         {/* Visual Charts Comparison: Team Goals Scored (Col-span 5) */}
-        <div className="lg:col-span-5 glass-panel-heavy border border-white/10 rounded-2xl p-4.5 space-y-4">
+        <div className="lg:col-span-5 glass-panel-heavy border th-border rounded-2xl p-4.5 space-y-4">
           <div className="select-none">
-            <span className="text-[10px] text-slate-400 font-mono font-bold uppercase block tracking-wider">
+            <span className="text-[10px] th-muted font-mono font-bold uppercase block tracking-wider">
               GOAL RATING BENCHMARKS
             </span>
-            <h3 className="text-xs font-bold text-slate-300 font-sans tracking-tight font-sans">
+            <h3 className="text-xs font-bold th-sub font-sans tracking-tight font-sans">
               Top 10 highest-scoring teams in season
             </h3>
           </div>
 
           {/* Graphical custom CSS bars chart */}
-          <div className="space-y-3.5 select-none font-mono text-slate-200 text-xs">
+          <div className="space-y-3.5 select-none font-mono th-text text-xs">
             {teamGoalsData.length === 0 || teamGoalsData.every(t => t.goals === 0) ? (
-              <div className="text-center text-slate-600 font-mono py-16 text-[11px]">
+              <div className="text-center th-faint font-mono py-16 text-[11px]">
                 🛡️ Chart awaiting simulated match stats...
               </div>
             ) : (
@@ -652,16 +652,16 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                     <div 
                       key={index} 
                       onClick={() => triggerGlobalEntity("team", td.crest.id)} 
-                      className="space-y-1 hover:bg-white/5 p-1 rounded-lg transition-all cursor-pointer select-none"
+                      className="space-y-1 hover:th-wash p-1 rounded-lg transition-all cursor-pointer select-none"
                       title="Click to view club dossier"
                     >
                       <div className="flex items-center justify-between text-[10px] leading-tight font-medium">
                         <div className="flex items-center gap-1.5 font-bold">
-                          <span className="text-[9px] text-slate-500 font-mono shrink-0 select-none w-3">
+                          <span className="text-[9px] th-muted font-mono shrink-0 select-none w-3">
                             {index + 1}
                           </span>
                           <TeamCrest team={td.crest} size={16} />
-                          <span className="truncate max-w-[120px] font-sans text-slate-350 hover:text-emerald-400 hover:underline transition-all">
+                          <span className="truncate max-w-[120px] font-sans th-sub hover:text-emerald-400 hover:underline transition-all">
                             {td.name}
                           </span>
                         </div>
@@ -670,7 +670,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                         </span>
                       </div>
                       {/* CSS progress track */}
-                      <div className="h-2 bg-black/55 rounded-full flex shadow-inner border border-white/5">
+                      <div className="h-2 th-inset rounded-full flex shadow-inner border th-border">
                         <div
                           className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
                           style={{ width: `${barPct}%` }}
@@ -688,28 +688,28 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
       ) : (
       /* FINANCE & BETTING DNA TAB */
       <div className="space-y-6 animate-fade-in">
-        <div className="border-b border-white/5 pb-3">
-          <span className="text-[10px] text-emerald-400 font-mono tracking-widest block uppercase font-bold">
+        <div className="border-b th-border pb-3">
+          <span className="text-[10px] th-muted font-mono tracking-widest block uppercase font-bold">
             BANKROLL ANALYTICS
           </span>
-          <h2 className="text-sm font-bold text-slate-100 font-sans tracking-tight mt-1">
+          <h2 className="text-sm font-bold th-text font-sans tracking-tight mt-1">
             Profit Visualizer & Betting DNA
           </h2>
         </div>
 
         {/* DNA Overview Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="glass-card border border-white/5 rounded-2xl p-4 flex flex-col justify-between text-center select-none">
-            <span className="text-[9px] text-slate-400 font-bold uppercase font-sans">WIN RATE</span>
+          <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
+            <span className="text-[9px] th-muted font-bold uppercase font-sans">WIN RATE</span>
             <span className="text-xl font-black font-mono text-emerald-400 mt-1">
               {financeData?.winRate}%
             </span>
-            <p className="text-[8px] text-slate-500 font-mono mt-1 uppercase">
+            <p className="text-[8px] th-muted font-mono mt-1 uppercase">
               {financeData?.completedCount} COMPLETED TICKETS
             </p>
           </div>
-          <div className="glass-card border border-white/5 rounded-2xl p-4 flex flex-col justify-between text-center select-none">
-            <span className="text-[9px] text-slate-400 font-bold uppercase font-sans">BIGGEST WIN</span>
+          <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
+            <span className="text-[9px] th-muted font-bold uppercase font-sans">BIGGEST WIN</span>
             <span className="text-xl font-black font-mono text-amber-400 mt-1">
               ${financeData ? formatMoney(financeData.biggestWin) : "0.00"}
             </span>
@@ -717,8 +717,8 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
               PURE PROFIT
             </p>
           </div>
-          <div className="glass-card border border-white/5 rounded-2xl p-4 flex flex-col justify-between text-center select-none col-span-2">
-            <span className="text-[9px] text-slate-400 font-bold uppercase font-sans">MOST PROFITABLE MARKET</span>
+          <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none col-span-2">
+            <span className="text-[9px] th-muted font-bold uppercase font-sans">MOST PROFITABLE MARKET</span>
             <span className="text-xl font-black font-sans text-sky-400 mt-1 uppercase tracking-tight">
               {financeData?.bestMarket}
             </span>
@@ -729,12 +729,12 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
         </div>
 
         {/* Bankroll Chart */}
-        <div className="glass-panel-heavy border border-white/10 rounded-2xl p-6 relative">
+        <div className="glass-panel-heavy border th-border rounded-2xl p-6 relative">
           <div className="absolute top-4 left-6 z-10 pointer-events-none select-none">
-             <h3 className="text-xs font-bold text-slate-300 font-sans tracking-tight uppercase tracking-wider">
+             <h3 className="text-xs font-bold th-sub font-sans tracking-tight uppercase tracking-wider">
                Bankroll Trajectory
              </h3>
-             <p className="text-[10px] text-slate-500 font-mono">Current Balance: <span className="text-emerald-400 font-bold">${userProfile ? formatMoney(userProfile.balance) : "0.00"}</span></p>
+             <p className="text-[10px] th-muted font-mono">Current Balance: <span className="text-emerald-400 font-bold">${userProfile ? formatMoney(userProfile.balance) : "0.00"}</span></p>
           </div>
           <div className="h-72 w-full mt-8">
             <ResponsiveContainer width="100%" height="100%">
@@ -763,3 +763,4 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
     </div>
   );
 };
+

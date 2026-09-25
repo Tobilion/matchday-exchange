@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
           <h1 className="text-sm font-black tracking-wider uppercase text-emerald-400 font-sans leading-none">
             Matchday Exchange
           </h1>
-          <p className="text-[10px] text-slate-400 font-mono tracking-widest leading-none mt-1">
+          <p className="text-[10px] th-muted font-mono tracking-widest leading-none mt-1">
             {gameMode === "LEAGUE" ? "LEAGUE CAMPAIGN" : "TOURNAMENT ENGINE"}
           </p>
         </div>
@@ -89,8 +89,8 @@ export const Header: React.FC<HeaderProps> = ({
                 title={tab.label}
                 className={`flex items-center gap-1.5 px-2 md:px-3 py-2 md:py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200 cursor-pointer min-w-[36px] min-h-[36px] justify-center md:justify-start ${
                   isActive
-                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-semibold shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-                    : "text-slate-300 hover:bg-white/5 hover:text-white border border-transparent"
+                    ? "th-acc-soft text-emerald-400 border th-border-acc font-semibold shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                    : "th-sub hover:th-wash hover:th-text border border-transparent"
                 }`}
               >
                 <span className="shrink-0">{tab.icon}</span>
@@ -114,23 +114,23 @@ export const Header: React.FC<HeaderProps> = ({
           <ThemeToggle theme={theme} onChange={setTheme} compact />
         </div>
         {/* Wallet Display */}
-        <div className="bg-white/5 px-2 md:px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-1.5 md:gap-2">
-          <span className="hidden sm:inline text-[9px] font-mono text-slate-400 tracking-wider">WALLET:</span>
+        <div className="th-wash px-2 md:px-3 py-1.5 rounded-lg border th-border flex items-center gap-1.5 md:gap-2">
+          <span className="hidden sm:inline text-[9px] font-mono th-muted tracking-wider">WALLET:</span>
           <span className="text-xs font-bold text-emerald-400 font-mono whitespace-nowrap">
             ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           <button
             onClick={addFunds}
             title="Add +$1000.00 Funds"
-            className="ml-0.5 md:ml-1.5 bg-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 p-0.5 px-1 rounded-md transition-all cursor-pointer flex items-center justify-center font-black text-[10px] min-w-[24px] min-h-[24px]"
+            className="ml-0.5 md:ml-1.5 th-acc-soft hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 p-0.5 px-1 rounded-md transition-all cursor-pointer flex items-center justify-center font-black text-[10px] min-w-[24px] min-h-[24px]"
           >
             <Plus size={10} strokeWidth={3} />
           </button>
         </div>
 
         {/* Current Round Indicator */}
-        <div className="hidden lg:flex flex-col items-end border-l border-white/10 pl-3">
-          <span className="text-[10px] text-slate-400 font-mono leading-none">STAGE</span>
+        <div className="hidden lg:flex flex-col items-end border-l th-border pl-3">
+          <span className="text-[10px] th-muted font-mono leading-none">STAGE</span>
           <span className="text-xs font-black text-emerald-400 font-sans tracking-tight mt-0.5">
             {currentRoundLabel}
           </span>
@@ -149,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={exitToMenu}
           title="Exit to Mode Selection"
-          className="bg-slate-500/15 hover:bg-slate-500/35 text-slate-300 hover:text-white p-2 rounded-lg border border-white/10 transition-all cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
+          className="th-wash hover:bg-slate-500/35 th-sub hover:th-text p-2 rounded-lg border th-border transition-all cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
         >
           <LogOut size={14} />
         </button>
@@ -165,10 +165,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="text-[10px] text-red-400 font-mono tracking-widest uppercase font-bold">
                   ⚠️ DANGER ZONE
                 </span>
-                <h3 className="text-sm font-bold text-slate-100 font-sans tracking-tight">
+                <h3 className="text-sm font-bold th-text font-sans tracking-tight">
                   Reset Tournament Championship?
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs th-muted leading-relaxed">
                   This action is irreversible. All current fixtures, live standings, bets history, and user wallet profile statistics will be wiped and seeded with a fresh Round of 32 champion cup.
                 </p>
               </div>
@@ -176,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="flex items-center gap-3 justify-center pt-2 select-none">
                 <button
                   onClick={() => setShowResetConfirm(false)}
-                  className="bg-white/5 hover:bg-white/10 text-slate-300 font-bold px-4 py-2 rounded-xl text-xs cursor-pointer border border-white/5 hover:text-white transition-all duration-150"
+                  className="th-wash hover:th-wash2 th-sub font-bold px-4 py-2 rounded-xl text-xs cursor-pointer border th-border hover:th-text transition-all duration-150"
                 >
                   Nevermind, Cancel
                 </button>
@@ -185,7 +185,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setShowResetConfirm(false);
                     resetTournament();
                   }}
-                  className="bg-red-500 hover:bg-red-650 text-white font-bold px-4 py-2 rounded-xl text-xs cursor-pointer shadow-md shadow-red-500/10 hover:shadow-red-500/20 active:scale-95 transition-all duration-150"
+                  className="bg-red-500 hover:bg-red-650 th-text font-bold px-4 py-2 rounded-xl text-xs cursor-pointer shadow-md shadow-red-500/10 hover:shadow-red-500/20 active:scale-95 transition-all duration-150"
                 >
                   Yes, Completely Reset
                 </button>
@@ -200,3 +200,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+

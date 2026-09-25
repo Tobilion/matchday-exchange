@@ -52,7 +52,7 @@ const ToastItem: React.FC<{ toast: Toast }> = ({ toast }) => {
       exit={{ opacity: 0, scale: 0.85, x: 50, transition: { duration: 0.2 } }}
       onClick={() => removeToast(toast.id)}
       className={`
-        flex items-start gap-3 px-4 py-3 rounded-r-xl border border-y-white/5 border-r-white/5 bg-[#12151c]/95 backdrop-blur-md
+        flex items-start gap-3 px-4 py-3 rounded-r-xl border border-y-white/5 border-r-white/5 th-solid backdrop-blur-md
         cursor-pointer shadow-2xl pointer-events-auto w-80 relative overflow-hidden
         ${BORDER_LEFT[toast.type] ?? BORDER_LEFT.info}
       `}
@@ -62,14 +62,14 @@ const ToastItem: React.FC<{ toast: Toast }> = ({ toast }) => {
         <p className={`text-[11px] font-black font-mono uppercase tracking-wider ${TITLE_COLOR[toast.type] ?? TITLE_COLOR.info}`}>
           {toast.title}
         </p>
-        <p className="text-[11px] text-slate-300 font-sans mt-0.5 leading-snug">
+        <p className="text-[11px] th-sub font-sans mt-0.5 leading-snug">
           {toast.message}
         </p>
       </div>
-      <span className="text-slate-500 hover:text-slate-300 text-[10px] font-mono shrink-0 mt-0.5 transition-colors">✕</span>
+      <span className="th-muted hover:th-sub text-[10px] font-mono shrink-0 mt-0.5 transition-colors">✕</span>
       
       {/* Toast countdown progress line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/5 overflow-hidden">
+      <div className="absolute bottom-0 left-0 right-0 h-[3px] th-wash overflow-hidden">
         <div
           className="h-full animate-toast-progress"
           style={{
@@ -94,3 +94,4 @@ export const ToastContainer: React.FC = () => {
     </div>
   );
 };
+

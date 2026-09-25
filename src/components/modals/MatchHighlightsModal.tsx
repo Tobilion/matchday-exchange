@@ -36,18 +36,18 @@ export function MatchHighlightsModal({ fixture, teams, onClose }: MatchHighlight
       onClick={onClose}
     >
       <div
-        className="bg-gradient-to-b from-[#131722] to-[#0b0e14] border border-white/10 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
+        className="bg-gradient-to-b from-[#131722] to-[#0b0e14] border th-border rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header: final scoreline */}
-        <div className="p-5 border-b border-white/10 bg-black/30">
+        <div className="p-5 border-b th-border th-inset">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-[10px] font-black tracking-widest text-slate-500 uppercase">
+            <p className="text-[10px] font-black tracking-widest th-muted uppercase">
               📋 Match Highlights
             </p>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white text-lg font-bold px-2"
+              className="th-muted hover:th-text text-lg font-bold px-2"
               aria-label="Close highlights"
             >
               ✕
@@ -55,15 +55,15 @@ export function MatchHighlightsModal({ fixture, teams, onClose }: MatchHighlight
           </div>
           <div className="flex items-center justify-center gap-4 mt-2">
             <div className="flex items-center gap-2 flex-1 justify-end">
-              <span className="text-sm font-bold text-slate-200 text-right">{home?.shortName ?? "HOME"}</span>
+              <span className="text-sm font-bold th-text text-right">{home?.shortName ?? "HOME"}</span>
               {home && <TeamCrest team={home} size={32} />}
             </div>
-            <div className="text-3xl font-black font-mono text-white tracking-tight">
+            <div className="text-3xl font-black font-mono th-text tracking-tight">
               {Math.floor(fixture.homeScore)}–{Math.floor(fixture.awayScore)}
             </div>
             <div className="flex items-center gap-2 flex-1">
               {away && <TeamCrest team={away} size={32} />}
-              <span className="text-sm font-bold text-slate-200">{away?.shortName ?? "AWAY"}</span>
+              <span className="text-sm font-bold th-text">{away?.shortName ?? "AWAY"}</span>
             </div>
           </div>
           {fixture.penaltyScore && (
@@ -76,23 +76,23 @@ export function MatchHighlightsModal({ fixture, teams, onClose }: MatchHighlight
         {/* Timeline */}
         <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {moments.length === 0 && (
-            <p className="text-center text-sm text-slate-500 py-8">
+            <p className="text-center text-sm th-muted py-8">
               No major moments in this match.
             </p>
           )}
           {moments.map((m, i) => (
             <div
               key={i}
-              className={`flex items-start gap-3 border-l-4 ${STRIPE_COLORS[m.type]} bg-white/[0.03] rounded-r-lg px-3 py-2.5`}
+              className={`flex items-start gap-3 border-l-4 ${STRIPE_COLORS[m.type]} th-wash rounded-r-lg px-3 py-2.5`}
             >
-              <span className="shrink-0 bg-black/50 border border-white/10 rounded-md text-[10px] font-black font-mono text-slate-300 px-1.5 py-0.5 mt-0.5">
+              <span className="shrink-0 th-inset border th-border rounded-md text-[10px] font-black font-mono th-sub px-1.5 py-0.5 mt-0.5">
                 {m.minute}'
               </span>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-white">
+                <p className="text-xs font-bold th-text">
                   {TYPE_ICONS[m.type]} {m.playerName}
                 </p>
-                <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">{m.description}</p>
+                <p className="text-[11px] th-muted mt-0.5 leading-snug">{m.description}</p>
               </div>
             </div>
           ))}
@@ -100,21 +100,21 @@ export function MatchHighlightsModal({ fixture, teams, onClose }: MatchHighlight
 
         {/* MOTM card */}
         {motm && (
-          <div className="p-4 border-t border-white/10 bg-black/30">
+          <div className="p-4 border-t th-border th-inset">
             <div className="flex items-center justify-between bg-yellow-400/10 border border-yellow-400/30 rounded-xl px-4 py-3">
               <div>
                 <p className="text-[9px] font-black tracking-widest text-yellow-400 uppercase">
                   ⭐ Man of the Match
                 </p>
-                <p className="text-sm font-black text-white">{motm.playerName}</p>
+                <p className="text-sm font-black th-text">{motm.playerName}</p>
                 <p className="text-[10px] text-yellow-300/70 font-mono">
                   {motmTeam?.shortName ?? motmTeam?.name ?? ""}
                 </p>
-                <p className="text-[10px] text-slate-400 font-mono mt-0.5 capitalize">{motm.reason}</p>
+                <p className="text-[10px] th-muted font-mono mt-0.5 capitalize">{motm.reason}</p>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-black text-yellow-400 font-mono">{motm.score.toFixed(1)}</p>
-                <p className="text-[9px] text-slate-500 font-mono uppercase">Rating</p>
+                <p className="text-[9px] th-muted font-mono uppercase">Rating</p>
               </div>
             </div>
           </div>
@@ -123,3 +123,4 @@ export function MatchHighlightsModal({ fixture, teams, onClose }: MatchHighlight
     </div>
   );
 }
+

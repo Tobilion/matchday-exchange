@@ -23,7 +23,7 @@ const FEATURES = [
   {
     icon: Layers,
     color: "text-emerald-400",
-    ring: "bg-emerald-500/10 border-emerald-500/20",
+    ring: "th-acc-soft th-border-acc",
     title: "Build Your Club",
     body: "Sign players, upgrade facilities, develop youth, and chase league and cup glory.",
   },
@@ -34,7 +34,7 @@ export const SplashGate: React.FC<SplashGateProps> = ({ onEnter }) => {
   return (
     <div
       id="splash-gate"
-      className="fixed inset-0 z-[999] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black text-slate-100 overflow-y-auto overflow-x-hidden font-sans select-none animate-fade-in"
+      className="fixed inset-0 z-[999] th-app overflow-y-auto overflow-x-hidden font-sans select-none animate-fade-in"
     >
       <div className="min-h-full w-full flex flex-col items-center justify-center gap-10 px-4 py-14">
         <div className="flex flex-col items-center gap-4 text-center">
@@ -42,10 +42,10 @@ export const SplashGate: React.FC<SplashGateProps> = ({ onEnter }) => {
             <Trophy size={30} className="text-slate-950" strokeWidth={2.5} />
           </div>
           <h1 className="text-4xl sm:text-5xl font-black tracking-wider uppercase leading-none">
-            <span className="text-slate-100">Matchday</span>{" "}
+            <span className="th-text">Matchday</span>{" "}
             <span className="text-emerald-400">Exchange</span>
           </h1>
-          <p className="text-xs font-mono uppercase tracking-[0.3em] text-slate-400">
+          <p className="text-xs font-mono uppercase tracking-[0.3em] th-muted">
             Elite Football &amp; Prediction Market Simulator
           </p>
         </div>
@@ -54,7 +54,7 @@ export const SplashGate: React.FC<SplashGateProps> = ({ onEnter }) => {
           {FEATURES.map((card) => (
             <div
               key={card.title}
-              className="p-6 rounded-2xl bg-slate-900/50 border border-white/5 backdrop-blur-md flex flex-col gap-3"
+              className="p-6 rounded-2xl th-solid border th-border backdrop-blur-md flex flex-col gap-3"
             >
               <div
                 className={`h-10 w-10 rounded-xl border flex items-center justify-center ${card.ring}`}
@@ -66,7 +66,7 @@ export const SplashGate: React.FC<SplashGateProps> = ({ onEnter }) => {
               >
                 {card.title}
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs th-muted leading-relaxed">
                 {card.body}
               </p>
             </div>
@@ -82,7 +82,7 @@ export const SplashGate: React.FC<SplashGateProps> = ({ onEnter }) => {
             Enter Matchday Exchange
             <ArrowRight size={16} strokeWidth={2.5} />
           </button>
-          <span className="text-[10px] text-slate-500">
+          <span className="text-[10px] th-muted">
             Click anywhere on the button to begin
           </span>
         </div>
@@ -92,3 +92,4 @@ export const SplashGate: React.FC<SplashGateProps> = ({ onEnter }) => {
 };
 
 export default SplashGate;
+

@@ -47,13 +47,13 @@ function isRed(suit: Suit) { return suit === "♥" || suit === "♦"; }
 const CardUI: React.FC<{ card: Card }> = ({ card }) => {
   if (card.hidden) {
     return (
-      <div className="w-10 h-14 sm:w-12 sm:h-16 rounded-lg border border-white/10 bg-gradient-to-br from-blue-900 to-blue-950 flex items-center justify-center shadow-md">
+      <div className="w-10 h-14 sm:w-12 sm:h-16 rounded-lg border th-border bg-gradient-to-br from-blue-900 to-blue-950 flex items-center justify-center shadow-md">
         <span className="text-blue-400/40 text-xl">🂠</span>
       </div>
     );
   }
   return (
-    <div className="w-10 h-14 sm:w-12 sm:h-16 rounded-lg border border-white/10 bg-white flex flex-col items-start justify-start p-1 shadow-md">
+    <div className="w-10 h-14 sm:w-12 sm:h-16 rounded-lg border th-border bg-white flex flex-col items-start justify-start p-1 shadow-md">
       <span className={`text-[10px] sm:text-[11px] font-black leading-none ${isRed(card.suit) ? "text-red-600" : "text-slate-900"}`}>{card.val}</span>
       <span className={`text-xs sm:text-[13px] leading-none ${isRed(card.suit) ? "text-red-600" : "text-slate-900"}`}>{card.suit}</span>
     </div>
@@ -176,19 +176,19 @@ export const BlackjackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, a
 
   return (
     <div className="space-y-3 select-none">
-      <div className="bg-black/40 border border-white/5 rounded-xl p-3 sm:p-4">
+      <div className="th-inset border th-border rounded-xl p-3 sm:p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-mono text-slate-400 uppercase font-bold">DEALER</span>
-          <span className="text-[10px] font-mono text-slate-400">{phase !== "idle" ? `Value: ${phase === "done" ? handValue(dealerHand) : handValue([dealerHand[0]])}` : "—"}</span>
+          <span className="text-[10px] font-mono th-muted uppercase font-bold">DEALER</span>
+          <span className="text-[10px] font-mono th-muted">{phase !== "idle" ? `Value: ${phase === "done" ? handValue(dealerHand) : handValue([dealerHand[0]])}` : "—"}</span>
         </div>
         <div className="flex gap-1.5 flex-wrap min-h-[3.5rem]">
           {dealerHand.map((c, i) => <CardUI key={i} card={c} />)}
         </div>
       </div>
-      <div className="bg-black/40 border border-white/5 rounded-xl p-3 sm:p-4">
+      <div className="th-inset border th-border rounded-xl p-3 sm:p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-mono text-slate-400 uppercase font-bold">YOU {doubled && <span className="text-amber-400">(DOUBLED)</span>}</span>
-          <span className="text-[10px] font-mono text-slate-400">{phase !== "idle" ? `Value: ${handValue(playerHand)}` : "—"}</span>
+          <span className="text-[10px] font-mono th-muted uppercase font-bold">YOU {doubled && <span className="text-amber-400">(DOUBLED)</span>}</span>
+          <span className="text-[10px] font-mono th-muted">{phase !== "idle" ? `Value: ${handValue(playerHand)}` : "—"}</span>
         </div>
         <div className="flex gap-1.5 flex-wrap min-h-[3.5rem]">
           {playerHand.map((c, i) => <CardUI key={i} card={c} />)}
@@ -197,8 +197,8 @@ export const BlackjackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, a
       <div className={`text-center text-xs font-bold py-2.5 px-3 rounded-xl border leading-snug ${
         result === "bust" || result === "loss" ? "bg-red-500/10 border-red-500/20 text-red-400" :
         result === "push" ? "bg-amber-500/10 border-amber-500/20 text-amber-400" :
-        result ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-        "bg-white/5 border-white/5 text-slate-300"
+        result ? "th-acc-soft th-border-acc text-emerald-400" :
+        "th-wash th-border th-sub"
       }`}>{message}</div>
       {phase === "idle" || phase === "done" ? (
         <div className="space-y-3">
@@ -210,13 +210,14 @@ export const BlackjackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, a
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-2">
-          <button onClick={hit} className="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 rounded-2xl transition-all active:scale-95 cursor-pointer uppercase">HIT</button>
-          <button onClick={stand} className="bg-red-700 hover:bg-red-600 text-white font-black text-xs py-3 rounded-2xl transition-all active:scale-95 cursor-pointer uppercase">STAND</button>
+          <button onClick={hit} className="bg-blue-600 hover:bg-blue-500 th-text font-black text-xs py-3 rounded-2xl transition-all active:scale-95 cursor-pointer uppercase">HIT</button>
+          <button onClick={stand} className="bg-red-700 hover:bg-red-600 th-text font-black text-xs py-3 rounded-2xl transition-all active:scale-95 cursor-pointer uppercase">STAND</button>
           <button onClick={doubleDown} disabled={playerHand.length !== 2 || balance < safeStake}
-            className="bg-amber-600 hover:bg-amber-500 text-white font-black text-xs py-3 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase">2X DOWN</button>
+            className="bg-amber-600 hover:bg-amber-500 th-text font-black text-xs py-3 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase">2X DOWN</button>
         </div>
       )}
-      <div className="text-[9px] text-slate-600 font-mono text-center">6-deck shoe • Dealer stands soft 17 • Blackjack pays 3:2 • RTP ~99.5%</div>
+      <div className="text-[9px] th-faint font-mono text-center">6-deck shoe • Dealer stands soft 17 • Blackjack pays 3:2 • RTP ~99.5%</div>
     </div>
   );
 };
+

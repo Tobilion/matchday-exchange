@@ -268,21 +268,21 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 max-w-4xl mx-auto animate-fade-in">
       {/* Intro Bannner */}
-      <div className="glass-panel rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 border-emerald-500/10">
+      <div className="glass-panel rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 th-border-acc">
         <div className="space-y-1">
-          <span className="text-[10px] text-emerald-400 font-mono tracking-widest uppercase font-black">
+          <span className="text-[10px] th-muted font-mono tracking-widest uppercase font-black">
             🔴 Live Fan Zone & community Timeline
           </span>
-          <h2 className="text-sm font-bold text-slate-100 font-sans tracking-tight">
+          <h2 className="text-sm font-bold th-text font-sans tracking-tight">
             Matchday Exchange Supporter Hub — Live Reactions
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs th-muted">
             Read current tournament banter, transfer gossip, and expert betting advice. Posts react to match goal tickers in real-time!
           </p>
         </div>
         <button
           onClick={handleResetFeed}
-          className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 text-slate-350 hover:text-emerald-400 px-3 py-1.5 rounded-xl text-xs transition-all border border-white/5 cursor-pointer"
+          className="flex items-center gap-1.5 th-wash hover:th-wash2 th-sub hover:text-emerald-400 px-3 py-1.5 rounded-xl text-xs transition-all border th-border cursor-pointer"
         >
           <RefreshCw size={12} />
           Reset Banter
@@ -291,16 +291,16 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Side: Post Creator */}
-        <div className="md:col-span-1 glass-panel rounded-2xl p-4 h-fit border-white/5 space-y-4">
-          <div className="border-b border-white/5 pb-2">
-            <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider block font-bold">
+        <div className="md:col-span-1 glass-panel rounded-2xl p-4 h-fit th-border space-y-4">
+          <div className="border-b th-border pb-2">
+            <span className="text-[10px] th-muted font-mono uppercase tracking-wider block font-bold">
               Post Your Prediction
             </span>
           </div>
 
           <form onSubmit={handleCreatePost} className="space-y-3">
             <div>
-              <label className="text-[10px] text-slate-400 font-mono block mb-1">Pick Supporter Badge</label>
+              <label className="text-[10px] th-muted font-mono block mb-1">Pick Supporter Badge</label>
               <div className="flex flex-wrap gap-1.5">
                 {avatarsList.map((av) => (
                   <button
@@ -309,8 +309,8 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
                     onClick={() => setSelectedAvatar(av)}
                     className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-all border cursor-pointer select-none ${
                       selectedAvatar === av
-                        ? "bg-emerald-500/15 border-emerald-500 text-white shadow-sm"
-                        : "bg-black/20 border-white/5 text-slate-400 hover:border-white/10"
+                        ? "th-acc-soft th-border-acc th-text shadow-sm"
+                        : "th-inset th-border th-muted hover:th-border"
                     }`}
                   >
                     {av}
@@ -320,14 +320,14 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
             </div>
 
             <div>
-              <label htmlFor="userPostText" className="text-[10px] text-slate-400 font-mono block mb-1">Slander or Cheer</label>
+              <label htmlFor="userPostText" className="text-[10px] th-muted font-mono block mb-1">Slander or Cheer</label>
               <textarea
                 id="userPostText"
                 value={userPostText}
                 onChange={(e) => setUserPostText(e.target.value)}
                 placeholder="Write a hot take... e.g., HOME TEAM DRAW SLAYED! Elite Casino bets hit!"
                 maxLength={250}
-                className="w-full text-xs p-3 rounded-xl bg-black/30 border border-white/5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500/50 resize-none h-24"
+                className="w-full text-xs p-3 rounded-xl th-inset border th-border th-text placeholder:th-muted focus:outline-none focus:th-border-acc resize-none h-24"
               ></textarea>
             </div>
 
@@ -345,10 +345,10 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
         {/* Right Side: Timeline Stream */}
         <div className="md:col-span-2 space-y-3">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-mono text-slate-400 font-bold uppercase select-none">
+            <span className="text-[11px] font-mono th-muted font-bold uppercase select-none">
               Timeline Gossip ({posts.length} Posts)
             </span>
-            <div className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-450 animate-pulse">
+            <div className="flex items-center gap-1.5 text-[10px] font-mono th-acc animate-pulse">
               <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full"></span>
               Live Feed Connected
             </div>
@@ -365,29 +365,29 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="glass-card rounded-xl p-4 border border-white/5 space-y-2.5 hover:border-white/10 transition-all bg-[#0a111a]/80"
+                    className="glass-card rounded-xl p-4 border th-border space-y-2.5 hover:th-border transition-all th-solid"
                   >
                     {/* Post Header */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-lg select-none">
+                        <div className="w-9 h-9 rounded-full th-wash border th-border flex items-center justify-center text-lg select-none">
                           {post.avatarSeed}
                         </div>
                         <div>
                           <div className="flex items-center gap-1">
-                            <span className="text-xs font-bold text-slate-200 leading-none">
+                            <span className="text-xs font-bold th-text leading-none">
                               {post.authorName}
                             </span>
                             {post.isVerified && (
                               <CheckCircle2 size={11} className="text-sky-400 fill-sky-400/10 shrink-0" />
                             )}
                             {post.isTipster && (
-                              <span className="text-[8px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-1 py-0.2 rounded font-mono uppercase font-extrabold select-none shrink-0">
+                              <span className="text-[8px] th-acc-soft border th-border-acc text-emerald-400 px-1 py-0.2 rounded font-mono uppercase font-extrabold select-none shrink-0">
                                 PRO TIPSTER
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] text-slate-500 font-mono block mt-0.5">
+                          <span className="text-[10px] th-muted font-mono block mt-0.5">
                             @{post.authorHandle}
                           </span>
                         </div>
@@ -396,25 +396,25 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
                       <div className="flex items-center gap-2">
                         {team && (
                           <span
-                            className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold text-emerald-350 border border-emerald-500/10"
+                            className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold th-acc border th-border-acc"
                             style={{ backgroundColor: `${team.primaryColor}15`, color: team.primaryColor }}
                           >
                             {team.shortName} supporter
                           </span>
                         )}
-                        <span className="text-[9px] font-mono text-slate-500">
+                        <span className="text-[9px] font-mono th-muted">
                           {post.timestamp}
                         </span>
                       </div>
                     </div>
 
                     {/* Post Content */}
-                    <p className="text-xs text-slate-350 leading-relaxed break-words whitespace-pre-wrap pl-11">
+                    <p className="text-xs th-sub leading-relaxed break-words whitespace-pre-wrap pl-11">
                       {post.content}
                     </p>
 
                     {/* Action Stats buttons */}
-                    <div className="flex items-center gap-6 text-[10px] font-mono text-slate-500 pl-11 pt-1 border-t border-white/5 select-none">
+                    <div className="flex items-center gap-6 text-[10px] font-mono th-muted pl-11 pt-1 border-t th-border select-none">
                       <button
                         onClick={(e) => handleLike(post.id, e)}
                         className={`flex items-center gap-1 px-1 py-0.5 rounded hover:text-red-400 transition-all cursor-pointer ${
@@ -443,3 +443,4 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
     </div>
   );
 };
+

@@ -39,23 +39,23 @@ export const BetBuilderTicketsList: React.FC<BetBuilderTicketsListProps> = ({
               key={ticket.id}
               className={`glass-card rounded-2xl overflow-hidden border ${
                 isWon
-                  ? "border-emerald-500/20"
+                  ? "th-border-acc"
                   : isLost
                   ? "border-red-500/15 opacity-70"
                   : "border-amber-500/20"
               }`}
             >
-              <div className="px-4 py-2.5 flex items-center justify-between bg-black/20">
+              <div className="px-4 py-2.5 flex items-center justify-between th-inset">
                 <div>
-                  <p className="text-xs font-black text-white">{getMatchup(ticket.fixtureId)}</p>
-                  <p className="text-[9px] text-slate-500 font-mono uppercase mt-0.5">
+                  <p className="text-xs font-black th-text">{getMatchup(ticket.fixtureId)}</p>
+                  <p className="text-[9px] th-muted font-mono uppercase mt-0.5">
                     Bet Builder • {ticket.selections.length} legs • Round {ticket.placedAt + 1}
                   </p>
                 </div>
                 <span
                   className={`text-[9px] font-black font-mono uppercase rounded px-2 py-1 ${
                     isWon
-                      ? "bg-emerald-500/15 text-emerald-400"
+                      ? "th-acc-soft text-emerald-400"
                       : isLost
                       ? "bg-red-500/15 text-red-400"
                       : "bg-amber-500/15 text-amber-400"
@@ -66,19 +66,19 @@ export const BetBuilderTicketsList: React.FC<BetBuilderTicketsListProps> = ({
               </div>
               <div className="px-4 py-2 space-y-1">
                 {ticket.selections.map((sel, i) => (
-                  <p key={i} className="text-[10px] text-slate-400 font-mono">
-                    • {sel.label} <span className="text-slate-600">@{sel.odds.toFixed(2)}</span>
+                  <p key={i} className="text-[10px] th-muted font-mono">
+                    • {sel.label} <span className="th-faint">@{sel.odds.toFixed(2)}</span>
                   </p>
                 ))}
               </div>
-              <div className="px-4 py-2 flex items-center justify-between text-[11px] font-mono border-t border-white/5 text-slate-400">
+              <div className="px-4 py-2 flex items-center justify-between text-[11px] font-mono border-t th-border th-muted">
                 <span>
-                  Stake: <span className="text-white font-bold">${formatMoney(ticket.stake)}</span>
+                  Stake: <span className="th-text font-bold">${formatMoney(ticket.stake)}</span>
                   {" · "}Odds: <span className="text-amber-400 font-bold">{ticket.combinedOdds.toFixed(2)}</span>
                 </span>
                 <span>
                   {isWon ? "Returned: " : "Potential: "}
-                  <span className={`font-bold ${isWon ? "text-emerald-400" : isLost ? "text-red-400 line-through" : "text-white"}`}>
+                  <span className={`font-bold ${isWon ? "text-emerald-400" : isLost ? "text-red-400 line-through" : "th-text"}`}>
                     ${formatMoney(ticket.potentialPayout)}
                   </span>
                 </span>
@@ -90,3 +90,4 @@ export const BetBuilderTicketsList: React.FC<BetBuilderTicketsListProps> = ({
     </div>
   );
 };
+

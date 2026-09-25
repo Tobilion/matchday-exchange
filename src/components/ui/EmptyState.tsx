@@ -46,7 +46,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         );
       default:
         return (
-          <svg className="w-24 h-24 text-slate-500/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <svg className="w-24 h-24 th-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <circle cx={12} cy={12} r={9} />
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01" />
           </svg>
@@ -55,12 +55,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   };
 
   return (
-    <div className={`flex flex-col items-center justify-center text-center p-6 rounded-2xl bg-[#12151c]/30 border border-white/5 backdrop-blur-md ${className}`}>
+    <div className={`flex flex-col items-center justify-center text-center p-6 rounded-2xl th-solid border th-border backdrop-blur-md ${className}`}>
       <div className="mb-4 flex items-center justify-center">
         {renderIllustration()}
       </div>
-      <h3 className="text-sm font-bold text-slate-200 mb-1">{title}</h3>
-      <p className="text-[11px] text-slate-400 max-w-[240px] mb-4 leading-normal">{description}</p>
+      <h3 className="text-sm font-bold th-text mb-1">{title}</h3>
+      <p className="text-[11px] th-muted max-w-[240px] mb-4 leading-normal">{description}</p>
       {ctaText && onCtaClick && (
         <button
           onClick={onCtaClick}
@@ -72,3 +72,4 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     </div>
   );
 };
+

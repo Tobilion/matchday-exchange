@@ -80,12 +80,12 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
 
   return (
     <div className="space-y-4">
-      <div className="bg-[#05070a] border border-white/5 rounded-2xl p-5 flex justify-center gap-6 select-none relative">
-        <span className="text-[10px] font-mono text-slate-500 absolute top-2 left-2 uppercase">Duel Dice Cup</span>
+      <div className="th-app border th-border rounded-2xl p-5 flex justify-center gap-6 select-none relative">
+        <span className="text-[10px] font-mono th-muted absolute top-2 left-2 uppercase">Duel Dice Cup</span>
         {diceVals.map((val, index) => (
           <div
             key={index}
-            className={`h-20 w-20 rounded-2xl bg-gradient-to-br from-[#121824] to-[#05070a] border-2 border-emerald-500/20 shadow-md flex items-center justify-center font-black text-4xl font-mono transition-all duration-300 ${
+            className={`h-20 w-20 rounded-2xl bg-gradient-to-br from-[#121824] to-[#05070a] border-2 th-border-acc shadow-md flex items-center justify-center font-black text-4xl font-mono transition-all duration-300 ${
               rolling ? "rotate-12 animate-pulse scale-90 border-amber-500" : ""
             }`}
           >
@@ -94,12 +94,12 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
         ))}
         {!rolling && (
           <div className="absolute bottom-3 left-0 right-0 text-center">
-            <span className="text-[10px] font-mono text-slate-400">Sum: <b className="text-white">{diceVals[0] + diceVals[1]}</b></span>
+            <span className="text-[10px] font-mono th-muted">Sum: <b className="th-text">{diceVals[0] + diceVals[1]}</b></span>
           </div>
         )}
       </div>
 
-      <p className="text-[11px] leading-relaxed text-slate-300 text-center bg-white/2 p-2.5 rounded-xl border border-white/5 select-none font-mono">{commentary}</p>
+      <p className="text-[11px] leading-relaxed th-sub text-center th-wash p-2.5 rounded-xl border th-border select-none font-mono">{commentary}</p>
 
       <div className="grid grid-cols-3 gap-2 shrink-0 select-none">
         {(["UNDER_7", "EQUAL_7", "OVER_7"] as const).map(mode => {
@@ -107,7 +107,7 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
           const multi = mode === "EQUAL_7" ? `${DICE_MULTI_EXACT}x` : `${DICE_MULTI_OVER_UNDER}x`;
           const label = mode === "UNDER_7" ? "UNDER 7" : mode === "EQUAL_7" ? "EXACTLY 7" : "OVER 7";
           const activeStyle = mode === "UNDER_7"
-            ? "bg-emerald-500/20 border-emerald-500 text-emerald-400"
+            ? "th-acc-soft th-border-acc text-emerald-400"
             : mode === "EQUAL_7"
             ? "bg-amber-500/25 border-amber-500 text-amber-400"
             : "bg-sky-500/20 border-sky-500 text-sky-400";
@@ -117,11 +117,11 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
               onClick={() => setTargetMode(mode)}
               disabled={rolling}
               className={`py-3 rounded-2xl font-sans font-bold text-xs border transition-all active:scale-95 cursor-pointer flex flex-col items-center ${
-                isActive ? activeStyle : "bg-[#0b0e14] border-white/5 text-slate-400 hover:border-white/10"
+                isActive ? activeStyle : "th-solid th-border th-muted hover:th-border"
               }`}
             >
               <span>{label}</span>
-              <span className="text-[8px] font-mono text-slate-500 mt-1">{multi} Pays</span>
+              <span className="text-[8px] font-mono th-muted mt-1">{multi} Pays</span>
             </button>
           );
         })}
@@ -139,3 +139,4 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
     </div>
   );
 };
+

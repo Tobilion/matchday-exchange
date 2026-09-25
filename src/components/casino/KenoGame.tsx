@@ -93,8 +93,8 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
   return (
     <div className="space-y-3 select-none">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono text-slate-400 uppercase font-bold">PICKS: {picks.size}/10</span>
-        {phase === "done" && <span className={`text-[10px] font-mono font-bold ${hits >= 5 ? "text-emerald-400" : "text-slate-400"}`}>HITS: {hits}/{picks.size}</span>}
+        <span className="text-[10px] font-mono th-muted uppercase font-bold">PICKS: {picks.size}/10</span>
+        {phase === "done" && <span className={`text-[10px] font-mono font-bold ${hits >= 5 ? "text-emerald-400" : "th-muted"}`}>HITS: {hits}/{picks.size}</span>}
       </div>
 
       {/* Number grid */}
@@ -106,10 +106,10 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
           return (
             <button key={n} onClick={() => togglePick(n)} disabled={phase !== "idle"}
               className={`h-8 sm:h-9 rounded-lg text-[11px] font-black transition-all active:scale-90 ${
-                isHit ? "bg-emerald-500 text-white ring-2 ring-emerald-400 scale-110" :
+                isHit ? "bg-emerald-500 th-text ring-2 ring-emerald-400 scale-110" :
                 isDrawn ? "bg-red-700/60 text-red-300 border border-red-500/30" :
                 isPick ? "bg-amber-500/30 border-2 border-amber-500 text-amber-400" :
-                "bg-white/5 border border-white/8 text-slate-400 hover:bg-white/10 cursor-pointer"
+                "th-wash border th-border th-muted hover:th-wash2 cursor-pointer"
               }`}>
               {n}
             </button>
@@ -118,11 +118,11 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
       </div>
 
       {/* Payout table for current pick count */}
-      <div className="bg-black/30 border border-white/5 rounded-xl p-2.5">
-        <div className="text-[8px] font-mono text-slate-500 uppercase mb-1.5 text-center">Payouts for {picks.size || 10}-pick ticket</div>
+      <div className="th-inset border th-border rounded-xl p-2.5">
+        <div className="text-[8px] font-mono th-muted uppercase mb-1.5 text-center">Payouts for {picks.size || 10}-pick ticket</div>
         <div className="grid grid-cols-6 gap-1 text-center">
           {Object.entries(activeTable).map(([k, v]) => (
-            <div key={k} className={`text-[9px] font-mono ${hits === parseInt(k) && phase === "done" ? "text-emerald-400 font-black" : "text-slate-500"}`}>
+            <div key={k} className={`text-[9px] font-mono ${hits === parseInt(k) && phase === "done" ? "text-emerald-400 font-black" : "th-muted"}`}>
               <div className="text-[8px]">{k}H</div>
               <div className="font-bold">{v}x</div>
             </div>
@@ -130,7 +130,7 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
         </div>
       </div>
 
-      <p className="text-xs text-center text-slate-300 bg-white/5 border border-white/5 rounded-xl py-2 px-3 font-bold">{message}</p>
+      <p className="text-xs text-center th-sub th-wash border th-border rounded-xl py-2 px-3 font-bold">{message}</p>
 
       <StakeSlider balance={balance} stake={safeStake} setStake={setStake} disabled={phase !== "idle"} label="TICKET STAKE" />
 
@@ -145,11 +145,12 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
           🔄 NEW TICKET
         </button>
       ) : (
-        <div className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 text-center text-xs text-amber-400 font-mono animate-pulse">
+        <div className="w-full th-wash border th-border rounded-2xl py-3 text-center text-xs text-amber-400 font-mono animate-pulse">
           Drawing numbers...
         </div>
       )}
-      <div className="text-[9px] text-slate-600 font-mono text-center">Pick 1–10 • 10 drawn from 40 • Max 5000x on 10/10</div>
+      <div className="text-[9px] th-faint font-mono text-center">Pick 1–10 • 10 drawn from 40 • Max 5000x on 10/10</div>
     </div>
   );
 };
+

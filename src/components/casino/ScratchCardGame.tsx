@@ -125,7 +125,7 @@ export const ScratchCardGame: React.FC<GameProps> = ({ balance, onUpdateBalance,
       {/* Prize legend */}
       <div className="grid grid-cols-5 gap-1">
         {Object.entries(PRIZE_TABLE).filter(([,v]) => v > 0).slice(0,5).map(([sym, v]) => (
-          <div key={sym} className="bg-white/3 border border-white/5 rounded-lg p-1.5 text-center">
+          <div key={sym} className="th-wash border th-border rounded-lg p-1.5 text-center">
             <div className="text-lg">{sym}</div>
             <div className="text-[9px] font-mono text-emerald-400 font-bold">{v}x</div>
           </div>
@@ -137,9 +137,9 @@ export const ScratchCardGame: React.FC<GameProps> = ({ balance, onUpdateBalance,
         {Array.from({ length: 9 }, (_, i) => (
           <button key={i} onClick={() => scratch(i)} disabled={phase !== "scratching" || revealed[i]}
             className={`aspect-square rounded-xl border text-2xl sm:text-3xl flex items-center justify-center transition-all active:scale-90 ${
-              revealed[i] ? "bg-white/5 border-white/10 cursor-default" :
+              revealed[i] ? "th-wash th-border cursor-default" :
               phase === "scratching" ? "bg-amber-900/30 border-amber-500/40 hover:bg-amber-800/40 cursor-pointer animate-pulse" :
-              "bg-white/3 border-white/5 cursor-default"
+              "th-wash th-border cursor-default"
             }`}>
             {revealed[i] ? (card[i] || "") : (phase === "scratching" ? "🪙" : "")}
           </button>
@@ -147,8 +147,8 @@ export const ScratchCardGame: React.FC<GameProps> = ({ balance, onUpdateBalance,
       </div>
 
       <p className={`text-xs text-center font-bold py-2.5 px-3 rounded-xl border leading-snug ${
-        phase === "done" && message.includes("WIN") ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-        phase === "done" ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-white/5 border-white/5 text-slate-300"
+        phase === "done" && message.includes("WIN") ? "th-acc-soft th-border-acc text-emerald-400" :
+        phase === "done" ? "bg-red-500/10 border-red-500/20 text-red-400" : "th-wash th-border th-sub"
       }`}>{message}</p>
 
       {phase === "idle" || phase === "done" ? (
@@ -161,11 +161,12 @@ export const ScratchCardGame: React.FC<GameProps> = ({ balance, onUpdateBalance,
         </div>
       ) : (
         <button onClick={revealAll}
-          className="w-full bg-white/10 hover:bg-white/15 border border-white/10 text-slate-200 font-bold text-xs py-2.5 rounded-2xl transition-all active:scale-95 cursor-pointer uppercase block text-center">
+          className="w-full th-wash2 hover:th-wash2 border th-border th-text font-bold text-xs py-2.5 rounded-2xl transition-all active:scale-95 cursor-pointer uppercase block text-center">
           🎴 REVEAL ALL
         </button>
       )}
-      <div className="text-[9px] text-slate-600 font-mono text-center">Match 3+ symbols • ~33% win rate • Max 50x on 💎</div>
+      <div className="text-[9px] th-faint font-mono text-center">Match 3+ symbols • ~33% win rate • Max 50x on 💎</div>
     </div>
   );
 };
+

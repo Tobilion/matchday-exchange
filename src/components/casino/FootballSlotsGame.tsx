@@ -85,30 +85,30 @@ export const FootballSlotsGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
 
   return (
     <div className="space-y-4">
-      <div className="bg-[#05070a] border border-white/5 rounded-2xl p-5 flex justify-center gap-4 select-none relative">
+      <div className="th-app border th-border rounded-2xl p-5 flex justify-center gap-4 select-none relative">
         {reels.map((sym, index) => (
           <div
             key={index}
-            className={`h-28 w-20 rounded-xl bg-gradient-to-b from-[#131923] to-[#040608] border border-white/10 flex flex-col items-center justify-center font-bold relative overflow-hidden transition-all duration-300 ${
+            className={`h-28 w-20 rounded-xl bg-gradient-to-b from-[#131923] to-[#040608] border th-border flex flex-col items-center justify-center font-bold relative overflow-hidden transition-all duration-300 ${
               spinning ? "animate-pulse border-amber-500/30 scale-95" : ""
             }`}
           >
             <span className="text-3xl block">{spinning ? "⚙️" : getSymbolChar(sym)}</span>
-            <span className="text-[10px] text-slate-400 font-mono uppercase mt-1 tracking-wider">{spinning ? "..." : sym}</span>
+            <span className="text-[10px] th-muted font-mono uppercase mt-1 tracking-wider">{spinning ? "..." : sym}</span>
           </div>
         ))}
       </div>
 
-      <div className="bg-black/30 border border-white/5 rounded-xl p-2.5 grid grid-cols-4 gap-1 text-center select-none">
+      <div className="th-inset border th-border rounded-xl p-2.5 grid grid-cols-4 gap-1 text-center select-none">
         {[["3×Cup", "100x"], ["3×Boot", "50x"], ["3×Ball", "30x"], ["Pair Cup/Boot/Ball", "4/3/2x"]].map(([label, val]) => (
-          <div key={label} className="bg-white/2 rounded-lg py-1.5 px-1">
-            <div className="text-[9px] text-slate-400 font-mono">{label}</div>
+          <div key={label} className="th-wash rounded-lg py-1.5 px-1">
+            <div className="text-[9px] th-muted font-mono">{label}</div>
             <div className="text-[11px] font-black text-amber-400 font-mono mt-0.5">{val}</div>
           </div>
         ))}
       </div>
 
-      <p className="text-[11px] leading-relaxed text-slate-300 text-center bg-white/2 p-2.5 rounded-xl border border-white/5 select-none font-mono">{commentary}</p>
+      <p className="text-[11px] leading-relaxed th-sub text-center th-wash p-2.5 rounded-xl border th-border select-none font-mono">{commentary}</p>
 
       <StakeSlider balance={balance} stake={safeStake} setStake={setStake} disabled={spinning} label="STAKE SLOTS AMOUNT" />
 
@@ -122,3 +122,4 @@ export const FootballSlotsGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
     </div>
   );
 };
+

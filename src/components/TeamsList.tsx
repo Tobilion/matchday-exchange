@@ -112,25 +112,25 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
     <div className="flex-1 min-height-0 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 no-scrollbar max-h-none">
       
       {/* Title */}
-      <div className="border-b border-white/5 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none">
+      <div className="border-b th-border pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none">
         <div>
-          <span className="text-[10px] text-emerald-400 font-mono tracking-widest block uppercase font-bold">
+          <span className="text-[10px] th-muted font-mono tracking-widest block uppercase font-bold">
             CHAMPIONSHIP SQUADS & TEAM RECORDS
           </span>
-          <h2 className="text-sm font-bold text-slate-100 font-sans tracking-tight mt-1">
+          <h2 className="text-sm font-bold th-text font-sans tracking-tight mt-1">
             Browse the 13-Player rosters, past historic match stats & attributes
           </h2>
         </div>
         
         {/* Search Input bar */}
-        <div className="bg-black/35 border border-white/5 rounded-xl px-3 py-1.5 flex items-center gap-2 max-w-[240px]">
+        <div className="th-inset border th-border rounded-xl px-3 py-1.5 flex items-center gap-2 max-w-[240px]">
           <span className="text-xs">🔍</span>
           <input
             type="text"
             placeholder="Search team name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-transparent border-none text-xs text-white focus:outline-none placeholder-slate-600"
+            className="w-full bg-transparent border-none text-xs th-text focus:outline-none placeholder:th-muted"
           />
         </div>
       </div>
@@ -154,15 +154,15 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                 }}
                 className={`glass-card rounded-2xl p-4 flex flex-col items-center text-center transition-all duration-150 cursor-pointer border ${
                   isSelected
-                    ? "border-emerald-450 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)] scale-[1.01]"
-                    : "border-white/5 hover:border-white/15 hover:bg-white/5"
+                    ? "th-border-acc th-acc-soft shadow-[0_0_15px_rgba(16,185,129,0.1)] scale-[1.01]"
+                    : "th-border hover:th-border2 hover:th-wash"
                 }`}
               >
                 <TeamCrest team={team} size={48} />
-                <h3 className="text-xs font-bold text-slate-200 truncate mt-2.5 w-full select-none">
+                <h3 className="text-xs font-bold th-text truncate mt-2.5 w-full select-none">
                   {team.name}
                 </h3>
-                <span className="text-[9px] text-slate-400 font-mono font-bold tracking-widest block mt-0.5 select-none font-sans">
+                <span className="text-[9px] th-muted font-mono font-bold tracking-widest block mt-0.5 select-none font-sans">
                   {team.shortName} • STARS ({team.rating.toFixed(1)})
                 </span>
                 
@@ -170,7 +170,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   {starStr}
                 </div>
 
-                <div className="flex gap-4 mt-3 text-[9px] text-slate-400 font-mono select-none">
+                <div className="flex gap-4 mt-3 text-[9px] th-muted font-mono select-none">
                   <span>W: {team.wonMatches}</span>
                   <span>L: {team.lostMatches}</span>
                   <span>G: {team.goalsScored}</span>
@@ -181,29 +181,29 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
         </div>
 
         {/* Selected Team Profile Portfolio Detail (Col-Span 5) */}
-        <div ref={detailPanelRef} className="lg:col-span-6 xl:col-span-5 glass-panel-heavy rounded-2xl border border-white/10 overflow-hidden self-stretch flex flex-col justify-between">
+        <div ref={detailPanelRef} className="lg:col-span-6 xl:col-span-5 glass-panel-heavy rounded-2xl border th-border overflow-hidden self-stretch flex flex-col justify-between">
           {selectedTeam ? (
             <div className="flex flex-col h-full min-h-[560px]">
               {/* Profile Header */}
-              <div className="bg-white/5 p-4 text-center border-b border-white/5">
+              <div className="th-wash p-4 text-center border-b th-border">
                 <TeamCrest team={selectedTeam} size={64} />
-                <h3 className="text-sm font-black text-slate-100 mt-2">
+                <h3 className="text-sm font-black th-text mt-2">
                   {selectedTeam.name}
                 </h3>
-                <span className="text-[10px] text-slate-400 font-mono block uppercase tracking-wider mt-0.5 font-sans">
+                <span className="text-[10px] th-muted font-mono block uppercase tracking-wider mt-0.5 font-sans">
                   Global Club Rating: {calculateTeamRating(selectedTeam)} / 100
                 </span>
                 
                 {/* Visual Accent Badge */}
                 <div className="flex items-center justify-center gap-1.5 mt-2.5 select-none">
-                  <span className="text-[10px] text-slate-400 font-mono">CLUB COLORS:</span>
+                  <span className="text-[10px] th-muted font-mono">CLUB COLORS:</span>
                   <span
-                    className="h-3 w-5 rounded border border-white/15 inline-block"
+                    className="h-3 w-5 rounded border th-border2 inline-block"
                     style={{ backgroundColor: selectedTeam.primaryColor }}
                     title={`Primary: ${selectedTeam.primaryColor}`}
                   ></span>
                   <span
-                    className="h-3 w-5 rounded border border-white/15 inline-block"
+                    className="h-3 w-5 rounded border th-border2 inline-block"
                     style={{ backgroundColor: selectedTeam.secondaryColor }}
                     title={`Secondary: ${selectedTeam.secondaryColor}`}
                   ></span>
@@ -211,13 +211,13 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
               </div>
 
               {/* Sub tabs selector inside right info frame */}
-              <div className="flex border-b border-white/5 divide-x divide-white/5 bg-black/25">
+              <div className="flex border-b th-border divide-x divide-white/5 th-inset">
                 <button
                   onClick={() => setActiveRightTab("roster")}
                   className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase cursor-pointer ${
                     activeRightTab === "roster"
-                      ? "bg-white/5 text-emerald-400 font-extrabold border-b-2 border-emerald-500"
-                      : "text-slate-400 hover:text-white"
+                      ? "th-wash text-emerald-400 font-extrabold border-b-2 th-border-acc"
+                      : "th-muted hover:th-text"
                   }`}
                 >
                   👥 SQUAD ({selectedTeam.players.length})
@@ -226,8 +226,8 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   onClick={() => setActiveRightTab("history")}
                   className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase cursor-pointer ${
                     activeRightTab === "history"
-                      ? "bg-white/5 text-emerald-400 font-extrabold border-b-2 border-emerald-500"
-                      : "text-slate-400 hover:text-white"
+                      ? "th-wash text-emerald-400 font-extrabold border-b-2 th-border-acc"
+                      : "th-muted hover:th-text"
                   }`}
                 >
                   📜 RECORD / STATS
@@ -239,13 +239,13 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                 <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar max-h-[500px] glass-scrollbar">
                   
                   <div className="mb-4">
-                    <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase block mb-2">
+                    <span className="text-[10px] font-mono font-bold tracking-widest th-muted uppercase block mb-2">
                       Starting XI Formation
                     </span>
                     <PitchFormation players={sortedPlayers} teamId={selectedTeam.id} />
                   </div>
 
-                  <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase block mb-3 border-b border-white/5 pb-2">
+                  <span className="text-[10px] font-mono font-bold tracking-widest th-muted uppercase block mb-3 border-b th-border pb-2">
                     Squad Roster Directory
                   </span>
 
@@ -255,29 +255,29 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                         <div
                           key={p.id}
                           onClick={() => triggerGlobalEntity("player", p.id)}
-                          className="bg-black/35 border border-white/5 hover:border-emerald-500/35 hover:bg-emerald-500/[0.08] rounded-xl p-3 flex flex-col justify-between text-xs cursor-pointer transition-all duration-200 shadow-sm min-h-[90px]"
+                          className="th-inset border th-border hover:th-border-acc hover:th-acc-soft rounded-xl p-3 flex flex-col justify-between text-xs cursor-pointer transition-all duration-200 shadow-sm min-h-[90px]"
                         >
                           <div className="flex items-start justify-between mb-2">
                             <span className={`px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase ${
                               p.position === "GK" ? "bg-red-500/15 text-red-400" :
                               p.position === "DEF" ? "bg-blue-500/15 text-blue-400" :
-                              p.position === "MID" ? "bg-emerald-500/15 text-emerald-400" : "bg-purple-500/15 text-purple-400"
+                              p.position === "MID" ? "th-acc-soft text-emerald-400" : "bg-purple-500/15 text-purple-400"
                             }`}>
                               {p.position}
                             </span>
-                            <div className="bg-black/40 border border-white/5 h-8 w-11 flex flex-col items-center justify-center rounded-lg">
-                              <span className="text-[11px] font-black font-mono text-emerald-450 leading-none">
+                            <div className="th-inset border th-border h-8 w-11 flex flex-col items-center justify-center rounded-lg">
+                              <span className="text-[11px] font-black font-mono th-acc leading-none">
                                 {p.rating}
                               </span>
                             </div>
                           </div>
                           
                           <div className="flex flex-col gap-0.5 mt-auto">
-                            <span className="font-bold text-slate-200 truncate">
+                            <span className="font-bold th-text truncate">
                               {cleanPlayerName(p.name)}
                               {isReservePlayer(p) && <span className="ml-1 text-[7px] font-bold text-amber-400 px-1 bg-amber-500/10 rounded border border-amber-500/20 align-middle">RES</span>}
                             </span>
-                            <span className="text-[8px] text-slate-500 font-mono tracking-tighter truncate leading-tight">
+                            <span className="text-[8px] th-muted font-mono tracking-tighter truncate leading-tight">
                               Pld: {p.matchesPlayed} • Gls: {p.goals} • Ast: {p.assists}
                             </span>
                           </div>
@@ -294,14 +294,14 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
 
                   {/* Season-by-season history (persists across seasons) */}
                   {(selectedTeam.seasonHistory?.length ?? 0) > 0 && (
-                    <div className="bg-black/35 border border-white/5 rounded-2xl p-3.5 space-y-2">
+                    <div className="th-inset border th-border rounded-2xl p-3.5 space-y-2">
                       <span className="text-[9px] font-mono font-bold tracking-widest text-amber-400 uppercase block">
                         SEASON HISTORY ({selectedTeam.seasonHistory!.length})
                       </span>
                       <div className="overflow-x-auto">
                         <table className="w-full text-[10px] font-mono">
                           <thead>
-                            <tr className="text-slate-500 uppercase text-[8px]">
+                            <tr className="th-muted uppercase text-[8px]">
                               <th className="text-left py-1">Season</th>
                               <th className="text-center">Pos</th>
                               <th className="text-center">W</th>
@@ -314,7 +314,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                           </thead>
                           <tbody>
                             {[...selectedTeam.seasonHistory!].reverse().map((s) => (
-                              <tr key={s.seasonNumber} className="border-t border-white/5 text-slate-300">
+                              <tr key={s.seasonNumber} className="border-t th-border th-sub">
                                 <td className="text-left py-1">S{s.seasonNumber}</td>
                                 <td className="text-center">{s.position || "-"}</td>
                                 <td className="text-center text-emerald-400">{s.won}</td>
@@ -333,39 +333,39 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
 
                   {/* Aggregated totals */}
                   {teamAggStats ? (
-                    <div className="bg-black/35 border border-white/5 rounded-2xl p-3.5 space-y-3">
-                      <span className="text-[9px] font-mono font-bold tracking-widest text-emerald-400 uppercase block">
+                    <div className="th-inset border th-border rounded-2xl p-3.5 space-y-3">
+                      <span className="text-[9px] font-mono font-bold tracking-widest th-muted uppercase block">
                         TOURNAMENT AGGREGATE METRICS
                       </span>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                        <div className="bg-white/2 p-2 rounded-xl border border-white/5">
-                          <span className="text-[8px] text-slate-500 uppercase block font-bold leading-none">SHOTS</span>
-                          <span className="text-xs font-black text-slate-200 mt-1 block font-mono">
-                            {teamAggStats.totalShots} <span className="text-[8px] text-slate-400 font-normal">({teamAggStats.totalShotsOnTarget} SOT)</span>
+                        <div className="th-wash p-2 rounded-xl border th-border">
+                          <span className="text-[8px] th-muted uppercase block font-bold leading-none">SHOTS</span>
+                          <span className="text-xs font-black th-text mt-1 block font-mono">
+                            {teamAggStats.totalShots} <span className="text-[8px] th-muted font-normal">({teamAggStats.totalShotsOnTarget} SOT)</span>
                           </span>
                         </div>
-                        <div className="bg-white/2 p-2 rounded-xl border border-white/5">
-                          <span className="text-[8px] text-slate-500 uppercase block font-bold leading-none">PASSES</span>
-                          <span className="text-xs font-black text-slate-200 mt-1 block font-mono">
+                        <div className="th-wash p-2 rounded-xl border th-border">
+                          <span className="text-[8px] th-muted uppercase block font-bold leading-none">PASSES</span>
+                          <span className="text-xs font-black th-text mt-1 block font-mono">
                             {teamAggStats.totalPasses.toLocaleString()}
                           </span>
                         </div>
-                        <div className="bg-white/2 p-2 rounded-xl border border-white/5">
-                          <span className="text-[8px] text-slate-500 uppercase block font-bold leading-none">SAVES</span>
-                          <span className="text-xs font-black text-slate-200 mt-1 block font-mono">
+                        <div className="th-wash p-2 rounded-xl border th-border">
+                          <span className="text-[8px] th-muted uppercase block font-bold leading-none">SAVES</span>
+                          <span className="text-xs font-black th-text mt-1 block font-mono">
                             {teamAggStats.totalSaves}
                           </span>
                         </div>
-                        <div className="bg-white/2 p-2 rounded-xl border border-white/5">
-                          <span className="text-[8px] text-slate-500 uppercase block font-bold leading-none">CORNERS</span>
-                          <span className="text-xs font-black text-slate-200 mt-1 block font-mono">
+                        <div className="th-wash p-2 rounded-xl border th-border">
+                          <span className="text-[8px] th-muted uppercase block font-bold leading-none">CORNERS</span>
+                          <span className="text-xs font-black th-text mt-1 block font-mono">
                             {teamAggStats.totalCorners}
                           </span>
                         </div>
                       </div>
 
                       {/* Discipline details */}
-                      <div className="flex justify-between items-center bg-white/2 p-2 rounded-xl border border-white/5 text-[10px] text-slate-400 px-3 select-none">
+                      <div className="flex justify-between items-center th-wash p-2 rounded-xl border th-border text-[10px] th-muted px-3 select-none">
                         <span>FOULS COMMITTED: <strong className="font-mono">{teamAggStats.totalFouls}</strong></span>
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-yellow-500/80">🟨 {teamAggStats.totalYellows}</span>
@@ -374,14 +374,14 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-white/2 border border-white/5 rounded-2xl p-4 text-center text-slate-500 text-[11px] font-mono select-none italic">
+                    <div className="th-wash border th-border rounded-2xl p-4 text-center th-muted text-[11px] font-mono select-none italic">
                       🛡️ No matches simulated yet. Play games in the 'Live' section to populate stats histories!
                     </div>
                   )}
 
                   {/* Matches List completed */}
                   <div className="space-y-2">
-                    <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase block mb-1">
+                    <span className="text-[10px] font-mono font-bold tracking-widest th-muted uppercase block mb-1">
                       MATCH-BY-MATCH SPREAD ({pastMatches.length} PLD)
                     </span>
 
@@ -402,13 +402,13 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                         <div
                           key={match.id}
                           onClick={() => setInspectedMatch(match)}
-                          className="bg-black/25 hover:bg-slate-900/40 border border-white/5 hover:border-white/10 rounded-xl p-3 text-xs space-y-2.5 cursor-pointer transition-all hover:scale-[1.005]"
+                          className="th-inset hover:th-solid border th-border hover:th-border rounded-xl p-3 text-xs space-y-2.5 cursor-pointer transition-all hover:scale-[1.005]"
                           title="Click to inspect Match Details & both rosters"
                         >
-                          <div className="flex items-center justify-between border-b border-white/5 pb-1.5">
+                          <div className="flex items-center justify-between border-b th-border pb-1.5">
                             <div className="flex items-center gap-2">
                               <span className={`px-1.5 py-0.5 rounded text-[8px] font-mono font-black ${
-                                isWin ? "bg-emerald-500/15 text-emerald-450" : "bg-red-500/15 text-red-400"
+                                isWin ? "th-acc-soft th-acc" : "bg-red-500/15 text-red-400"
                               }`}>
                                 {isWin ? "WIN" : "LOSS"}
                               </span>
@@ -417,7 +417,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                                   e.stopPropagation();
                                   triggerGlobalEntity("team", oppTeam.id);
                                 }}
-                                className="flex items-center gap-1.5 font-bold text-slate-300 hover:text-emerald-450 cursor-pointer select-none transition-colors"
+                                className="flex items-center gap-1.5 font-bold th-sub hover:th-acc cursor-pointer select-none transition-colors"
                                 title="Click to view club dossier"
                               >
                                 <TeamCrest team={oppTeam as any} size={16} />
@@ -431,22 +431,22 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                           </div>
 
                           {/* Match individual stats breakdown */}
-                          <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono text-slate-400 select-none">
+                          <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono th-muted select-none">
                             <div>
-                              <span className="text-[8px] text-slate-500 block uppercase">Shots (SOT)</span>
-                              <span className="text-slate-200 font-bold block mt-0.5">
+                              <span className="text-[8px] th-muted block uppercase">Shots (SOT)</span>
+                              <span className="th-text font-bold block mt-0.5">
                                 {sideStats.shots} ({sideStats.shotsOnTarget}) vs {oppSideStats.shots} ({oppSideStats.shotsOnTarget})
                               </span>
                             </div>
                             <div>
-                              <span className="text-[8px] text-slate-500 block uppercase">Passes</span>
-                              <span className="text-slate-200 font-bold block mt-0.5">
+                              <span className="text-[8px] th-muted block uppercase">Passes</span>
+                              <span className="th-text font-bold block mt-0.5">
                                 {sideStats.passes} vs {oppSideStats.passes}
                               </span>
                             </div>
                             <div>
-                              <span className="text-[8px] text-slate-500 block uppercase">Saves • Fouls</span>
-                              <span className="text-slate-200 font-bold block mt-0.5">
+                              <span className="text-[8px] th-muted block uppercase">Saves • Fouls</span>
+                              <span className="th-text font-bold block mt-0.5">
                                 {sideStats.saves} / {sideStats.fouls}
                               </span>
                             </div>
@@ -459,10 +459,10 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
               )}
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-center text-slate-500 p-8 py-16">
+            <div className="h-full flex flex-col items-center justify-center text-center th-muted p-8 py-16">
               <span className="text-5xl mb-3 opacity-40">👥</span>
               <p className="text-xs font-bold">No Team Selected</p>
-              <p className="text-[11px] text-slate-600 mt-1 max-w-[200px]">
+              <p className="text-[11px] th-faint mt-1 max-w-[200px]">
                 Explore the register cards on the left side and choose a team to unfold detail profile histories.
               </p>
             </div>
@@ -475,7 +475,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
         const [dossierTab, setDossierTab] = useState<"stats" | "qualities">("stats");
         
         let statusBadge = (
-          <span className="px-2 py-0.5 bg-emerald-500/15 border border-emerald-500/30 rounded-md text-[9px] font-mono text-emerald-400 font-bold flex items-center gap-1">
+          <span className="px-2 py-0.5 th-acc-soft border th-border-acc rounded-md text-[9px] font-mono text-emerald-400 font-bold flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             ACTIVE
           </span>
@@ -498,49 +498,49 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
 
         return (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="relative bg-[#070b11] border border-white/10 rounded-2xl p-6 max-w-sm w-full mx-auto space-y-4 shadow-2xl text-center flex flex-col items-center">
+            <div className="relative th-solid border th-border rounded-2xl p-6 max-w-sm w-full mx-auto space-y-4 shadow-2xl text-center flex flex-col items-center">
               
               {/* Close trigger button */}
               <button
                 onClick={() => setSelectedPlayer(null)}
-                className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white h-8 w-8 rounded-full flex items-center justify-center cursor-pointer text-xs transition-colors"
+                className="absolute top-4 right-4 th-wash hover:th-wash2 th-muted hover:th-text h-8 w-8 rounded-full flex items-center justify-center cursor-pointer text-xs transition-colors"
               >
                 ✕
               </button>
 
               {/* FUT/Card inspired header */}
               <div className="w-full flex flex-col items-center select-none pt-2">
-                <div className="h-10 w-10 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-lg mb-2">
+                <div className="h-10 w-10 th-acc-soft border th-border-acc rounded-xl flex items-center justify-center text-lg mb-2">
                   🏃
                 </div>
-                <p className="text-[9px] font-mono tracking-widest text-[#10b981] font-bold uppercase leading-none">
+                <p className="text-[9px] font-mono tracking-widest th-muted font-bold uppercase leading-none">
                   CHAMPIONSHIP PLAYER CARD
                 </p>
-                <h3 className="text-base font-black text-slate-100 mt-1 leading-tight truncate max-w-full">
+                <h3 className="text-base font-black th-text mt-1 leading-tight truncate max-w-full">
                   {cleanPlayerName(selectedPlayer.name)}
                 </h3>
                 <div className="flex items-center gap-1.5 mt-2 flex-wrap justify-center">
-                  <span className="px-1.5 py-0.5 bg-white/5 border border-white/5 rounded text-[9px] font-mono text-slate-305 font-bold">
+                  <span className="px-1.5 py-0.5 th-wash border th-border rounded text-[9px] font-mono th-sub font-bold">
                     {selectedPlayer.position}
                   </span>
-                  <span className="text-slate-600 font-mono text-[9px]">•</span>
-                  <span className="text-slate-400 font-mono text-[9px] font-bold truncate max-w-[140px]">
+                  <span className="th-faint font-mono text-[9px]">•</span>
+                  <span className="th-muted font-mono text-[9px] font-bold truncate max-w-[140px]">
                     {getTeamNameById(selectedPlayer.teamId)}
                   </span>
-                  <span className="text-slate-600 font-mono text-[9px]">•</span>
+                  <span className="th-faint font-mono text-[9px]">•</span>
                   {statusBadge}
                 </div>
               </div>
 
               {/* Selector Tabs */}
-              <div className="w-full grid grid-cols-2 border-b border-white/5 text-xs font-bold leading-none select-none">
+              <div className="w-full grid grid-cols-2 border-b th-border text-xs font-bold leading-none select-none">
                 <button
                   type="button"
                   onClick={() => setDossierTab("stats")}
                   className={`py-2 border-b-2 text-center transition-all cursor-pointer font-bold ${
                     dossierTab === "stats"
-                      ? "border-emerald-500 text-emerald-400 font-black"
-                      : "border-transparent text-slate-400 hover:text-white font-medium"
+                      ? "th-border-acc text-emerald-400 font-black"
+                      : "border-transparent th-muted hover:th-text font-medium"
                   }`}
                 >
                   SEASON STATS
@@ -550,8 +550,8 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   onClick={() => setDossierTab("qualities")}
                   className={`py-2 border-b-2 text-center transition-all cursor-pointer ${
                     dossierTab === "qualities"
-                      ? "border-emerald-500 text-emerald-400 font-black"
-                      : "border-transparent text-slate-400 hover:text-white font-medium"
+                      ? "th-border-acc text-emerald-400 font-black"
+                      : "border-transparent th-muted hover:th-text font-medium"
                   }`}
                 >
                   TECHNICAL QUALITIES
@@ -562,32 +562,32 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
               {dossierTab === "stats" ? (
                 <div className="w-full space-y-3 animate-fade-in block">
                   {/* Rating / Plays */}
-                  <div className="bg-black/35 rounded-xl border border-white/5 p-3 flex justify-between items-center text-xs font-mono">
+                  <div className="th-inset rounded-xl border th-border p-3 flex justify-between items-center text-xs font-mono">
                     <div className="text-left">
-                      <span className="text-[9px] text-slate-500 block uppercase">OVERALL SCALE</span>
+                      <span className="text-[9px] th-muted block uppercase">OVERALL SCALE</span>
                       <span className="text-emerald-400 font-black text-sm">{selectedPlayer.rating} OVR</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[9px] text-slate-500 block uppercase">MATCHES</span>
-                      <span className="text-slate-250 font-bold">{selectedPlayer.matchesPlayed} games</span>
+                      <span className="text-[9px] th-muted block uppercase">MATCHES</span>
+                      <span className="th-sub font-bold">{selectedPlayer.matchesPlayed} games</span>
                     </div>
                   </div>
 
                   {/* High performance box */}
-                  <div className="grid grid-cols-3 divide-x divide-white/5 border border-white/5 bg-black/25 py-2.5 rounded-xl text-center text-xs font-mono text-slate-350">
+                  <div className="grid grid-cols-3 divide-x divide-white/5 border th-border th-inset py-2.5 rounded-xl text-center text-xs font-mono th-sub">
                     <div>
-                      <span className="text-[8px] text-slate-550 uppercase block">GOALS</span>
+                      <span className="text-[8px] th-muted uppercase block">GOALS</span>
                       <span className="text-emerald-400 font-black mt-0.5 block">{selectedPlayer.goals}</span>
                     </div>
                     <div>
-                      <span className="text-[8px] text-slate-550 uppercase block">{selectedPlayer.position === "GK" ? "SAVES" : "ASSISTS"}</span>
-                      <span className="text-slate-205 font-bold mt-0.5 block">
+                      <span className="text-[8px] th-muted uppercase block">{selectedPlayer.position === "GK" ? "SAVES" : "ASSISTS"}</span>
+                      <span className="th-text font-bold mt-0.5 block">
                         {selectedPlayer.position === "GK" ? (selectedPlayer.saves || 0) : (selectedPlayer.assists || 0)}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[8px] text-slate-550 uppercase block">BOOKINGS</span>
-                      <span className="text-slate-205 font-bold mt-0.5 block text-[10px] whitespace-nowrap">
+                      <span className="text-[8px] th-muted uppercase block">BOOKINGS</span>
+                      <span className="th-text font-bold mt-0.5 block text-[10px] whitespace-nowrap">
                         🟨 {selectedPlayer.yellowCards || 0} • 🟥 {selectedPlayer.redCards || 0}
                       </span>
                     </div>
@@ -596,7 +596,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
               ) : (
                 <div className="w-full space-y-3 text-left animate-fade-in block">
                   {/* Technical Abilities Core specs list */}
-                  <span className="text-[9px] font-mono font-bold text-slate-400 tracking-widest uppercase block border-b border-white/5 pb-1 select-none">
+                  <span className="text-[9px] font-mono font-bold th-muted tracking-widest uppercase block border-b th-border pb-1 select-none">
                     TECHNICAL CHARACTERISTICS
                   </span>
 
@@ -637,28 +637,28 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
 
         return (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-fade-in">
-            <div className="relative bg-[#070b11] border border-white/10 rounded-3xl p-6 max-w-sm w-full mx-auto my-auto shadow-2xl space-y-5 flex flex-col select-none">
+            <div className="relative th-solid border th-border rounded-3xl p-6 max-w-sm w-full mx-auto my-auto shadow-2xl space-y-5 flex flex-col select-none">
               
               {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setInspectedMatch(null)}
-                className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white h-8 w-8 rounded-full flex items-center justify-center cursor-pointer text-xs transition-colors border border-white/5"
+                className="absolute top-4 right-4 th-wash hover:th-wash2 th-muted hover:th-text h-8 w-8 rounded-full flex items-center justify-center cursor-pointer text-xs transition-colors border th-border"
               >
                 ✕
               </button>
 
               <div className="text-center">
-                <span className="text-[9px] font-mono tracking-widest text-[#10b981] font-extrabold uppercase">
+                <span className="text-[9px] font-mono tracking-widest th-muted font-extrabold uppercase">
                   COMPLETED REPORT
                 </span>
-                <h3 className="text-sm font-black text-slate-100 uppercase tracking-widest mt-1">
+                <h3 className="text-sm font-black th-text uppercase tracking-widest mt-1">
                   Match Details
                 </h3>
               </div>
 
               {/* Scoreboard line */}
-              <div className="bg-black/45 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
+              <div className="th-inset border th-border rounded-2xl p-4 flex items-center justify-between">
                 {/* Home Team */}
                 <div 
                   onClick={() => {
@@ -668,14 +668,14 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   className="flex flex-col items-center gap-1.5 w-[38%] text-center cursor-pointer hover:scale-105 transition-all group"
                 >
                   <TeamCrest team={homeTeam as any} size={36} className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
-                  <span className="text-[11px] font-bold text-slate-300 group-hover:text-emerald-450 line-clamp-2 leading-tight">
+                  <span className="text-[11px] font-bold th-sub group-hover:text-emerald-450 line-clamp-2 leading-tight">
                     {homeTeam.name}
                   </span>
                 </div>
 
                 {/* Score */}
                 <div className="flex flex-col items-center justify-center w-[24%]">
-                  <span className="text-xl font-black font-mono text-slate-100">
+                  <span className="text-xl font-black font-mono th-text">
                     {homeGoals} - {awayGoals}
                   </span>
                   {inspectedMatch.homeScore % 1 !== 0 && (
@@ -692,7 +692,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   className="flex flex-col items-center gap-1.5 w-[38%] text-center cursor-pointer hover:scale-105 transition-all group"
                 >
                   <TeamCrest team={awayTeam as any} size={36} className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
-                  <span className="text-[11px] font-bold text-slate-300 group-hover:text-emerald-400 line-clamp-2 leading-tight">
+                  <span className="text-[11px] font-bold th-sub group-hover:text-emerald-400 line-clamp-2 leading-tight">
                     {awayTeam.name}
                   </span>
                 </div>
@@ -700,13 +700,13 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
 
               {/* Dynamic Goal Scorer logs list */}
               <div className="space-y-1.5">
-                <span className="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-widest block text-left">
+                <span className="text-[8px] font-mono font-bold th-muted uppercase tracking-widest block text-left">
                   GOAL EVENT LOG & TIMELINE
                 </span>
                 
                 <div className="max-h-[110px] overflow-y-auto no-scrollbar space-y-1 text-xs font-mono">
                   {goalEvents.length === 0 ? (
-                    <div className="text-center text-slate-600 text-[10px] py-3 italic">
+                    <div className="text-center th-faint text-[10px] py-3 italic">
                       No goals were scored. Goalless match.
                     </div>
                   ) : (
@@ -715,9 +715,9 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                       return (
                         <div 
                           key={eIdx}
-                          className={`flex items-center gap-1.5 text-[11px] ${isHomeScorer ? "justify-start text-left text-slate-300" : "justify-end text-right text-slate-300"}`}
+                          className={`flex items-center gap-1.5 text-[11px] ${isHomeScorer ? "justify-start text-left th-sub" : "justify-end text-right th-sub"}`}
                         >
-                          <span className="text-slate-500 font-bold">[{evt.minute}']</span>
+                          <span className="th-muted font-bold">[{evt.minute}']</span>
                           <span className="truncate">⚽ {evt.commentary.split(" scored")[0].split(" - ")[0]}</span>
                         </div>
                       );
@@ -727,22 +727,22 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
               </div>
 
               {/* Match detailed statistics comparison */}
-              <div className="space-y-2 border-t border-white/5 pt-3 select-none">
-                <span className="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-widest block text-left">
+              <div className="space-y-2 border-t th-border pt-3 select-none">
+                <span className="text-[8px] font-mono font-bold th-muted uppercase tracking-widest block text-left">
                   TEAM STATS COMPARISON
                 </span>
-                <div className="grid grid-cols-3 text-center text-[11px] font-mono text-slate-300">
+                <div className="grid grid-cols-3 text-center text-[11px] font-mono th-sub">
                   <div>
-                    <span className="text-[12px] font-bold text-slate-100 block">{inspectedMatch.stats.home.shots} ({inspectedMatch.stats.home.shotsOnTarget})</span>
-                    <span className="text-[8px] text-slate-500 block uppercase mt-0.5">Shots(SOT)</span>
+                    <span className="text-[12px] font-bold th-text block">{inspectedMatch.stats.home.shots} ({inspectedMatch.stats.home.shotsOnTarget})</span>
+                    <span className="text-[8px] th-muted block uppercase mt-0.5">Shots(SOT)</span>
                   </div>
                   <div>
-                    <span className="text-[12px] font-bold text-slate-100 block">{inspectedMatch.stats.home.passes} vs {inspectedMatch.stats.away.passes}</span>
-                    <span className="text-[8px] text-slate-500 block uppercase mt-0.5">Passes</span>
+                    <span className="text-[12px] font-bold th-text block">{inspectedMatch.stats.home.passes} vs {inspectedMatch.stats.away.passes}</span>
+                    <span className="text-[8px] th-muted block uppercase mt-0.5">Passes</span>
                   </div>
                   <div>
-                    <span className="text-[12px] font-bold text-slate-100 block">{inspectedMatch.stats.away.shots} ({inspectedMatch.stats.away.shotsOnTarget})</span>
-                    <span className="text-[8px] text-slate-500 block uppercase mt-0.5">Shots(SOT)</span>
+                    <span className="text-[12px] font-bold th-text block">{inspectedMatch.stats.away.shots} ({inspectedMatch.stats.away.shotsOnTarget})</span>
+                    <span className="text-[8px] th-muted block uppercase mt-0.5">Shots(SOT)</span>
                   </div>
                 </div>
               </div>
@@ -759,11 +759,11 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
 const SkillBar: React.FC<{ label: string; value: number }> = ({ label, value }) => {
   return (
     <div className="space-y-1">
-      <div className="flex justify-between items-center text-[9px] font-mono text-slate-400 leading-none">
+      <div className="flex justify-between items-center text-[9px] font-mono th-muted leading-none">
         <span className="font-bold">{label}</span>
-        <span className="font-extrabold text-slate-200">{value}</span>
+        <span className="font-extrabold th-text">{value}</span>
       </div>
-      <div className="h-1.5 bg-black/40 border border-white/5 rounded-full overflow-hidden">
+      <div className="h-1.5 th-inset border th-border rounded-full overflow-hidden">
         <div
           className="h-full rounded-full bg-emerald-500"
           style={{ width: `${value}%` }}
@@ -772,3 +772,4 @@ const SkillBar: React.FC<{ label: string; value: number }> = ({ label, value }) 
     </div>
   );
 };
+

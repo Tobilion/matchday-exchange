@@ -39,9 +39,9 @@ function checkWin(bet: RouletteBet, num: number): boolean {
 }
 
 function getNumColor(n: number) {
-  if (n === 0) return "bg-emerald-600 text-white";
-  if (RED_NUMS.includes(n)) return "bg-red-600 text-white";
-  return "bg-slate-900 text-white";
+  if (n === 0) return "bg-emerald-600 th-text";
+  if (RED_NUMS.includes(n)) return "bg-red-600 th-text";
+  return "th-solid th-text";
 }
 
 export const RouletteGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog }) => {
@@ -109,11 +109,11 @@ export const RouletteGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
       <div className="flex justify-center items-center gap-6">
         <div className="relative w-24 h-24 flex items-center justify-center">
           <div className="absolute inset-0 rounded-full border-4 border-amber-500/30 overflow-hidden bg-gradient-to-br from-emerald-900 to-emerald-950">
-            <div className="absolute inset-1 rounded-full border-2 border-white/10 flex items-center justify-center"
+            <div className="absolute inset-1 rounded-full border-2 th-border flex items-center justify-center"
               style={{ transform: `rotate(${spinDeg}deg)`, transition: spinning ? "transform 3s cubic-bezier(0.17,0.67,0.12,0.99)" : "none" }}>
               <div className="grid grid-cols-6 gap-px p-1">
                 {Array.from({ length: 37 }, (_, i) => (
-                  <div key={i} className={`w-2.5 h-2.5 rounded-full text-[5px] flex items-center justify-center font-bold ${i === 0 ? "bg-emerald-500" : RED_NUMS.includes(i) ? "bg-red-500" : "bg-slate-800"}`}></div>
+                  <div key={i} className={`w-2.5 h-2.5 rounded-full text-[5px] flex items-center justify-center font-bold ${i === 0 ? "bg-emerald-500" : RED_NUMS.includes(i) ? "bg-red-500" : "th-solid2"}`}></div>
                 ))}
               </div>
             </div>
@@ -122,13 +122,13 @@ export const RouletteGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
         </div>
         <div className="text-center">
           {result !== null ? (
-            <div className={`w-16 h-16 rounded-full ${numColor} border-2 border-white/20 flex flex-col items-center justify-center shadow-xl`}>
+            <div className={`w-16 h-16 rounded-full ${numColor} border-2 th-border2 flex flex-col items-center justify-center shadow-xl`}>
               <span className="text-xl font-black">{result}</span>
               <span className="text-[8px] font-bold uppercase">{result === 0 ? "ZERO" : RED_NUMS.includes(result) ? "RED" : "BLACK"}</span>
             </div>
           ) : (
-            <div className="w-16 h-16 rounded-full bg-white/5 border-2 border-white/10 flex items-center justify-center">
-              <span className="text-slate-500 text-xs font-mono">?</span>
+            <div className="w-16 h-16 rounded-full th-wash border-2 th-border flex items-center justify-center">
+              <span className="th-muted text-xs font-mono">?</span>
             </div>
           )}
           <div className="mt-2 flex gap-1 flex-wrap justify-center max-w-[120px]">
@@ -140,18 +140,18 @@ export const RouletteGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
       </div>
 
       {/* Message */}
-      <p className="text-xs text-center text-slate-300 bg-white/5 border border-white/5 rounded-xl py-2.5 px-3 font-bold">{message}</p>
+      <p className="text-xs text-center th-sub th-wash border th-border rounded-xl py-2.5 px-3 font-bold">{message}</p>
 
       {/* Outside bets */}
       <div>
-        <div className="text-[9px] font-mono text-slate-500 uppercase font-bold mb-1.5">OUTSIDE BETS (1:1 / 2:1)</div>
+        <div className="text-[9px] font-mono th-muted uppercase font-bold mb-1.5">OUTSIDE BETS (1:1 / 2:1)</div>
         <div className="grid grid-cols-3 gap-1.5">
           {OUTSIDE_BETS.map(b => (
             <button key={b.type} onClick={() => setSelectedBet(b)} disabled={spinning}
               className={`py-2 text-[10px] font-bold rounded-xl border transition-all cursor-pointer uppercase ${
-                selectedBet.type === b.type ? "bg-amber-500/20 border-amber-500 text-amber-400" : "bg-white/3 border-white/5 text-slate-400 hover:border-white/20"
+                selectedBet.type === b.type ? "bg-amber-500/20 border-amber-500 text-amber-400" : "th-wash th-border th-muted hover:th-border2"
               }`}>
-              {b.label}<br/><span className="text-[8px] text-slate-500">{b.payout}x</span>
+              {b.label}<br/><span className="text-[8px] th-muted">{b.payout}x</span>
             </button>
           ))}
         </div>
@@ -159,7 +159,7 @@ export const RouletteGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
 
       {/* Number bet */}
       <div>
-        <div className="text-[9px] font-mono text-slate-500 uppercase font-bold mb-1.5">STRAIGHT UP NUMBER (35:1)</div>
+        <div className="text-[9px] font-mono th-muted uppercase font-bold mb-1.5">STRAIGHT UP NUMBER (35:1)</div>
         <div className="grid grid-cols-9 gap-0.5">
           {Array.from({ length: 37 }, (_, i) => (
             <button key={i} onClick={() => setSelectedBet({ type: "number", label: `#${i}`, payout: 36, value: i })} disabled={spinning}
@@ -177,7 +177,8 @@ export const RouletteGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
         className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm py-3 rounded-2xl transition-all active:scale-95 disabled:opacity-40 cursor-pointer uppercase tracking-wide block text-center">
         {spinning ? "🎡 Spinning..." : "🎡 SPIN"}
       </button>
-      <div className="text-[9px] text-slate-600 font-mono text-center">European single-zero roulette • RTP 97.3%</div>
+      <div className="text-[9px] th-faint font-mono text-center">European single-zero roulette • RTP 97.3%</div>
     </div>
   );
 };
+

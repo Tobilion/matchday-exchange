@@ -300,7 +300,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
           >
             <span>🎫</span>
             {selections.length > 0 && (
-              <span className="bg-red-500 text-white font-mono text-[10px] h-5 w-5 rounded-full flex items-center justify-center font-bold shrink-0">
+              <span className="bg-red-500 th-text font-mono text-[10px] h-5 w-5 rounded-full flex items-center justify-center font-bold shrink-0">
                 {selections.length}
               </span>
             )}
@@ -315,7 +315,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
           >
             <span>🎫</span>
             {selections.length > 0 && (
-              <span className="bg-red-500 text-white font-mono text-[10px] h-5 w-5 rounded-full flex items-center justify-center font-bold shrink-0">
+              <span className="bg-red-500 th-text font-mono text-[10px] h-5 w-5 rounded-full flex items-center justify-center font-bold shrink-0">
                 {selections.length}
               </span>
             )}
@@ -329,7 +329,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
     <>
       {/* Mobile backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 z-30 md:hidden backdrop-blur-sm"
+        className="fixed inset-0 th-inset z-30 md:hidden backdrop-blur-sm"
         onClick={() => setCollapsed(true)}
       />
       <aside
@@ -337,10 +337,10 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
         className="fixed bottom-0 inset-x-0 h-[88vh] md:h-full md:static md:w-[330px] md:shrink-0 glass-panel border-y-0 md:border-r-0 rounded-t-2xl md:rounded-none flex flex-col overflow-hidden select-none z-40 transition-all duration-300"
       >
       {/* Header element */}
-      <div className="bg-white/5 p-3 border-b border-white/5 flex items-center justify-between">
+      <div className="th-wash p-3 border-b th-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-lg">🎫</span>
-          <h2 className="text-xs font-bold tracking-wider uppercase text-slate-250">
+          <h2 className="text-xs font-bold tracking-wider uppercase th-sub">
             BET SLIP
           </h2>
           {selections.length > 0 && (
@@ -360,7 +360,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
           )}
           <button
             onClick={() => setCollapsed(true)}
-            className="text-xs text-slate-400 hover:text-slate-200 p-1 rounded-md hover:bg-white/5 cursor-pointer"
+            className="text-xs th-muted hover:th-text p-1 rounded-md hover:th-wash cursor-pointer"
             title="Collapse Slip"
           >
             ❌
@@ -369,7 +369,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
       </div>
 
       {/* Slip Modes Toggle */}
-      <div className="grid grid-cols-2 p-2 border-b border-white/5 bg-black/10">
+      <div className="grid grid-cols-2 p-2 border-b th-border th-inset">
         <button
           onClick={() => {
             setBetMode("SINGLE");
@@ -378,7 +378,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
           className={`py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
             betMode === "SINGLE"
               ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/10"
-              : "text-slate-400 hover:bg-white/5 hover:text-white"
+              : "th-muted hover:th-wash hover:th-text"
           }`}
         >
           SINGLES
@@ -391,7 +391,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
           className={`py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
             betMode === "ACCUMULATOR"
               ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/10"
-              : "text-slate-400 hover:bg-white/5 hover:text-white"
+              : "th-muted hover:th-wash hover:th-text"
           }`}
         >
           ACCUM (ACCA)
@@ -409,7 +409,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
             <span className="font-heading">🔮 STATS-BASED BET ADVISOR</span>
           </div>
           <div className="flex items-center gap-1.5 font-sans">
-            <span className="text-[9px] text-slate-400 bg-white/5 border border-white/15 px-1.5 py-0.5 rounded font-mono font-bold leading-none">
+            <span className="text-[9px] th-muted th-wash border th-border2 px-1.5 py-0.5 rounded font-mono font-bold leading-none">
               {maxAvailable} Scheduled
             </span>
             {showAdvisor ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -417,13 +417,13 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
         </button>
 
         {showAdvisor && (
-          <div className="mt-2.5 pt-2.5 border-t border-amber-500/15 text-xs text-slate-300 space-y-3 animate-fade-in">
-            <p className="text-[10px] text-slate-405 leading-normal">
+          <div className="mt-2.5 pt-2.5 border-t border-amber-500/15 text-xs th-sub space-y-3 animate-fade-in">
+            <p className="text-[10px] th-muted leading-normal">
               Select your desired number of games. Our stats-engine reviews team strengths, home court factors, and market probabilities to curate the safest slate:
             </p>
 
             {maxAvailable === 0 ? (
-              <div className="bg-black/25 text-center text-[10px] text-slate-500 py-3.5 rounded-xl border border-white/5 font-mono">
+              <div className="th-inset text-center text-[10px] th-muted py-3.5 rounded-xl border th-border font-mono">
                 🔒 All matches currently live or finished.
                 <br />
                 Wait for the next championship round!
@@ -432,7 +432,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
               <div className="space-y-3">
                 {/* Quantity selector */}
                 <div className="space-y-1">
-                  <span className="text-[9px] text-slate-500 font-mono tracking-wider block uppercase font-bold">
+                  <span className="text-[9px] th-muted font-mono tracking-wider block uppercase font-bold">
                     1. CHOOSE HOW MANY GAMES:
                   </span>
                   <div className="flex flex-wrap items-center gap-1">
@@ -447,7 +447,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
                         className={`h-7 px-3 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer border ${
                           recommendQty === n
                             ? "bg-amber-500 border-amber-500 text-slate-950 shadow-md shadow-amber-500/20"
-                            : "bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-100 border-white/5"
+                            : "th-wash hover:th-wash2 th-muted hover:th-text th-border"
                         }`}
                       >
                         {n} {n === 1 ? "Game" : "Games"}
@@ -458,23 +458,23 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
 
                 {/* Selections preview list with explanations/advice */}
                 <div className="space-y-1">
-                  <span className="text-[9px] text-slate-500 font-mono tracking-wider block uppercase flex justify-between font-bold">
+                  <span className="text-[9px] th-muted font-mono tracking-wider block uppercase flex justify-between font-bold">
                     <span>2. STATS PREVIEW & ADVICE:</span>
                     <span className="text-amber-400 font-black font-mono text-[10px]">Combined: @{recommendedSels.reduce((acc, s) => acc * s.odds, 1).toFixed(2)}</span>
                   </span>
-                  <div className="bg-black/35 rounded-xl border border-white/5 p-2.5 space-y-3 max-h-[170px] overflow-y-auto no-scrollbar glass-scrollbar">
+                  <div className="th-inset rounded-xl border th-border p-2.5 space-y-3 max-h-[170px] overflow-y-auto no-scrollbar glass-scrollbar">
                     {recommendedSels.map((sel, idx) => (
-                      <div key={sel.fixtureId} className="text-[11px] space-y-1 border-b border-white/5 last:border-0 pb-2.5 last:pb-0">
-                        <div className="flex justify-between items-center font-bold text-slate-100 leading-none">
+                      <div key={sel.fixtureId} className="text-[11px] space-y-1 border-b th-border last:border-0 pb-2.5 last:pb-0">
+                        <div className="flex justify-between items-center font-bold th-text leading-none">
                           <span className="truncate max-w-[170px]">
                             {idx + 1}. {sel.fixtureName}
                           </span>
-                          <span className="text-amber-400 font-mono text-[10px] bg-white/5 px-1 py-0.5 rounded leading-none">@{sel.odds.toFixed(2)}</span>
+                          <span className="text-amber-400 font-mono text-[10px] th-wash px-1 py-0.5 rounded leading-none">@{sel.odds.toFixed(2)}</span>
                         </div>
                         <div className="text-emerald-400 font-mono font-black text-[9px] uppercase leading-none mt-0.5">
                           👉 {sel.details} (Match Winner)
                         </div>
-                        <p className="text-[10px] text-slate-400 leading-tight italic pl-1.5 border-l-2 border-amber-500/20 py-0.5">
+                        <p className="text-[10px] th-muted leading-tight italic pl-1.5 border-l-2 border-amber-500/20 py-0.5">
                           "{sel.advice}"
                         </p>
                       </div>
@@ -528,19 +528,19 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
             return (
               <div
                 key={stakeKey}
-                className="glass-card rounded-xl p-3 relative flex flex-col gap-1 transition-all hover:bg-white/5 hover:border-emerald-500/20"
+                className="glass-card rounded-xl p-3 relative flex flex-col gap-1 transition-all hover:th-wash hover:th-border-acc"
               >
                 {/* Delete cross */}
                 <button
                   onClick={() => onRemoveSelection(sel.fixtureId, sel.marketType, sel.selectionId)}
-                  className="absolute top-1.5 right-1.5 text-xs text-slate-500 hover:text-red-400 cursor-pointer"
+                  className="absolute top-1.5 right-1.5 text-xs th-muted hover:text-red-400 cursor-pointer"
                   title="Remove selection"
                 >
                   ✕
                 </button>
 
                 {/* Match names */}
-                <span className="text-[10px] text-slate-400 font-semibold tracking-tight">
+                <span className="text-[10px] th-muted font-semibold tracking-tight">
                   {getFixtureMatchup(sel.fixtureId)}
                 </span>
 
@@ -549,31 +549,31 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
                   <span className="text-xs font-black text-emerald-400">
                     {sel.details}
                   </span>
-                  <span className="text-[10px] font-extrabold text-white font-mono bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-md">
+                  <span className="text-[10px] font-extrabold th-text font-mono th-wash border th-border px-1.5 py-0.5 rounded-md">
                     @{sel.odds.toFixed(2)}
                   </span>
                 </div>
 
-                <span className="text-[9px] text-slate-500 font-mono tracking-wide">
+                <span className="text-[9px] th-muted font-mono tracking-wide">
                   {sel.marketName}
                 </span>
 
                 {/* Input for single stake */}
                 {betMode === "SINGLE" && (
-                  <div className="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 bg-black/35 border border-white/10 rounded-lg px-2 py-1 max-w-[130px]">
-                      <span className="text-[10px] text-slate-500 leading-none">$</span>
+                  <div className="mt-2.5 pt-2 border-t th-border flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 th-inset border th-border rounded-lg px-2 py-1 max-w-[130px]">
+                      <span className="text-[10px] th-muted leading-none">$</span>
                       <input
                         type="text"
                         placeholder="Stake"
                         value={sValue}
                         onChange={(e) => handleSingleStakeChange(stakeKey, e.target.value)}
-                        className="w-full bg-transparent border-none text-xs text-emerald-400 focus:outline-none placeholder-slate-700 font-mono font-bold leading-none"
+                        className="w-full bg-transparent border-none text-xs text-emerald-400 focus:outline-none placeholder:th-muted font-mono font-bold leading-none"
                       />
                     </div>
                     {/* Live payout update as specified */}
                     <div className="text-right">
-                      <span className="text-[8px] text-slate-550 block leading-none font-mono">EST PAYOUT</span>
+                      <span className="text-[8px] th-muted block leading-none font-mono">EST PAYOUT</span>
                       <span className="text-xs font-bold text-emerald-400 font-mono">
                         ${formatMoney(singlePayout)}
                       </span>
@@ -587,16 +587,16 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
       </div>
 
       {/* Slip Footer Actions */}
-      <div className="bg-white/5 p-3.5 border-t border-white/10 space-y-2.5 backdrop-blur-md">
+      <div className="th-wash p-3.5 border-t th-border space-y-2.5 backdrop-blur-md">
         {/* #3 - quick stake distribution for singles */}
         {betMode === "SINGLE" && selections.length > 1 && (
-          <div className="bg-black/25 border border-white/5 rounded-xl p-2.5 space-y-2">
-            <span className="text-[9px] text-slate-400 font-mono uppercase tracking-wider font-bold block">
+          <div className="th-inset border th-border rounded-xl p-2.5 space-y-2">
+            <span className="text-[9px] th-muted font-mono uppercase tracking-wider font-bold block">
               Quick Stake - {selections.length} singles
             </span>
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 bg-black/40 border border-white/10 rounded-lg px-2 py-1 flex-1">
-                <span className="text-[10px] text-slate-500 leading-none">$</span>
+              <div className="flex items-center gap-1 th-inset border th-border rounded-lg px-2 py-1 flex-1">
+                <span className="text-[10px] th-muted leading-none">$</span>
                 <input
                   type="text"
                   placeholder="Amount"
@@ -610,34 +610,34 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
               </div>
               <button
                 onClick={() => applyStakeDistribution("split")}
-                className="text-[9px] font-bold uppercase bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 px-2 py-1.5 rounded-lg cursor-pointer transition-all"
+                className="text-[9px] font-bold uppercase th-acc-soft hover:th-acc-soft text-emerald-400 border th-border-acc px-2 py-1.5 rounded-lg cursor-pointer transition-all"
                 title="Divide the amount equally across all singles"
               >
                 Split total
               </button>
               <button
                 onClick={() => applyStakeDistribution("same")}
-                className="text-[9px] font-bold uppercase bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 px-2 py-1.5 rounded-lg cursor-pointer transition-all"
+                className="text-[9px] font-bold uppercase th-wash hover:th-wash2 th-sub border th-border px-2 py-1.5 rounded-lg cursor-pointer transition-all"
                 title="Apply the amount to every single"
               >
                 Same each
               </button>
             </div>
-            <p className="text-[8.5px] text-slate-500 leading-tight">
+            <p className="text-[8.5px] th-muted leading-tight">
               Split divides the amount across all singles; Same applies it to each. You can still edit any stake individually below.
             </p>
           </div>
         )}
 
         {betMode === "ACCUMULATOR" && selections.length >= 2 && (
-          <div className="space-y-2 bg-black/25 border border-white/5 rounded-xl p-3">
+          <div className="space-y-2 th-inset border th-border rounded-xl p-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">Total Selections:</span>
-              <span className="text-xs font-extrabold text-slate-200">{selections.length}</span>
+              <span className="text-xs th-muted">Total Selections:</span>
+              <span className="text-xs font-extrabold th-text">{selections.length}</span>
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">
+              <span className="text-xs th-muted">
                 Combined Odds (product of legs):
               </span>
               <span className="text-xs font-black text-emerald-400 font-mono">
@@ -645,9 +645,9 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
               </span>
             </div>
 
-            <div className="flex items-center justify-between gap-4 pt-2 border-t border-white/5">
-              <div className="flex items-center gap-1 bg-black/40 border border-white/10 rounded-lg px-2 py-1 max-w-[140px]">
-                <span className="text-xs text-slate-500 leading-none">$</span>
+            <div className="flex items-center justify-between gap-4 pt-2 border-t th-border">
+              <div className="flex items-center gap-1 th-inset border th-border rounded-lg px-2 py-1 max-w-[140px]">
+                <span className="text-xs th-muted leading-none">$</span>
                 <input
                   type="text"
                   placeholder="Acca Stake"
@@ -658,7 +658,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
               </div>
 
               <div className="text-right">
-                <span className="text-[8px] text-slate-500 block leading-none font-mono">EST PAYOUT</span>
+                <span className="text-[8px] th-muted block leading-none font-mono">EST PAYOUT</span>
                 <span className="text-xs font-black text-emerald-400 font-mono">
                   ${formatMoney(accaPayout)}
                 </span>
@@ -681,7 +681,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
           className={`w-full py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
             selections.length > 0
               ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 active:scale-[0.98]"
-              : "bg-white/5 text-slate-500 cursor-not-allowed"
+              : "th-wash th-muted cursor-not-allowed"
           }`}
         >
           {selections.length === 0 ? "Add Selections to Slip" : `Place Bet${selections.length > 1 ? "s" : ""} →`}
@@ -691,3 +691,4 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
     </>
   );
 };
+

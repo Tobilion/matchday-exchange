@@ -203,7 +203,7 @@ export const FootysimMatchViewer: React.FC<Props> = ({
       <div className="glass-panel border border-indigo-500/25 rounded-2xl w-full max-w-5xl max-h-[94vh] overflow-y-auto no-scrollbar p-4 space-y-3 shadow-2xl relative">
         {/* top bar */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <button onClick={onClose} className="flex items-center gap-1.5 text-xs font-bold bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-200 cursor-pointer" title="Close — playback progress is saved, close to place live bets elsewhere">
+          <button onClick={onClose} className="flex items-center gap-1.5 text-xs font-bold th-wash hover:th-wash2 border th-border px-3 py-1.5 rounded-lg th-text cursor-pointer" title="Close — playback progress is saved, close to place live bets elsewhere">
             ← Back to Live
           </button>
           <span className="text-[10px] font-mono font-black uppercase tracking-widest text-indigo-300">🛰️ Spatial Engine · 2D Match</span>
@@ -232,19 +232,19 @@ export const FootysimMatchViewer: React.FC<Props> = ({
         {/* scoreboard */}
         <div className="flex items-center justify-center gap-4">
           <div className="flex items-center gap-2 flex-1 justify-end min-w-0">
-            <span className="text-sm font-black text-white truncate">{homeTeam.name}</span>
+            <span className="text-sm font-black th-text truncate">{homeTeam.name}</span>
             <TeamCrest team={homeTeam} size={28} />
           </div>
           <div className="text-center shrink-0">
-            <div className="font-mono text-2xl font-black text-white bg-black/40 px-4 py-1 rounded-lg">{hs} - {as_}</div>
-            <div className="text-[10px] font-mono text-slate-400 mt-1">{timeLabel}</div>
+            <div className="font-mono text-2xl font-black th-text th-inset px-4 py-1 rounded-lg">{hs} - {as_}</div>
+            <div className="text-[10px] font-mono th-muted mt-1">{timeLabel}</div>
             {match?.penaltyScore && (
               <div className="text-[10px] font-mono text-amber-300 mt-0.5">PENS {match.penaltyScore}</div>
             )}
           </div>
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <TeamCrest team={awayTeam} size={28} />
-            <span className="text-sm font-black text-white truncate">{awayTeam.name}</span>
+            <span className="text-sm font-black th-text truncate">{awayTeam.name}</span>
           </div>
         </div>
 
@@ -253,12 +253,12 @@ export const FootysimMatchViewer: React.FC<Props> = ({
           <div className="space-y-2 min-w-0">
             <div className="relative">
               {phase === "simulating" ? (
-                <div className="h-64 flex items-center justify-center text-slate-400 text-sm animate-pulse">Running the spatial simulation…</div>
+                <div className="h-64 flex items-center justify-center th-muted text-sm animate-pulse">Running the spatial simulation…</div>
               ) : phase === "error" ? (
                 <div className="h-64 flex flex-col items-center justify-center gap-2 text-center px-6">
                   <span className="text-3xl">⚠️</span>
                   <p className="text-sm font-bold text-rose-400">The spatial engine couldn't simulate this match.</p>
-                  <p className="text-xs text-slate-400 max-w-sm">
+                  <p className="text-xs th-muted max-w-sm">
                     No result was recorded — the fixture is unchanged. Check the browser console for details, or go back and use the standard sim for this match instead.
                   </p>
                 </div>
@@ -286,44 +286,44 @@ export const FootysimMatchViewer: React.FC<Props> = ({
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-1.5">
                 {phase === "playing" && (
-                  <button onClick={() => setPlaying((p) => !p)} className="text-[11px] font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-200 cursor-pointer">
+                  <button onClick={() => setPlaying((p) => !p)} className="text-[11px] font-bold uppercase th-wash hover:th-wash2 border th-border px-3 py-1.5 rounded-lg th-text cursor-pointer">
                     {playing ? "⏸ Pause" : "▶ Play"}
                   </button>
                 )}
                 {phase !== "simulating" && SPEEDS.map((s) => (
-                  <button key={s} onClick={() => setSpeed(s)} className={`text-[10px] font-bold px-2 py-1.5 rounded-lg cursor-pointer border ${speed === s ? "bg-indigo-500 text-white border-indigo-500" : "bg-white/5 text-slate-400 border-white/10"}`}>{s}x</button>
+                  <button key={s} onClick={() => setSpeed(s)} className={`text-[10px] font-bold px-2 py-1.5 rounded-lg cursor-pointer border ${speed === s ? "bg-indigo-500 th-text border-indigo-500" : "th-wash th-muted th-border"}`}>{s}x</button>
                 ))}
               </div>
               <div className="flex items-center gap-2">
                 {match && !resimArmed && (
-                  <button onClick={() => setResimArmed(true)} title="Simulate a brand-new 2D match for this fixture" className="text-[11px] font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-300 cursor-pointer">
+                  <button onClick={() => setResimArmed(true)} title="Simulate a brand-new 2D match for this fixture" className="text-[11px] font-bold uppercase th-wash hover:th-wash2 border th-border px-3 py-1.5 rounded-lg th-sub cursor-pointer">
                     🎲 Re-sim
                   </button>
                 )}
                 {resimArmed && (
                   <span className="flex items-center gap-1.5 text-[11px]">
                     <span className="text-amber-300 font-mono">{fixtureStatus === "FT" || applyMode === "replay" ? "Overwrite official?" : "Discard & re-sim?"}</span>
-                    <button onClick={() => { setResimArmed(false); onResim(); }} className="font-bold uppercase bg-red-500 hover:bg-red-400 text-white px-2 py-1 rounded-lg cursor-pointer">Yes</button>
-                    <button onClick={() => setResimArmed(false)} className="font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-2 py-1 rounded-lg text-slate-300 cursor-pointer">No</button>
+                    <button onClick={() => { setResimArmed(false); onResim(); }} className="font-bold uppercase bg-red-500 hover:bg-red-400 th-text px-2 py-1 rounded-lg cursor-pointer">Yes</button>
+                    <button onClick={() => setResimArmed(false)} className="font-bold uppercase th-wash hover:th-wash2 border th-border px-2 py-1 rounded-lg th-sub cursor-pointer">No</button>
                   </span>
                 )}
                 {phase === "playing" && (
-                  <button onClick={skipToResult} className="text-[11px] font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-300 cursor-pointer">⏭ Sim straight through</button>
+                  <button onClick={skipToResult} className="text-[11px] font-bold uppercase th-wash hover:th-wash2 border th-border px-3 py-1.5 rounded-lg th-sub cursor-pointer">⏭ Sim straight through</button>
                 )}
                 <button onClick={onClose} className="text-[11px] font-black uppercase bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-1.5 rounded-lg cursor-pointer">
                   {phase === "done" ? "Done → Live" : "Back to Live"}
                 </button>
               </div>
             </div>
-            <p className="text-[10px] font-mono text-slate-500">Closing saves playback — reopen to resume. Place live bets from the Live tab while paused.</p>
+            <p className="text-[10px] font-mono th-muted">Closing saves playback — reopen to resume. Place live bets from the Live tab while paused.</p>
           </div>
 
           {/* side rail */}
-          <div className="min-w-0 flex flex-col rounded-xl border border-white/5 bg-black/30 overflow-hidden">
-            <div className="flex border-b border-white/5 shrink-0">
+          <div className="min-w-0 flex flex-col rounded-xl border th-border th-inset overflow-hidden">
+            <div className="flex border-b th-border shrink-0">
               {(["feed", "goals", "stats"] as RailTab[]).map((t) => (
                 <button key={t} type="button" onClick={() => setRailTab(t)}
-                  className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${railTab === t ? "text-indigo-300 border-b-2 border-indigo-400 bg-indigo-500/5" : "text-slate-500 hover:text-slate-300"}`}>
+                  className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${railTab === t ? "text-indigo-300 border-b-2 border-indigo-400 bg-indigo-500/5" : "th-muted hover:th-sub"}`}>
                   {t === "feed" ? "Feed" : t === "goals" ? `Goals (${goals.length})` : "Stats"}
                 </button>
               ))}
@@ -334,22 +334,22 @@ export const FootysimMatchViewer: React.FC<Props> = ({
                   <div className="flex gap-1 mb-1.5">
                     {(["ALL", "KEY", "ATTACK"] as FeedFilter[]).map((f) => (
                       <button key={f} type="button" onClick={() => setFeedFilter(f)}
-                        className={`text-[9px] font-mono font-bold px-2 py-1 rounded-md cursor-pointer border ${feedFilter === f ? "bg-white/10 text-white border-white/20" : "text-slate-500 border-transparent hover:text-slate-300"}`}>
+                        className={`text-[9px] font-mono font-bold px-2 py-1 rounded-md cursor-pointer border ${feedFilter === f ? "th-wash2 th-text th-border2" : "th-muted border-transparent hover:th-sub"}`}>
                         {f === "ALL" ? "All" : f === "KEY" ? "Key moments" : "Attack"}
                       </button>
                     ))}
                   </div>
                   <div className="text-[11px] font-mono space-y-0.5">
-                    {feedEvents.length === 0 && <div className="text-slate-500">Kick-off…</div>}
+                    {feedEvents.length === 0 && <div className="th-muted">Kick-off…</div>}
                     {[...feedEvents].reverse().map((e, i) => (
-                      <div key={i} className={e.type === "GOAL" ? "text-emerald-400 font-bold" : "text-slate-300"}>
-                        <span className="text-slate-500">{e.minute}'</span>{" "}
+                      <div key={i} className={e.type === "GOAL" ? "text-emerald-400 font-bold" : "th-sub"}>
+                        <span className="th-muted">{e.minute}'</span>{" "}
                         {eventIcon(e.type)}{" "}
                         {cleanPlayerName(e.playerName ?? e.commentary ?? "")}
                         {e.type === "GOAL" && e.assistantPlayerName && (
-                          <span className="text-slate-500 font-normal"> (asst. {cleanPlayerName(e.assistantPlayerName)})</span>
+                          <span className="th-muted font-normal"> (asst. {cleanPlayerName(e.assistantPlayerName)})</span>
                         )}{" "}
-                        <span className="text-slate-500">· {teamName(e.teamId ?? "")}</span>
+                        <span className="th-muted">· {teamName(e.teamId ?? "")}</span>
                       </div>
                     ))}
                   </div>
@@ -357,15 +357,15 @@ export const FootysimMatchViewer: React.FC<Props> = ({
               )}
               {railTab === "goals" && (
                 <div className="space-y-1 text-[11px] font-mono">
-                  {goals.length === 0 && <div className="text-slate-500">No goals yet — they stay pinned here once scored.</div>}
+                  {goals.length === 0 && <div className="th-muted">No goals yet — they stay pinned here once scored.</div>}
                   {goals.map((e, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 rounded-lg px-2 py-1.5">
-                      <span className="font-black text-emerald-300">{e.minute}'</span>
-                      <span className="text-slate-100 font-bold truncate">{cleanPlayerName(e.playerName ?? "")}</span>
+                    <div key={i} className="flex items-center gap-2 th-acc-soft border th-border-acc rounded-lg px-2 py-1.5">
+                      <span className="font-black th-acc">{e.minute}'</span>
+                      <span className="th-text font-bold truncate">{cleanPlayerName(e.playerName ?? "")}</span>
                       {e.assistantPlayerName && (
-                        <span className="text-slate-400 truncate text-[10px]">asst. {cleanPlayerName(e.assistantPlayerName)}</span>
+                        <span className="th-muted truncate text-[10px]">asst. {cleanPlayerName(e.assistantPlayerName)}</span>
                       )}
-                      <span className="text-slate-500 truncate">· {teamName(e.teamId ?? "")}</span>
+                      <span className="th-muted truncate">· {teamName(e.teamId ?? "")}</span>
                     </div>
                   ))}
                   {wentET && (
@@ -375,10 +375,10 @@ export const FootysimMatchViewer: React.FC<Props> = ({
               )}
               {railTab === "stats" && (
                 <div className="space-y-2">
-                  <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest text-center">
+                  <p className="text-[9px] font-mono th-muted uppercase tracking-widest text-center">
                     {phase === "done" ? "Full-time stats" : "Sim final stats (score still playing out)"}
                   </p>
-                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 px-1">
+                  <div className="flex items-center justify-between text-[10px] font-mono th-muted px-1">
                     <span className="font-bold" style={{ color: homeTeam.primaryColor }}>{homeTeam.shortName}</span>
                     <span className="uppercase tracking-widest">Stat</span>
                     <span className="font-bold" style={{ color: awayTeam.primaryColor }}>{awayTeam.shortName}</span>
@@ -389,11 +389,11 @@ export const FootysimMatchViewer: React.FC<Props> = ({
                     return (
                       <div key={r.label}>
                         <div className="flex items-center justify-between text-[11px] font-mono px-1">
-                          <span className="text-slate-100 font-bold">{String(r.hv)}</span>
-                          <span className="text-slate-500 text-[10px]">{r.label}</span>
-                          <span className="text-slate-100 font-bold">{String(r.av)}</span>
+                          <span className="th-text font-bold">{String(r.hv)}</span>
+                          <span className="th-muted text-[10px]">{r.label}</span>
+                          <span className="th-text font-bold">{String(r.av)}</span>
                         </div>
-                        <div className="flex h-1 rounded-full overflow-hidden bg-white/5 mt-0.5">
+                        <div className="flex h-1 rounded-full overflow-hidden th-wash mt-0.5">
                           <div style={{ width: `${pctH}%`, background: homeTeam.primaryColor }} />
                           <div style={{ width: `${100 - pctH}%`, background: awayTeam.primaryColor }} />
                         </div>
@@ -409,3 +409,4 @@ export const FootysimMatchViewer: React.FC<Props> = ({
     </div>
   );
 };
+

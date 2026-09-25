@@ -134,7 +134,11 @@ No environment variables, database or server-side code required.
 
 ## Changelog (latest)
 
-### September 2026 — Entry Flow, 2D Viewer, Odds & Cards
+### September 2026 — Full Theming, Entry Flow, 2D Viewer, Odds & Cards
+
+**Theming v2 (breaking visual change, same palette):**
+- Semantic `th-*` token utilities (Tailwind v4 `@utility`, variant-compatible) replace all hardcoded dark surfaces/text across ~60 files; matte renders as before, navy/cream now recolor the entire UI including modals and odds selectors
+- Emerald reserved for money, odds prices, CTAs, selections, active states, wins — informational labels use neutral text tokens; cream uses a darker emerald (`#047857`) for contrast
 
 **Entry flow (WelcomeScreen):**
 - Three themes — matte black (default), navy dark, cream light — via a toggle on the entry screen and in the header, persisted to localStorage; emerald accent kept across all three

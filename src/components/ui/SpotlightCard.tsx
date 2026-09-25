@@ -69,10 +69,11 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           ? "transform 0.05s linear, background-image 0.15s ease"
           : "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background-image 0.25s ease",
       }}
-      className={`relative overflow-hidden bg-[#12151c] border border-white/5 rounded-2xl ${className}`}
+      className={`relative overflow-hidden th-solid border th-border rounded-2xl ${className}`}
       {...props}
     >
       {children}
     </div>
   );
 };
+

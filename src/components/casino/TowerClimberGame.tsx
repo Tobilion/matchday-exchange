@@ -104,7 +104,7 @@ export const TowerClimberGame: React.FC<GameProps> = ({ balance, onUpdateBalance
     
     return (
       <div key={idx} className={`flex items-center gap-2 ${idx > currentFloor && phase === "playing" ? "opacity-30" : ""}`}>
-        <span className={`text-[9px] font-mono w-12 text-right shrink-0 ${idx < currentFloor ? "text-emerald-400" : isActive ? "text-amber-400 font-black" : "text-slate-600"}`}>
+        <span className={`text-[9px] font-mono w-12 text-right shrink-0 ${idx < currentFloor ? "text-emerald-400" : isActive ? "text-amber-400 font-black" : "th-faint"}`}>
           {FLOOR_MULTIPLIERS[idx]}x
         </span>
         <div className="flex gap-1.5 flex-1">
@@ -120,10 +120,10 @@ export const TowerClimberGame: React.FC<GameProps> = ({ balance, onUpdateBalance
                 className={`flex-1 h-10 rounded-xl border text-sm transition-all ${
                   isActive ? "bg-blue-900/40 border-blue-500/30 hover:bg-blue-800/60 hover:border-blue-400 cursor-pointer active:scale-95" :
                   showResult && wasChosen && isBomb ? "bg-red-700/40 border-red-500" :
-                  showResult && wasChosen ? "bg-emerald-500/20 border-emerald-500" :
+                  showResult && wasChosen ? "th-acc-soft th-border-acc" :
                   showResult && isBomb ? "bg-red-900/20 border-red-700/30" :
-                  showResult ? "bg-white/3 border-white/5" :
-                  "bg-white/3 border-white/5"
+                  showResult ? "th-wash th-border" :
+                  "th-wash th-border"
                 }`}>
                 {showResult ? (isBomb ? "💣" : wasChosen ? "✅" : "🟩") : isActive ? "?" : ""}
               </button>
@@ -137,14 +137,14 @@ export const TowerClimberGame: React.FC<GameProps> = ({ balance, onUpdateBalance
   return (
     <div className="space-y-3 select-none">
       {/* Tower - render from top to bottom (floor 9 first) */}
-      <div className="bg-black/40 border border-white/5 rounded-xl p-3 space-y-1.5">
-        <div className="text-[9px] font-mono text-slate-500 uppercase font-bold mb-2 flex justify-between">
+      <div className="th-inset border th-border rounded-xl p-3 space-y-1.5">
+        <div className="text-[9px] font-mono th-muted uppercase font-bold mb-2 flex justify-between">
           <span>FLOOR</span><span>MULTIPLIER</span>
         </div>
         {Array.from({ length: FLOORS }, (_, i) => FLOORS - 1 - i).map(idx => renderFloor(idx))}
       </div>
 
-      <p className="text-xs text-center text-slate-300 bg-white/5 border border-white/5 rounded-xl py-2 px-3 font-bold leading-snug">{message}</p>
+      <p className="text-xs text-center th-sub th-wash border th-border rounded-xl py-2 px-3 font-bold leading-snug">{message}</p>
 
       {phase === "idle" || phase === "done" ? (
         <div className="space-y-3">
@@ -162,7 +162,8 @@ export const TowerClimberGame: React.FC<GameProps> = ({ balance, onUpdateBalance
           </button>
         )
       )}
-      <div className="text-[9px] text-slate-600 font-mono text-center">3 doors per floor • 1 safe per floor • Top prize 50x</div>
+      <div className="text-[9px] th-faint font-mono text-center">3 doors per floor • 1 safe per floor • Top prize 50x</div>
     </div>
   );
 };
+
