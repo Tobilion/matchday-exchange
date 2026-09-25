@@ -138,7 +138,9 @@ export const FootysimMatchViewer: React.FC<Props> = ({
   const frame = frames[Math.min(idx, frames.length - 1)] ?? null;
   const minute = phase === "done" ? 90 : frame ? Math.min(90, Math.round(Number(frame.t) / 60)) : 0;
   const shownEvents = (match?.events ?? []).filter((e) => e.minute <= (phase === "done" ? 999 : minute));
-  const goals = (match?.events ?? []).filter((e) => e.type === "GOAL");
+  // Scoreboard + goals rail only ever show goals reached by playback — the
+  // final result must not leak before full time is actually watched.
+  const goals = shownEvents.filter((e) => e.type === "GOAL");
   const hs = goals.filter((e) => e.teamId === homeTeam.id).length;
   const as_ = goals.filter((e) => e.teamId === awayTeam.id).length;
   const isHalfTime = minute >= 45 && minute <= 47 && phase === "playing";
