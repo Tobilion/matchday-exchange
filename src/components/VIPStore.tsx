@@ -39,8 +39,8 @@ const CATEGORIES = ["All", ...Array.from(new Set(STORE_ITEMS.map(i => i.category
 
 const RarityColors: Record<string, string> = {
   "Common": "bg-slate-500/20 th-muted th-border",
-  "Rare": "bg-sky-500/20 text-sky-400 border-sky-500/30",
-  "Ultra Rare": "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  "Rare": "bg-sky-500/20 th-info border-sky-500/30",
+  "Ultra Rare": "bg-purple-500/20 th-purple border-purple-500/30",
   "Legendary": "bg-amber-500/20 text-amber-500 border-amber-500/50 shadow-[0_0_8px_rgba(245,158,11,0.4)] animate-[pulse_2s_ease-in-out_infinite]"
 };
 
@@ -119,13 +119,13 @@ export const VIPStore: React.FC<VIPStoreProps> = ({ balance, purchasedItems, onP
         <div className="flex border th-border rounded-lg overflow-hidden th-inset shrink-0">
           <button
             onClick={() => setActiveTab("store")}
-            className={`px-6 py-2 text-xs font-bold transition-colors cursor-pointer ${activeTab === "store" ? "bg-amber-500/20 text-amber-400" : "th-muted hover:th-wash"}`}
+            className={`px-6 py-2 text-xs font-bold transition-colors cursor-pointer ${activeTab === "store" ? "bg-amber-500/20 th-amber" : "th-muted hover:th-wash"}`}
           >
             Showroom
           </button>
           <button
             onClick={() => setActiveTab("inventory")}
-            className={`px-6 py-2 text-xs font-bold transition-colors cursor-pointer ${activeTab === "inventory" ? "bg-amber-500/20 text-amber-400" : "th-muted hover:th-wash"}`}
+            className={`px-6 py-2 text-xs font-bold transition-colors cursor-pointer ${activeTab === "inventory" ? "bg-amber-500/20 th-amber" : "th-muted hover:th-wash"}`}
           >
             Trophy Room ({purchasedItems.length})
           </button>
@@ -213,7 +213,7 @@ export const VIPStore: React.FC<VIPStoreProps> = ({ balance, purchasedItems, onP
               <span className="text-[10px] th-muted uppercase tracking-widest font-black">Total Asset Portfolio Collateral</span>
               <div className="text-2xl font-black th-acc font-mono mt-0.5">${totalWorth.toLocaleString()}</div>
             </div>
-            <div className="text-3xl text-emerald-400">💼</div>
+            <div className="text-3xl th-acc">💼</div>
           </div>
 
           <p className="text-sm th-muted mb-4 th-wash py-1 px-3 rounded inline-block">You own {purchasedItems.length} / {STORE_ITEMS.length} luxury items.</p>
@@ -256,11 +256,11 @@ export const VIPStore: React.FC<VIPStoreProps> = ({ balance, purchasedItems, onP
                     </div>
                     <div className="flex justify-between text-[10px]">
                       <span className="th-muted">Resale Value</span>
-                      <span className="font-bold text-emerald-400">{formatMoney(item.worth)}</span>
+                      <span className="font-bold th-acc">{formatMoney(item.worth)}</span>
                     </div>
                     <button
                       onClick={() => onLiquidate(item)}
-                      className="w-full py-1.5 rounded-xl text-[10px] font-bold uppercase text-red-400 border border-red-500/20 hover:bg-red-500/10 cursor-pointer transition-all"
+                      className="w-full py-1.5 rounded-xl text-[10px] font-bold uppercase th-danger border border-red-500/20 hover:bg-red-500/10 cursor-pointer transition-all"
                     >
                       Liquidate Asset
                     </button>
@@ -278,7 +278,7 @@ export const VIPStore: React.FC<VIPStoreProps> = ({ balance, purchasedItems, onP
           <div className="glass-panel border border-amber-500/30 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-black text-amber-400">
+                <h3 className="text-base font-black th-amber">
                   {clubAction === "buy" ? "Choose Your Club" : clubAction === "naming" ? "Stadium Naming Rights" : "Training Complex Upgrade"}
                 </h3>
                 <p className="text-xs th-muted">
@@ -316,7 +316,7 @@ export const VIPStore: React.FC<VIPStoreProps> = ({ balance, purchasedItems, onP
                     </p>
                   </div>
                   {selectedTeamId === team.id && (
-                    <span className="text-amber-400 text-xs font-black shrink-0">✓</span>
+                    <span className="th-amber text-xs font-black shrink-0">✓</span>
                   )}
                 </button>
               ))}

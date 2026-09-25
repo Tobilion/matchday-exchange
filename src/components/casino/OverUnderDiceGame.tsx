@@ -107,10 +107,10 @@ export const OverUnderDiceGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
           const multi = mode === "EQUAL_7" ? `${DICE_MULTI_EXACT}x` : `${DICE_MULTI_OVER_UNDER}x`;
           const label = mode === "UNDER_7" ? "UNDER 7" : mode === "EQUAL_7" ? "EXACTLY 7" : "OVER 7";
           const activeStyle = mode === "UNDER_7"
-            ? "th-acc-soft th-border-acc text-emerald-400"
+            ? "th-acc-soft th-border-acc th-acc"
             : mode === "EQUAL_7"
-            ? "bg-amber-500/25 border-amber-500 text-amber-400"
-            : "bg-sky-500/20 border-sky-500 text-sky-400";
+            ? "bg-amber-500/25 border-amber-500 th-amber"
+            : "bg-sky-500/20 border-sky-500 th-info";
           return (
             <button
               key={mode}

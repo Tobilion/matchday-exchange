@@ -64,7 +64,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                   </p>
                   <p className="text-[10px] th-muted mt-0.5 leading-snug">{c.description}</p>
                 </div>
-                <span className="shrink-0 text-[10px] font-black text-emerald-400 font-mono">
+                <span className="shrink-0 text-[10px] font-black th-acc font-mono">
                   +{formatMoney(c.reward)}
                 </span>
               </div>

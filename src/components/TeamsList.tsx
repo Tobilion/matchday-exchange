@@ -216,7 +216,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   onClick={() => setActiveRightTab("roster")}
                   className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase cursor-pointer ${
                     activeRightTab === "roster"
-                      ? "th-wash text-emerald-400 font-extrabold border-b-2 th-border-acc"
+                      ? "th-wash th-acc font-extrabold border-b-2 th-border-acc"
                       : "th-muted hover:th-text"
                   }`}
                 >
@@ -226,7 +226,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   onClick={() => setActiveRightTab("history")}
                   className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase cursor-pointer ${
                     activeRightTab === "history"
-                      ? "th-wash text-emerald-400 font-extrabold border-b-2 th-border-acc"
+                      ? "th-wash th-acc font-extrabold border-b-2 th-border-acc"
                       : "th-muted hover:th-text"
                   }`}
                 >
@@ -259,9 +259,9 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                         >
                           <div className="flex items-start justify-between mb-2">
                             <span className={`px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase ${
-                              p.position === "GK" ? "bg-red-500/15 text-red-400" :
-                              p.position === "DEF" ? "bg-blue-500/15 text-blue-400" :
-                              p.position === "MID" ? "th-acc-soft text-emerald-400" : "bg-purple-500/15 text-purple-400"
+                              p.position === "GK" ? "bg-red-500/15 th-danger" :
+                              p.position === "DEF" ? "bg-blue-500/15 th-info" :
+                              p.position === "MID" ? "th-acc-soft th-acc" : "bg-purple-500/15 th-purple"
                             }`}>
                               {p.position}
                             </span>
@@ -275,7 +275,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                           <div className="flex flex-col gap-0.5 mt-auto">
                             <span className="font-bold th-text truncate">
                               {cleanPlayerName(p.name)}
-                              {isReservePlayer(p) && <span className="ml-1 text-[7px] font-bold text-amber-400 px-1 bg-amber-500/10 rounded border border-amber-500/20 align-middle">RES</span>}
+                              {isReservePlayer(p) && <span className="ml-1 text-[7px] font-bold th-amber px-1 bg-amber-500/10 rounded border border-amber-500/20 align-middle">RES</span>}
                             </span>
                             <span className="text-[8px] th-muted font-mono tracking-tighter truncate leading-tight">
                               Pld: {p.matchesPlayed} • Gls: {p.goals} • Ast: {p.assists}
@@ -295,7 +295,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   {/* Season-by-season history (persists across seasons) */}
                   {(selectedTeam.seasonHistory?.length ?? 0) > 0 && (
                     <div className="th-inset border th-border rounded-2xl p-3.5 space-y-2">
-                      <span className="text-[9px] font-mono font-bold tracking-widest text-amber-400 uppercase block">
+                      <span className="text-[9px] font-mono font-bold tracking-widest th-amber uppercase block">
                         SEASON HISTORY ({selectedTeam.seasonHistory!.length})
                       </span>
                       <div className="overflow-x-auto">
@@ -317,9 +317,9 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                               <tr key={s.seasonNumber} className="border-t th-border th-sub">
                                 <td className="text-left py-1">S{s.seasonNumber}</td>
                                 <td className="text-center">{s.position || "-"}</td>
-                                <td className="text-center text-emerald-400">{s.won}</td>
+                                <td className="text-center th-acc">{s.won}</td>
                                 <td className="text-center">{s.drawn}</td>
-                                <td className="text-center text-red-400">{s.lost}</td>
+                                <td className="text-center th-danger">{s.lost}</td>
                                 <td className="text-center">{s.goalsScored}</td>
                                 <td className="text-center">{s.goalsConceded}</td>
                                 <td className="text-center">{s.title ? "🏆" : "—"}</td>
@@ -408,7 +408,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                           <div className="flex items-center justify-between border-b th-border pb-1.5">
                             <div className="flex items-center gap-2">
                               <span className={`px-1.5 py-0.5 rounded text-[8px] font-mono font-black ${
-                                isWin ? "th-acc-soft th-acc" : "bg-red-500/15 text-red-400"
+                                isWin ? "th-acc-soft th-acc" : "bg-red-500/15 th-danger"
                               }`}>
                                 {isWin ? "WIN" : "LOSS"}
                               </span>
@@ -426,7 +426,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                             </div>
                             
                             <span className="font-mono font-bold text-[11px]">
-                              {scored} - {conceded} {isShootout && <span className="text-[8px] text-emerald-400 uppercase tracking-widest">(PENS)</span>}
+                              {scored} - {conceded} {isShootout && <span className="text-[8px] th-acc uppercase tracking-widest">(PENS)</span>}
                             </span>
                           </div>
 
@@ -475,14 +475,14 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
         const [dossierTab, setDossierTab] = useState<"stats" | "qualities">("stats");
         
         let statusBadge = (
-          <span className="px-2 py-0.5 th-acc-soft border th-border-acc rounded-md text-[9px] font-mono text-emerald-400 font-bold flex items-center gap-1">
+          <span className="px-2 py-0.5 th-acc-soft border th-border-acc rounded-md text-[9px] font-mono th-acc font-bold flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             ACTIVE
           </span>
         );
         if (selectedPlayer.suspendedRounds && selectedPlayer.suspendedRounds > 0) {
           statusBadge = (
-            <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/30 rounded-md text-[9px] font-mono text-red-400 font-bold flex items-center gap-1">
+            <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/30 rounded-md text-[9px] font-mono th-danger font-bold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
               SUSPENDED
             </span>
@@ -539,7 +539,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   onClick={() => setDossierTab("stats")}
                   className={`py-2 border-b-2 text-center transition-all cursor-pointer font-bold ${
                     dossierTab === "stats"
-                      ? "th-border-acc text-emerald-400 font-black"
+                      ? "th-border-acc th-acc font-black"
                       : "border-transparent th-muted hover:th-text font-medium"
                   }`}
                 >
@@ -550,7 +550,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   onClick={() => setDossierTab("qualities")}
                   className={`py-2 border-b-2 text-center transition-all cursor-pointer ${
                     dossierTab === "qualities"
-                      ? "th-border-acc text-emerald-400 font-black"
+                      ? "th-border-acc th-acc font-black"
                       : "border-transparent th-muted hover:th-text font-medium"
                   }`}
                 >
@@ -565,7 +565,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   <div className="th-inset rounded-xl border th-border p-3 flex justify-between items-center text-xs font-mono">
                     <div className="text-left">
                       <span className="text-[9px] th-muted block uppercase">OVERALL SCALE</span>
-                      <span className="text-emerald-400 font-black text-sm">{selectedPlayer.rating} OVR</span>
+                      <span className="th-acc font-black text-sm">{selectedPlayer.rating} OVR</span>
                     </div>
                     <div className="text-right">
                       <span className="text-[9px] th-muted block uppercase">MATCHES</span>
@@ -577,7 +577,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   <div className="grid grid-cols-3 divide-x divide-white/5 border th-border th-inset py-2.5 rounded-xl text-center text-xs font-mono th-sub">
                     <div>
                       <span className="text-[8px] th-muted uppercase block">GOALS</span>
-                      <span className="text-emerald-400 font-black mt-0.5 block">{selectedPlayer.goals}</span>
+                      <span className="th-acc font-black mt-0.5 block">{selectedPlayer.goals}</span>
                     </div>
                     <div>
                       <span className="text-[8px] th-muted uppercase block">{selectedPlayer.position === "GK" ? "SAVES" : "ASSISTS"}</span>
@@ -679,7 +679,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                     {homeGoals} - {awayGoals}
                   </span>
                   {inspectedMatch.homeScore % 1 !== 0 && (
-                    <span className="text-[8px] font-mono text-emerald-400 uppercase font-black mt-1">PENS WIN</span>
+                    <span className="text-[8px] font-mono th-acc uppercase font-black mt-1">PENS WIN</span>
                   )}
                 </div>
 
@@ -692,7 +692,7 @@ export const TeamsList: React.FC<TeamsListProps> = ({ teams, fixtures }) => {
                   className="flex flex-col items-center gap-1.5 w-[38%] text-center cursor-pointer hover:scale-105 transition-all group"
                 >
                   <TeamCrest team={awayTeam as any} size={36} className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
-                  <span className="text-[11px] font-bold th-sub group-hover:text-emerald-400 line-clamp-2 leading-tight">
+                  <span className="text-[11px] font-bold th-sub group-hover:th-acc line-clamp-2 leading-tight">
                     {awayTeam.name}
                   </span>
                 </div>

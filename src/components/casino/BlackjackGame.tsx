@@ -48,7 +48,7 @@ const CardUI: React.FC<{ card: Card }> = ({ card }) => {
   if (card.hidden) {
     return (
       <div className="w-10 h-14 sm:w-12 sm:h-16 rounded-lg border th-border bg-gradient-to-br from-blue-900 to-blue-950 flex items-center justify-center shadow-md">
-        <span className="text-blue-400/40 text-xl">🂠</span>
+        <span className="th-info/40 text-xl">🂠</span>
       </div>
     );
   }
@@ -187,7 +187,7 @@ export const BlackjackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, a
       </div>
       <div className="th-inset border th-border rounded-xl p-3 sm:p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-mono th-muted uppercase font-bold">YOU {doubled && <span className="text-amber-400">(DOUBLED)</span>}</span>
+          <span className="text-[10px] font-mono th-muted uppercase font-bold">YOU {doubled && <span className="th-amber">(DOUBLED)</span>}</span>
           <span className="text-[10px] font-mono th-muted">{phase !== "idle" ? `Value: ${handValue(playerHand)}` : "—"}</span>
         </div>
         <div className="flex gap-1.5 flex-wrap min-h-[3.5rem]">
@@ -195,9 +195,9 @@ export const BlackjackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, a
         </div>
       </div>
       <div className={`text-center text-xs font-bold py-2.5 px-3 rounded-xl border leading-snug ${
-        result === "bust" || result === "loss" ? "bg-red-500/10 border-red-500/20 text-red-400" :
-        result === "push" ? "bg-amber-500/10 border-amber-500/20 text-amber-400" :
-        result ? "th-acc-soft th-border-acc text-emerald-400" :
+        result === "bust" || result === "loss" ? "bg-red-500/10 border-red-500/20 th-danger" :
+        result === "push" ? "bg-amber-500/10 border-amber-500/20 th-amber" :
+        result ? "th-acc-soft th-border-acc th-acc" :
         "th-wash th-border th-sub"
       }`}>{message}</div>
       {phase === "idle" || phase === "done" ? (

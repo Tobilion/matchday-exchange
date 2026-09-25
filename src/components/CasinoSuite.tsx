@@ -102,24 +102,24 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
       <GlowOrb className="bottom-12 -right-32 opacity-10" size="450px" color="var(--accent-2)" />
       {/* Header — lobby only */}
       {!activeGame && (
-        <div className="relative shrink-0 border-b th-border bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#101725] via-[#05070a] to-[#05070a] px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="relative shrink-0 border-b th-border bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[var(--surface-2)] via-[var(--bg)] to-[var(--bg)] px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <Gamepad2 className="text-emerald-400 animate-pulse" size={18} />
+              <Gamepad2 className="th-acc animate-pulse" size={18} />
               <span className="text-[10px] th-muted font-mono tracking-widest uppercase font-black">MATCHDAY ELITE LOUNGE</span>
             </div>
             <h2 className="text-sm font-black th-text font-sans uppercase tracking-wider mt-1 flex items-center gap-2 flex-wrap">
               Matchday Exchange Elite Casino Suite
-              <span className="th-acc-soft text-emerald-400 text-[8px] font-mono px-1.5 py-0.5 rounded-full animate-pulse font-black">16 GAMES</span>
+              <span className="th-acc-soft th-acc text-[8px] font-mono px-1.5 py-0.5 rounded-full animate-pulse font-black">16 GAMES</span>
             </h2>
             <p className="text-[10px] th-muted font-mono mt-0.5">Wager with your manager balance. Wins reflect instantly.</p>
           </div>
           <div className="flex gap-2.5 items-center th-inset border th-border rounded-2xl px-3.5 py-2 shrink-0">
             <div className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></div>
-            <Coins className="text-amber-400" size={16} />
+            <Coins className="th-amber" size={16} />
             <div className="font-mono">
               <span className="text-[9px] th-muted block uppercase leading-none font-bold">LOBBY BAL</span>
-              <span className="text-xs font-black text-emerald-400 mt-1 block">${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="text-xs font-black th-acc mt-1 block">${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
               <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t th-border text-[10px] font-mono th-muted">
                 <div><span className="th-muted block">GAMES</span><span className="font-bold th-text">16</span></div>
                 <div><span className="th-muted block">SESSIONS</span><span className="font-bold th-text">{logs.length}</span></div>
-                <div><span className="th-muted block">MAX WIN</span><span className="font-bold text-emerald-400">5000x</span></div>
+                <div><span className="th-muted block">MAX WIN</span><span className="font-bold th-acc">5000x</span></div>
               </div>
             </div>
 
@@ -144,7 +144,7 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
             <div className="flex-1 th-solid border th-border rounded-2xl p-4 flex flex-col min-h-0">
               <div className="flex items-center justify-between border-b th-border pb-2.5 shrink-0">
                 <span className="text-[10px] font-mono font-bold th-muted uppercase tracking-widest flex items-center gap-1.5">
-                  <History size={11} className="text-emerald-400" /> Live Sessions (Last 15)
+                  <History size={11} className="th-acc" /> Live Sessions (Last 15)
                 </span>
                 <span className="text-[9px] th-muted font-mono">SYS-ONLINE</span>
               </div>
@@ -162,7 +162,7 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
                         <div className="text-[10px] th-muted font-mono truncate">{log.details}</div>
                       </div>
                       <div className="text-right font-mono">
-                        <span className={`font-black text-xs ${isWin ? "text-emerald-400" : isJoker ? "text-amber-500" : isFreeze ? "text-blue-400" : "text-red-400"}`}>
+                        <span className={`font-black text-xs ${isWin ? "th-acc" : isJoker ? "text-amber-500" : isFreeze ? "th-info" : "th-danger"}`}>
                           {isWin ? `+$${formatMoney(Math.max(0, (log.amount ?? 0) * ((log.multiplier ?? 0) - 1)))}` : isJoker ? "WIPED" : isFreeze ? "FROZEN" : `-$${formatMoney(log.amount ?? 0, 0)}`}
                         </span>
                         <div className="text-[9px] th-muted uppercase mt-0.5">
@@ -189,7 +189,7 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
                     <ArrowLeft size={13} /><span>Lobby</span>
                   </button>
                   <button onClick={() => setIsFullView(!isFullView)}
-                    className="flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 th-acc-soft hover:th-acc-soft px-2.5 py-1.5 rounded-lg border th-border-acc active:scale-95 cursor-pointer font-bold transition-all">
+                    className="flex items-center gap-1.5 text-xs th-acc hover:th-acc th-acc-soft hover:th-acc-soft px-2.5 py-1.5 rounded-lg border th-border-acc active:scale-95 cursor-pointer font-bold transition-all">
                     {isFullView ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
                     <span className="hidden sm:inline">{isFullView ? "Split" : "Full Screen"}</span>
                   </button>
@@ -200,10 +200,10 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
                     <span className="text-xs font-black th-text tracking-wide">{currentGame?.name}</span>
                   </div>
                   <div className="flex items-center gap-1.5 th-inset border th-border rounded-xl px-2.5 py-1.5">
-                    <Coins className="text-amber-400" size={13} />
+                    <Coins className="th-amber" size={13} />
                     <div>
                       <span className="text-[8px] th-muted block uppercase font-mono leading-none">BAL</span>
-                      <span className={`text-xs font-black font-mono block mt-0.5 ${balance <= 0 ? "text-red-400" : "text-emerald-400"}`}>
+                      <span className={`text-xs font-black font-mono block mt-0.5 ${balance <= 0 ? "th-danger" : "th-acc"}`}>
                         ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
@@ -234,17 +234,17 @@ export const CasinoSuite: React.FC<CasinoSuiteProps> = ({ balance, onUpdateBalan
                 {filteredGames.map(g => (
                   <div key={g.id} onClick={() => setActiveGame(g.id)}
                     className={`p-4 rounded-2xl bg-gradient-to-br ${g.color} flex flex-col justify-between text-left hover:scale-[1.015] active:scale-[0.99] transition-all cursor-pointer group relative overflow-hidden border`}>
-                    <div className="absolute top-0 right-0 h-10 w-10 th-wash rounded-bl-3xl flex items-center justify-center border-l border-b th-border text-[8px] font-mono text-emerald-400 font-extrabold">{g.rtp}</div>
+                    <div className="absolute top-0 right-0 h-10 w-10 th-wash rounded-bl-3xl flex items-center justify-center border-l border-b th-border text-[8px] font-mono th-acc font-extrabold">{g.rtp}</div>
                     <div className="space-y-1.5">
-                      <span className={`text-[8px] font-mono font-black px-2 py-0.5 rounded-full uppercase tracking-wider border ${g.tag.includes("NEW") ? "th-acc-soft th-border-acc text-emerald-400" : "th-wash th-border text-amber-400"}`}>{g.tag}</span>
+                      <span className={`text-[8px] font-mono font-black px-2 py-0.5 rounded-full uppercase tracking-wider border ${g.tag.includes("NEW") ? "th-acc-soft th-border-acc th-acc" : "th-wash th-border th-amber"}`}>{g.tag}</span>
                       <div>
-                        <h4 className="text-sm font-black th-text group-hover:text-emerald-400 transition-colors uppercase tracking-tight">{g.name}</h4>
+                        <h4 className="text-sm font-black th-text group-hover:th-acc transition-colors uppercase tracking-tight">{g.name}</h4>
                         <p className="text-[10px] th-muted mt-1 leading-normal max-w-[90%]">{g.desc}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between mt-3 pt-3 border-t th-border text-[10px] font-mono th-muted">
-                      <span>Max: <b className="text-emerald-400">{g.multiplier}</b></span>
-                      <span className="flex items-center gap-1 text-emerald-400 group-hover:th-text font-extrabold transition-all">
+                      <span>Max: <b className="th-acc">{g.multiplier}</b></span>
+                      <span className="flex items-center gap-1 th-acc group-hover:th-text font-extrabold transition-all">
                         PLAY <Play size={10} className="fill-current" />
                       </span>
                     </div>

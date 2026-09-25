@@ -8,21 +8,21 @@ interface SplashGateProps {
 const FEATURES = [
   {
     icon: PlayCircle,
-    color: "text-sky-400",
+    color: "th-info",
     ring: "bg-sky-500/10 border-sky-500/20",
     title: "Simulate Matches",
     body: "Live tick-by-tick match engine with tactics, formations, and real-time momentum swings.",
   },
   {
     icon: Coins,
-    color: "text-amber-400",
+    color: "th-amber",
     ring: "bg-amber-500/10 border-amber-500/20",
     title: "Bet With Virtual Cash",
     body: "Place accumulators, go live in-play, and cash out before the final whistle.",
   },
   {
     icon: Layers,
-    color: "text-emerald-400",
+    color: "th-acc",
     ring: "th-acc-soft th-border-acc",
     title: "Build Your Club",
     body: "Sign players, upgrade facilities, develop youth, and chase league and cup glory.",
@@ -43,7 +43,7 @@ export const SplashGate: React.FC<SplashGateProps> = ({ onEnter }) => {
           </div>
           <h1 className="text-4xl sm:text-5xl font-black tracking-wider uppercase leading-none">
             <span className="th-text">Matchday</span>{" "}
-            <span className="text-emerald-400">Exchange</span>
+            <span className="th-acc">Exchange</span>
           </h1>
           <p className="text-xs font-mono uppercase tracking-[0.3em] th-muted">
             Elite Football &amp; Prediction Market Simulator

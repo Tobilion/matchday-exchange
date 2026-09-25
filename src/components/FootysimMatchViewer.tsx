@@ -208,19 +208,19 @@ export const FootysimMatchViewer: React.FC<Props> = ({
           </button>
           <span className="text-[10px] font-mono font-black uppercase tracking-widest text-indigo-300">🛰️ Spatial Engine · 2D Match</span>
           {phase === "done" && applyMode === "official"
-            ? <span className="text-[9px] font-mono text-emerald-400 uppercase">✓ Official result saved</span>
+            ? <span className="text-[9px] font-mono th-acc uppercase">✓ Official result saved</span>
             : applyMode === "replay"
-              ? <span className="text-[9px] font-mono text-sky-300 uppercase">↻ Replay — official score stands</span>
+              ? <span className="text-[9px] font-mono th-info uppercase">↻ Replay — official score stands</span>
               : phase === "error"
                 ? <span className="text-[9px] font-mono text-rose-400 uppercase">⚠ Simulation failed</span>
-                : <span className="text-[9px] font-mono text-amber-300 uppercase">● Becomes official at FT</span>}
+                : <span className="text-[9px] font-mono th-amber uppercase">● Becomes official at FT</span>}
         </div>
 
         {/* authority banner */}
         {applyMode === "replay" && officialScore && (
           <div className="text-[11px] font-mono text-center bg-sky-500/10 border border-sky-500/25 text-sky-200 rounded-lg px-3 py-1.5">
             Official result (settles bets): <span className="font-black">{officialScore.home} – {officialScore.away}</span>
-            <span className="text-sky-300/70"> · this 2D view is a replay and will not overwrite it</span>
+            <span className="th-info/70"> · this 2D view is a replay and will not overwrite it</span>
           </div>
         )}
         {applyMode === "official" && fixtureStatus !== "FT" && (
@@ -239,7 +239,7 @@ export const FootysimMatchViewer: React.FC<Props> = ({
             <div className="font-mono text-2xl font-black th-text th-inset px-4 py-1 rounded-lg">{hs} - {as_}</div>
             <div className="text-[10px] font-mono th-muted mt-1">{timeLabel}</div>
             {match?.penaltyScore && (
-              <div className="text-[10px] font-mono text-amber-300 mt-0.5">PENS {match.penaltyScore}</div>
+              <div className="text-[10px] font-mono th-amber mt-0.5">PENS {match.penaltyScore}</div>
             )}
           </div>
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -302,7 +302,7 @@ export const FootysimMatchViewer: React.FC<Props> = ({
                 )}
                 {resimArmed && (
                   <span className="flex items-center gap-1.5 text-[11px]">
-                    <span className="text-amber-300 font-mono">{fixtureStatus === "FT" || applyMode === "replay" ? "Overwrite official?" : "Discard & re-sim?"}</span>
+                    <span className="th-amber font-mono">{fixtureStatus === "FT" || applyMode === "replay" ? "Overwrite official?" : "Discard & re-sim?"}</span>
                     <button onClick={() => { setResimArmed(false); onResim(); }} className="font-bold uppercase bg-red-500 hover:bg-red-400 th-text px-2 py-1 rounded-lg cursor-pointer">Yes</button>
                     <button onClick={() => setResimArmed(false)} className="font-bold uppercase th-wash hover:th-wash2 border th-border px-2 py-1 rounded-lg th-sub cursor-pointer">No</button>
                   </span>
@@ -342,7 +342,7 @@ export const FootysimMatchViewer: React.FC<Props> = ({
                   <div className="text-[11px] font-mono space-y-0.5">
                     {feedEvents.length === 0 && <div className="th-muted">Kick-off…</div>}
                     {[...feedEvents].reverse().map((e, i) => (
-                      <div key={i} className={e.type === "GOAL" ? "text-emerald-400 font-bold" : "th-sub"}>
+                      <div key={i} className={e.type === "GOAL" ? "th-acc font-bold" : "th-sub"}>
                         <span className="th-muted">{e.minute}'</span>{" "}
                         {eventIcon(e.type)}{" "}
                         {cleanPlayerName(e.playerName ?? e.commentary ?? "")}
@@ -369,7 +369,7 @@ export const FootysimMatchViewer: React.FC<Props> = ({
                     </div>
                   ))}
                   {wentET && (
-                    <div className="text-amber-300 pt-1">↳ Went to extra time{match?.penaltyScore ? ` — shootout ${match.penaltyScore}` : ""}.</div>
+                    <div className="th-amber pt-1">↳ Went to extra time{match?.penaltyScore ? ` — shootout ${match.penaltyScore}` : ""}.</div>
                   )}
                 </div>
               )}

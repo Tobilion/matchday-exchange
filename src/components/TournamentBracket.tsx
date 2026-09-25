@@ -72,7 +72,7 @@ export const TournamentBracket: React.FC<TournamentBracketProps> = ({ fixtures, 
         </span>
 
         {/* Home Team Row */}
-        <div className={`flex items-center justify-between text-[11px] py-0.5 ${homeWins ? "font-bold text-emerald-400 font-sans" : isFT ? "th-muted" : "th-sub"}`}>
+        <div className={`flex items-center justify-between text-[11px] py-0.5 ${homeWins ? "font-bold th-acc font-sans" : isFT ? "th-muted" : "th-sub"}`}>
           <div className="flex items-center gap-1.5 truncate max-w-[70%]">
             <TeamCrest team={homeT || { id: "p1", shortName: "??", primaryColor: "#333", secondaryColor: "#444" }} size={16} />
             <span className="truncate">{getTeamName(fixture.homeTeamId, true)}</span>
@@ -85,7 +85,7 @@ export const TournamentBracket: React.FC<TournamentBracketProps> = ({ fixtures, 
         </div>
 
         {/* Away Team Row */}
-        <div className={`flex items-center justify-between text-[11px] py-0.5 ${awayWins ? "font-bold text-emerald-400 font-sans" : isFT ? "th-muted" : "th-sub"}`}>
+        <div className={`flex items-center justify-between text-[11px] py-0.5 ${awayWins ? "font-bold th-acc font-sans" : isFT ? "th-muted" : "th-sub"}`}>
           <div className="flex items-center gap-1.5 truncate max-w-[70%]">
             <TeamCrest team={awayT || { id: "p2", shortName: "??", primaryColor: "#333", secondaryColor: "#444" }} size={16} />
             <span className="truncate">{getTeamName(fixture.awayTeamId, true)}</span>
@@ -99,7 +99,7 @@ export const TournamentBracket: React.FC<TournamentBracketProps> = ({ fixtures, 
 
         {/* Penalty details marker */}
         {isFT && hasShootout(fixture) && (
-          <span className="text-[7px] font-extrabold text-emerald-400 font-mono uppercase text-center block mt-1 leading-none">
+          <span className="text-[7px] font-extrabold th-acc font-mono uppercase text-center block mt-1 leading-none">
             {fixture.homeScore > fixture.awayScore 
               ? `${getTeamName(fixture.homeTeamId, true)} Qualified (${fixture.penaltyScore || "pens"})` 
               : `${getTeamName(fixture.awayTeamId, true)} Qualified (${fixture.penaltyScore || "pens"})`}

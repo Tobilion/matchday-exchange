@@ -119,15 +119,15 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
       <div className="th-inset border th-border rounded-xl p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="text-[9px] font-mono th-muted uppercase font-bold">STREAK PROGRESS</div>
-          <div className="text-[9px] font-mono text-emerald-400 font-bold">
+          <div className="text-[9px] font-mono th-acc font-bold">
             {phase === "playing" ? `POOL $${formatMoney(pool)} (${roundStakeRef.current > 0 ? (pool/roundStakeRef.current).toFixed(2) : "1.00"}x)` : `MAX ${MAX_STEPS} LEVELS`}
           </div>
         </div>
         <div className="flex gap-1.5 flex-wrap">
           {Array.from({ length: MAX_STEPS }, (_, i) => (
             <div key={i} className={`flex-1 min-w-[2rem] text-center py-1.5 rounded-lg border text-[9px] font-mono font-black transition-all ${
-              i < streak ? "th-acc-soft th-border-acc text-emerald-400" :
-              i === streak && phase === "playing" ? "bg-amber-500/20 border-amber-500 text-amber-400 animate-pulse" :
+              i < streak ? "th-acc-soft th-border-acc th-acc" :
+              i === streak && phase === "playing" ? "bg-amber-500/20 border-amber-500 th-amber animate-pulse" :
               "th-wash th-border th-faint"
             }`}>
               L{i+1}
@@ -145,7 +145,7 @@ export const HiLoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
           </div>
         ) : (
           <div className="w-20 h-28 rounded-xl border-2 th-border bg-gradient-to-br from-blue-900 to-blue-950 flex items-center justify-center">
-            <span className="text-blue-400/40 text-3xl">🂠</span>
+            <span className="th-info/40 text-3xl">🂠</span>
           </div>
         )}
       </div>

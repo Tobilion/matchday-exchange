@@ -194,7 +194,7 @@ export default function Dashboard() {
   if (!userProfile) return null;
 
   return (
-    <div id="app" className="h-screen w-screen bg-gradient-to-br from-[#0b0e14] via-[#05070a] to-[#121620] th-text flex flex-col overflow-hidden font-sans animate-fade-in">
+    <div id="app" className="h-screen w-screen bg-gradient-to-br from-[var(--surface)] via-[var(--bg)] to-[var(--surface-2)] th-text flex flex-col overflow-hidden font-sans animate-fade-in">
       <Header
         activeTab={activeTab} setActiveTab={setActiveTab}
         username={userProfile.username} balance={userProfile.balance}

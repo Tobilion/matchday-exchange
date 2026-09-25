@@ -30,7 +30,7 @@ export const PitchFormation: React.FC<PitchFormationProps> = ({ players }) => {
         className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 group z-10"
         style={{ left, top }}
       >
-        <div className="w-10 h-10 rounded-full bg-emerald-700 border-2 border-emerald-400 flex flex-col items-center justify-center th-text font-black text-[10px] shadow-[0_0_15px_rgba(52,211,153,0.3)] transition-transform group-hover:scale-110 cursor-default">
+        <div className="w-10 h-10 rounded-full bg-emerald-700 border-2 th-border-acc flex flex-col items-center justify-center th-text font-black text-[10px] shadow-[0_0_15px_rgba(52,211,153,0.3)] transition-transform group-hover:scale-110 cursor-default">
           <span className="text-[8px] opacity-80">{p.position}</span>
           <span>{p.rating}</span>
         </div>

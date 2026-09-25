@@ -129,13 +129,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         <div className="md:col-span-5 flex flex-col justify-between p-8 rounded-3xl th-solid border th-border backdrop-blur-md relative">
           
           <div className="space-y-6 relative z-10">
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl th-acc-soft border th-border-acc text-emerald-400">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl th-acc-soft border th-border-acc th-acc">
               <Sparkles size={20} className="animate-pulse" />
             </div>
             
             <div className="space-y-2">
               <h1 className="text-3xl font-black uppercase tracking-wider th-text font-sans leading-none">
-                Matchday <span className="text-emerald-400">Exchange</span>
+                Matchday <span className="th-acc">Exchange</span>
               </h1>
               <p className="text-xs th-muted font-mono tracking-widest uppercase">
                 Campaign Seeding Arena
@@ -164,7 +164,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 { slotMode: "LEAGUE" as const, title: "Elite League Mode", icon: Award, accent: "blue", existsArr: savedLeagues },
               ]).map(({ slotMode, title, icon: ModeIcon, accent, existsArr }) => (
                 <div key={slotMode} className="space-y-1.5 animate-fade-in">
-                  <div className={`flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest font-bold ${accent === "amber" ? "text-amber-500" : "text-blue-400"}`}>
+                  <div className={`flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest font-bold ${accent === "amber" ? "text-amber-500" : "th-info"}`}>
                     <ModeIcon size={11} className="shrink-0" />
                     <span>{title}</span>
                   </div>
@@ -193,7 +193,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
                               <span className="font-bold th-sub">Slot {slot}</span>
                               {isLastPlayed ? (
-                                <span className={`text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${accent === "amber" ? "bg-amber-500/20 text-amber-300" : "bg-blue-500/20 text-blue-300"}`}>
+                                <span className={`text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${accent === "amber" ? "bg-amber-500/20 th-amber" : "bg-blue-500/20 th-info"}`}>
                                   Last Played
                                 </span>
                               ) : (
@@ -202,7 +202,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                                 </span>
                               )}
                               {exists && (
-                                <span className="text-[9px] font-mono text-emerald-400 truncate">
+                                <span className="text-[9px] font-mono th-acc truncate">
                                   ${summary.balance.toLocaleString()}
                                 </span>
                               )}
@@ -218,7 +218,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                                       <p className="text-[8px] font-mono uppercase tracking-widest th-muted flex items-center gap-1">
                                         <Wallet size={9} /> Wallet
                                       </p>
-                                      <p className="text-[12px] font-mono font-bold text-emerald-400">
+                                      <p className="text-[12px] font-mono font-bold th-acc">
                                         ${summary.balance.toLocaleString()}
                                       </p>
                                     </div>
@@ -250,7 +250,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                                       type="button"
                                       onClick={() => setDeleteConfirmation({ mode: slotMode, slot })}
                                       title="Reset (delete) this save"
-                                      className="border border-red-500/40 hover:bg-red-500/15 text-red-400 font-bold px-2 py-1.5 rounded-lg transition-all text-[10px] uppercase tracking-wide cursor-pointer flex items-center justify-center gap-1"
+                                      className="border border-red-500/40 hover:bg-red-500/15 th-danger font-bold px-2 py-1.5 rounded-lg transition-all text-[10px] uppercase tracking-wide cursor-pointer flex items-center justify-center gap-1"
                                     >
                                       <Trash2 size={10} /> Reset
                                     </button>
@@ -378,7 +378,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <Award className={mode === "LEAGUE" ? "text-blue-400" : "th-muted"} size={18} />
+                    <Award className={mode === "LEAGUE" ? "th-info" : "th-muted"} size={18} />
                     {mode === "LEAGUE" && (
                       <span className="w-2.5 h-2.5 rounded-full bg-blue-450 animate-pulse"></span>
                     )}
@@ -469,14 +469,14 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       {overwriteConfirmation && (
         <div className="fixed inset-0 th-inset backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="th-solid border border-amber-500/30 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl shadow-amber-500/10 animate-fade-in text-center flex flex-col items-center">
-            <div className="h-12 w-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mb-2">
+            <div className="h-12 w-12 rounded-full bg-amber-500/10 th-amber flex items-center justify-center mb-2">
               <Trash2 size={24} />
             </div>
             <h3 className="text-lg font-black th-text uppercase tracking-widest font-sans">Overwrite Save?</h3>
             <p className="text-xs th-muted">
               <span className="th-text font-bold">Slot {selectedSlot}</span> ({mode}) already holds a campaign
               {summaries[`${mode}:${selectedSlot}`]?.exists
-                ? <> — <span className="text-emerald-400 font-mono font-bold">${summaries[`${mode}:${selectedSlot}`].balance.toLocaleString()}</span>, {summaries[`${mode}:${selectedSlot}`].stageLabel}</>
+                ? <> — <span className="th-acc font-mono font-bold">${summaries[`${mode}:${selectedSlot}`].balance.toLocaleString()}</span>, {summaries[`${mode}:${selectedSlot}`].stageLabel}</>
                 : null}
               . Starting fresh here permanently replaces it. This cannot be undone.
             </p>

@@ -10,8 +10,8 @@ interface MatchHighlightsModalProps {
 }
 
 const STRIPE_COLORS: Record<HighlightMoment["type"], string> = {
-  GOAL: "border-emerald-400",
-  PENALTY: "border-emerald-400",
+  GOAL: "th-border-acc",
+  PENALTY: "th-border-acc",
   RED_CARD: "border-red-500",
   MOTM: "border-yellow-400",
 };
@@ -67,7 +67,7 @@ export function MatchHighlightsModal({ fixture, teams, onClose }: MatchHighlight
             </div>
           </div>
           {fixture.penaltyScore && (
-            <p className="text-center text-[11px] text-amber-400 font-mono mt-1">
+            <p className="text-center text-[11px] th-amber font-mono mt-1">
               Penalties: {fixture.penaltyScore}
             </p>
           )}
@@ -103,17 +103,17 @@ export function MatchHighlightsModal({ fixture, teams, onClose }: MatchHighlight
           <div className="p-4 border-t th-border th-inset">
             <div className="flex items-center justify-between bg-yellow-400/10 border border-yellow-400/30 rounded-xl px-4 py-3">
               <div>
-                <p className="text-[9px] font-black tracking-widest text-yellow-400 uppercase">
+                <p className="text-[9px] font-black tracking-widest th-amber uppercase">
                   ⭐ Man of the Match
                 </p>
                 <p className="text-sm font-black th-text">{motm.playerName}</p>
-                <p className="text-[10px] text-yellow-300/70 font-mono">
+                <p className="text-[10px] th-amber font-mono">
                   {motmTeam?.shortName ?? motmTeam?.name ?? ""}
                 </p>
                 <p className="text-[10px] th-muted font-mono mt-0.5 capitalize">{motm.reason}</p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-black text-yellow-400 font-mono">{motm.score.toFixed(1)}</p>
+                <p className="text-2xl font-black th-amber font-mono">{motm.score.toFixed(1)}</p>
                 <p className="text-[9px] th-muted font-mono uppercase">Rating</p>
               </div>
             </div>

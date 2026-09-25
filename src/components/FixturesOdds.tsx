@@ -153,15 +153,15 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                 {isOwnerMatch && ownedTeamObj && (
                   <div className="bg-yellow-500/10 border-b border-yellow-500/20 px-3 py-1.5 flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-yellow-400 text-[10px]">&#x1F451;</span>
-                      <span className="text-[9px] font-black text-yellow-400 uppercase tracking-widest font-mono">
+                      <span className="th-amber text-[10px]">&#x1F451;</span>
+                      <span className="text-[9px] font-black th-amber uppercase tracking-widest font-mono">
                         YOUR CLUB · OWNER&apos;S VIEW
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-[9px] font-mono">
                       <span className="th-muted">
                         Morale:{" "}
-                        <span className={`font-bold ${(ownedTeamObj.morale ?? 60) >= 70 ? "text-emerald-400" : (ownedTeamObj.morale ?? 60) >= 45 ? "text-yellow-400" : "text-red-400"}`}>
+                        <span className={`font-bold ${(ownedTeamObj.morale ?? 60) >= 70 ? "th-acc" : (ownedTeamObj.morale ?? 60) >= 45 ? "th-amber" : "th-danger"}`}>
                           {(ownedTeamObj.morale ?? 60) >= 70 ? "HIGH" : (ownedTeamObj.morale ?? 60) >= 45 ? "MID" : "LOW"}
                         </span>
                       </span>
@@ -213,7 +213,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                   <div className="text-center font-bold px-2 shrink-0 flex flex-col items-center">
                     {fixture.status !== "SCHEDULED" ? (
                       <>
-                        <span className="text-sm font-black font-mono text-emerald-400">
+                        <span className="text-sm font-black font-mono th-acc">
                           {Math.floor(fixture.homeScore)} - {Math.floor(fixture.awayScore)}
                         </span>
                         {fixture.penaltyScore && (
@@ -253,7 +253,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                   const awayAvg = getTeamGoalAvg(awayTeam.id, fixtures);
                   const isExpanded = expandedFormFixtureId === fixture.id;
                   const formDot = (r: "W"|"D"|"L") => (
-                    <span key={Math.random()} className={`inline-block w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center ${r==="W"?"bg-emerald-500/30 text-emerald-400 border th-border-acc":r==="D"?"bg-yellow-500/30 text-yellow-400 border border-yellow-500/50":"bg-red-500/30 text-red-400 border border-red-500/50"}`}>{r}</span>
+                    <span key={Math.random()} className={`inline-block w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center ${r==="W"?"bg-emerald-500/30 th-acc border th-border-acc":r==="D"?"bg-yellow-500/30 th-amber border border-yellow-500/50":"bg-red-500/30 th-danger border border-red-500/50"}`}>{r}</span>
                   );
                   const toggleExpand = () => setExpandedFormFixtureId(isExpanded ? null : fixture.id);
                   return (
@@ -287,25 +287,25 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           {/* H2H win% bar */}
                           {h2h.played > 0 && (
                             <div className="flex items-center gap-1.5 text-[9px] font-mono">
-                              <span className="text-emerald-400 font-bold w-8 text-right">{Math.round((h2h.homeWins/h2h.played)*100)}%</span>
+                              <span className="th-acc font-bold w-8 text-right">{Math.round((h2h.homeWins/h2h.played)*100)}%</span>
                               <div className="flex-1 h-1.5 rounded-full overflow-hidden flex th-wash">
                                 <div className="bg-emerald-500 h-full transition-all" style={{width:`${(h2h.homeWins/h2h.played)*100}%`}}></div>
                                 <div className="bg-yellow-500 h-full transition-all" style={{width:`${(h2h.draws/h2h.played)*100}%`}}></div>
                                 <div className="bg-red-500 h-full flex-1 transition-all"></div>
                               </div>
-                              <span className="text-red-400 font-bold w-8">{Math.round((h2h.awayWins/h2h.played)*100)}%</span>
+                              <span className="th-danger font-bold w-8">{Math.round((h2h.awayWins/h2h.played)*100)}%</span>
                             </div>
                           )}
                           {/* Goal avgs */}
                           <div className="grid grid-cols-2 gap-2 text-[9px] font-mono">
                             <div className="th-wash rounded-lg p-1.5 text-center">
                               <p className="th-muted uppercase">Avg scored/conceded</p>
-                              <p className="th-text font-bold">{homeAvg.scored} / <span className="text-red-400">{homeAvg.conceded}</span></p>
+                              <p className="th-text font-bold">{homeAvg.scored} / <span className="th-danger">{homeAvg.conceded}</span></p>
                               <p className="th-muted text-[8px]">{homeTeam.shortName} last 5</p>
                             </div>
                             <div className="th-wash rounded-lg p-1.5 text-center">
                               <p className="th-muted uppercase">Avg scored/conceded</p>
-                              <p className="th-text font-bold">{awayAvg.scored} / <span className="text-red-400">{awayAvg.conceded}</span></p>
+                              <p className="th-text font-bold">{awayAvg.scored} / <span className="th-danger">{awayAvg.conceded}</span></p>
                               <p className="th-muted text-[8px]">{awayTeam.shortName} last 5</p>
                             </div>
                           </div>
@@ -345,7 +345,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           isBettingDisabled || homeOdds === null
                             ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                             : isSelected(fixture.id, "MATCH_WINNER", "HOME")
-                            ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                            ? "th-acc-soft th-border-acc th-acc font-bold"
                             : "th-inset th-border th-sub hover:th-border2 hover:th-wash"
                         }`}
                       >
@@ -371,7 +371,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           isBettingDisabled || drawOdds === null
                             ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                             : isSelected(fixture.id, "MATCH_WINNER", "DRAW")
-                            ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                            ? "th-acc-soft th-border-acc th-acc font-bold"
                             : "th-inset th-border th-sub hover:th-border2 hover:th-wash"
                         }`}
                       >
@@ -397,7 +397,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           isBettingDisabled || awayOdds === null
                             ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                             : isSelected(fixture.id, "MATCH_WINNER", "AWAY")
-                            ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                            ? "th-acc-soft th-border-acc th-acc font-bold"
                             : "th-inset th-border th-sub hover:th-border2 hover:th-wash"
                         }`}
                       >
@@ -418,13 +418,13 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                       <button
                         type="button"
                         onClick={() => triggerOpenHighlights(fixture.id)}
-                        className="text-[9px] text-amber-400 hover:text-amber-300 font-black tracking-widest uppercase cursor-pointer"
+                        className="text-[9px] th-amber hover:th-amber font-black tracking-widest uppercase cursor-pointer"
                       >
                         📋 HIGHLIGHTS
                       </button>
                     </span>
                   ) : isLive ? (
-                    <span className="text-[9px] text-red-400 font-mono font-bold uppercase select-none flex items-center gap-1 animate-pulse">
+                    <span className="text-[9px] th-danger font-mono font-bold uppercase select-none flex items-center gap-1 animate-pulse">
                       ⚡ In-Play Live • Betting Open
                     </span>
                   ) : isHalfTimePause ? (
@@ -440,7 +440,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                   <button
                     disabled={isBettingDisabled}
                     onClick={() => setActiveModalFixtureId(fixture.id)}
-                    className="text-[10px] text-emerald-400 hover:th-acc font-bold font-sans tracking-wide cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                    className="text-[10px] th-acc hover:th-acc font-bold font-sans tracking-wide cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
                   >
                     <span>▶️ ALL MARKETS ({Object.keys(fixture.odds).length}+)</span>
                   </button>
@@ -448,7 +448,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                     type="button"
                     onClick={() => onOpenBetBuilder?.(fixture.id)}
                     disabled={isFT}
-                    className="text-[10px] text-amber-400 hover:text-amber-300 font-bold font-sans tracking-wide cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+                    className="text-[10px] th-amber hover:th-amber font-bold font-sans tracking-wide cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
                   >
                     ⚡ BET BUILDER
                   </button>
@@ -494,7 +494,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                   onClick={() => setActiveModalTab(tab as any)}
                   className={`px-5 py-3 text-xs font-bold whitespace-nowrap transition-colors tracking-wide ${
                     activeModalTab === tab 
-                      ? "text-emerald-400 border-b-2 border-emerald-400 th-acc-soft" 
+                      ? "th-acc border-b-2 th-border-acc th-acc-soft" 
                       : "th-muted hover:th-text"
                   }`}
                 >
@@ -527,7 +527,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           b.o === null
                             ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                             : isSelected(activeFixture.id, "MATCH_WINNER", b.id)
-                            ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                            ? "th-acc-soft th-border-acc th-acc font-bold"
                             : "th-solid2 th-border hover:th-wash th-sub"
                         }`}
                       >
@@ -560,7 +560,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           b.o === null
                             ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                             : isSelected(activeFixture.id, "DOUBLE_CHANCE", b.id)
-                            ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                            ? "th-acc-soft th-border-acc th-acc font-bold"
                             : "th-solid2 th-border hover:th-wash th-sub"
                         }`}
                       >
@@ -587,7 +587,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           key={r.selectionId}
                           disabled={live === null}
                           onClick={() => handleMarketClick(activeFixture, "RESULT_BTTS", r.selectionId, live, r.label, "Result + BTTS")}
-                          className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${live === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "RESULT_BTTS", r.selectionId) ? "th-acc-soft th-border-acc text-emerald-400 font-bold" : "th-solid2 th-border hover:th-wash th-sub"}`}
+                          className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${live === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "RESULT_BTTS", r.selectionId) ? "th-acc-soft th-border-acc th-acc font-bold" : "th-solid2 th-border hover:th-wash th-sub"}`}
                         >
                           <span className="text-[10px] sm:text-xs font-semibold">{r.label}</span>
                           <span className="text-xs font-black font-mono">{live !== null ? `@${live.toFixed(2)}` : "🔒 SUSP"}</span>
@@ -613,7 +613,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           key={r.selectionId}
                           disabled={live === null}
                           onClick={() => handleMarketClick(activeFixture, "WIN_TO_NIL", r.selectionId, live, r.label, "Win to Nil")}
-                          className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${live === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "WIN_TO_NIL", r.selectionId) ? "th-acc-soft th-border-acc text-emerald-400 font-bold" : "th-solid2 th-border hover:th-wash th-sub"}`}
+                          className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${live === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "WIN_TO_NIL", r.selectionId) ? "th-acc-soft th-border-acc th-acc font-bold" : "th-solid2 th-border hover:th-wash th-sub"}`}
                         >
                           <span className="text-[10px] sm:text-xs font-semibold">{r.label}</span>
                           <span className="text-xs font-black font-mono">{live !== null ? `@${live.toFixed(2)}` : "🔒 SUSP"}</span>
@@ -648,7 +648,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                                   liveOverOdds === null
                                     ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                                     : isSelected(activeFixture.id, "OVER_UNDER_GOALS", `OVER_${line}`)
-                                    ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                                    ? "th-acc-soft th-border-acc th-acc font-bold"
                                     : "th-solid2 th-border hover:th-wash th-sub"
                                 }`}
                               >
@@ -662,7 +662,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                                   liveUnderOdds === null
                                     ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                                     : isSelected(activeFixture.id, "OVER_UNDER_GOALS", `UNDER_${line}`)
-                                    ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                                    ? "th-acc-soft th-border-acc th-acc font-bold"
                                     : "th-solid2 th-border hover:th-wash th-sub"
                                 }`}
                               >
@@ -694,7 +694,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                                 className={`py-3 px-4 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                                   liveBttsYes === null
                                     ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                    : isSelected(activeFixture.id, "BOTH_TEAMS_TO_SCORE", "YES") ? "th-acc-soft th-border-acc text-emerald-400 font-bold" : "th-solid2 th-border hover:th-wash th-sub"
+                                    : isSelected(activeFixture.id, "BOTH_TEAMS_TO_SCORE", "YES") ? "th-acc-soft th-border-acc th-acc font-bold" : "th-solid2 th-border hover:th-wash th-sub"
                                 }`}
                               >
                                 <span className="text-[10px] sm:text-xs font-semibold">Yes (GG)</span>
@@ -706,7 +706,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                                 className={`py-3 px-4 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                                   liveBttsNo === null
                                     ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                    : isSelected(activeFixture.id, "BOTH_TEAMS_TO_SCORE", "NO") ? "th-acc-soft th-border-acc text-emerald-400 font-bold" : "th-solid2 th-border hover:th-wash th-sub"
+                                    : isSelected(activeFixture.id, "BOTH_TEAMS_TO_SCORE", "NO") ? "th-acc-soft th-border-acc th-acc font-bold" : "th-solid2 th-border hover:th-wash th-sub"
                                 }`}
                               >
                                 <span className="text-[10px] sm:text-xs font-semibold">No (NG)</span>
@@ -736,7 +736,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                             className={`py-2 px-2 rounded-lg text-center border cursor-pointer font-mono whitespace-nowrap transition-all flex flex-col items-center ${
                               liveScoOdds === null
                                 ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                : isSel ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"
+                                : isSel ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"
                             }`}
                           >
                             <span className="text-[10px] sm:text-xs font-bold">{sc.score.startsWith("ANY_") ? (sc.score === "ANY_HOME" ? "Any other home" : sc.score === "ANY_DRAW" ? "Any other draw" : "Any other away") : sc.score}</span>
@@ -771,14 +771,14 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                                     <button
                                       disabled={liveOver === null}
                                       onClick={() => handleMarketClick(activeFixture, "TEAM_TOTAL_GOALS", overId, liveOver, `${side === "HOME" ? activeFixtureHomeTeam.shortName : activeFixtureAwayTeam.shortName} Over ${t.line}`, "Team Total")}
-                                      className={`py-2 px-2 rounded-lg text-center border cursor-pointer font-mono transition-all ${liveOver === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "TEAM_TOTAL_GOALS", overId) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"}`}
+                                      className={`py-2 px-2 rounded-lg text-center border cursor-pointer font-mono transition-all ${liveOver === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "TEAM_TOTAL_GOALS", overId) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"}`}
                                     >
                                       <span className="text-[10px] font-bold">Over {t.line} @{liveOver !== null ? liveOver.toFixed(2) : "🔒"}</span>
                                     </button>
                                     <button
                                       disabled={liveUnder === null}
                                       onClick={() => handleMarketClick(activeFixture, "TEAM_TOTAL_GOALS", underId, liveUnder, `${side === "HOME" ? activeFixtureHomeTeam.shortName : activeFixtureAwayTeam.shortName} Under ${t.line}`, "Team Total")}
-                                      className={`py-2 px-2 rounded-lg text-center border cursor-pointer font-mono transition-all ${liveUnder === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "TEAM_TOTAL_GOALS", underId) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"}`}
+                                      className={`py-2 px-2 rounded-lg text-center border cursor-pointer font-mono transition-all ${liveUnder === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "TEAM_TOTAL_GOALS", underId) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"}`}
                                     >
                                       <span className="text-[10px] font-bold">Under {t.line} @{liveUnder !== null ? liveUnder.toFixed(2) : "🔒"}</span>
                                     </button>
@@ -806,7 +806,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                               key={c.selectionId}
                               disabled={live === null}
                               onClick={() => handleMarketClick(activeFixture, "CLEAN_SHEET", c.selectionId, live, c.label, "Clean Sheet")}
-                              className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${live === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "CLEAN_SHEET", c.selectionId) ? "th-acc-soft th-border-acc text-emerald-400 font-bold" : "th-solid2 th-border hover:th-wash th-sub"}`}
+                              className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${live === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "CLEAN_SHEET", c.selectionId) ? "th-acc-soft th-border-acc th-acc font-bold" : "th-solid2 th-border hover:th-wash th-sub"}`}
                             >
                               <span className="text-[10px] sm:text-xs font-semibold">{c.label}</span>
                               <span className="text-xs font-black font-mono">{live !== null ? `@${live.toFixed(2)}` : "🔒 SUSP"}</span>
@@ -834,7 +834,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           key={r.selectionId}
                           disabled={live === null}
                           onClick={() => handleMarketClick(activeFixture, "HT_FT", r.selectionId, live, `HT/FT: ${r.label}`, "HT/FT")}
-                          className={`py-2 px-2 rounded-lg text-center border cursor-pointer transition-all flex flex-col items-center ${live === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "HT_FT", r.selectionId) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"}`}
+                          className={`py-2 px-2 rounded-lg text-center border cursor-pointer transition-all flex flex-col items-center ${live === null ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50" : isSelected(activeFixture.id, "HT_FT", r.selectionId) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"}`}
                         >
                           <span className="text-[10px] sm:text-xs font-bold">{r.label}</span>
                           <span className="text-[10px] font-black tracking-tight">{live !== null ? `@${live.toFixed(2)}` : "🔒 SUSP"}</span>
@@ -863,7 +863,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                           className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                             liveGsOdds === null
                               ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                              : isSelected(activeFixture.id, "ANYTIME_GOALSCORER", gs.playerId) ? "th-acc-soft th-border-acc text-emerald-400 font-bold" : "th-solid2 th-border hover:th-wash th-sub"
+                              : isSelected(activeFixture.id, "ANYTIME_GOALSCORER", gs.playerId) ? "th-acc-soft th-border-acc th-acc font-bold" : "th-solid2 th-border hover:th-wash th-sub"
                           }`}
                         >
                           <div className="flex items-center gap-2">
@@ -898,7 +898,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                             className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                               liveOver === null
                                 ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                : isSelected(activeFixture.id, "OVER_UNDER_CORNERS", `OVER_${ou.line}`) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"
+                                : isSelected(activeFixture.id, "OVER_UNDER_CORNERS", `OVER_${ou.line}`) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"
                             }`}
                           >
                             <span className="text-[10px] font-semibold">Over</span>
@@ -910,7 +910,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                             className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                               liveUnder === null
                                 ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                : isSelected(activeFixture.id, "OVER_UNDER_CORNERS", `UNDER_${ou.line}`) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"
+                                : isSelected(activeFixture.id, "OVER_UNDER_CORNERS", `UNDER_${ou.line}`) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"
                             }`}
                           >
                             <span className="text-[10px] font-semibold">Under</span>
@@ -943,7 +943,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                             className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                               liveOver === null
                                 ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                : isSelected(activeFixture.id, "OVER_UNDER_CARDS", `OVER_${ou.line}`) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"
+                                : isSelected(activeFixture.id, "OVER_UNDER_CARDS", `OVER_${ou.line}`) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"
                             }`}
                           >
                             <span className="text-[10px] font-semibold">Over</span>
@@ -955,7 +955,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                             className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                               liveUnder === null
                                 ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                : isSelected(activeFixture.id, "OVER_UNDER_CARDS", `UNDER_${ou.line}`) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"
+                                : isSelected(activeFixture.id, "OVER_UNDER_CARDS", `UNDER_${ou.line}`) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"
                             }`}
                           >
                             <span className="text-[10px] font-semibold">Under</span>
@@ -988,7 +988,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                              className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                                liveOver === null
                                  ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                 : isSelected(activeFixture.id, "OVER_UNDER_SAVES", `OVER_${ou.line}`) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"
+                                 : isSelected(activeFixture.id, "OVER_UNDER_SAVES", `OVER_${ou.line}`) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"
                              }`}
                            >
                              <span className="text-[10px] font-semibold">Over</span>
@@ -1000,7 +1000,7 @@ export const FixturesOdds: React.FC<FixturesOddsProps> = ({
                              className={`py-2 px-3 rounded-lg flex items-center justify-between border cursor-pointer transition-all ${
                                liveUnder === null
                                  ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
-                                 : isSelected(activeFixture.id, "OVER_UNDER_SAVES", `UNDER_${ou.line}`) ? "th-acc-soft th-border-acc text-emerald-400" : "th-solid2 th-border hover:th-wash th-sub"
+                                 : isSelected(activeFixture.id, "OVER_UNDER_SAVES", `UNDER_${ou.line}`) ? "th-acc-soft th-border-acc th-acc" : "th-solid2 th-border hover:th-wash th-sub"
                              }`}
                            >
                              <span className="text-[10px] font-semibold">Under</span>

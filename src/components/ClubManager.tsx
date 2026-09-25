@@ -212,7 +212,7 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${isActive ? "th-selected" : "th-border th-muted hover:th-text hover:th-wash"}`}>
                 <span className="w-4 h-4 rounded-full inline-block" style={{ backgroundColor: t.primaryColor }} />
                 {t.shortName}
-                {trophyCount > 0 && <span className="text-amber-400">🏆{trophyCount}</span>}
+                {trophyCount > 0 && <span className="th-amber">🏆{trophyCount}</span>}
               </button>
             );
           })}
@@ -234,8 +234,8 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
         </div>
         <div className="hidden sm:flex items-center gap-3 text-center">
           <div><p className="text-xs th-muted font-mono">PLAYED</p><p className="text-lg font-black th-text">{played}</p></div>
-          <div><p className="text-xs th-muted font-mono">POINTS</p><p className="text-lg font-black text-emerald-400">{pts}</p></div>
-          <div><p className="text-xs th-muted font-mono">GD</p><p className={`text-lg font-black ${gf - ga >= 0 ? "text-emerald-400" : "text-red-400"}`}>{gf - ga > 0 ? "+" : ""}{gf - ga}</p></div>
+          <div><p className="text-xs th-muted font-mono">POINTS</p><p className="text-lg font-black th-acc">{pts}</p></div>
+          <div><p className="text-xs th-muted font-mono">GD</p><p className={`text-lg font-black ${gf - ga >= 0 ? "th-acc" : "th-danger"}`}>{gf - ga > 0 ? "+" : ""}{gf - ga}</p></div>
         </div>
       </div>
 
@@ -247,7 +247,7 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-t-lg border-b-2 transition-all cursor-pointer ${
               activeTab === tab.id
-                ? "border-emerald-400 text-emerald-400 bg-emerald-400/5"
+                ? "th-border-acc th-acc bg-emerald-400/5"
                 : "border-transparent th-muted hover:th-text hover:th-wash"
             }`}
           >
@@ -264,8 +264,8 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
           {(ownership?.trophies?.length ?? 0) > 0 ? (
             <div className="glass-panel p-4 border border-amber-500/20 rounded-2xl">
               <div className="flex items-center gap-2 mb-3">
-                <Trophy size={16} className="text-amber-400" />
-                <h3 className="text-sm font-black text-amber-300 uppercase tracking-wide">Trophy Cabinet — {team.shortName}</h3>
+                <Trophy size={16} className="th-amber" />
+                <h3 className="text-sm font-black th-amber uppercase tracking-wide">Trophy Cabinet — {team.shortName}</h3>
               </div>
               <div className="flex flex-wrap gap-2">
                 {(ownership?.trophies ?? []).map((tr, i) => (
@@ -288,10 +288,10 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
           {/* Stats row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Wins", value: won, color: "text-emerald-400" },
-              { label: "Draws", value: drawn, color: "text-yellow-400" },
-              { label: "Losses", value: lost, color: "text-red-400" },
-              { label: "Points", value: pts, color: "text-purple-400" },
+              { label: "Wins", value: won, color: "th-acc" },
+              { label: "Draws", value: drawn, color: "th-amber" },
+              { label: "Losses", value: lost, color: "th-danger" },
+              { label: "Points", value: pts, color: "th-purple" },
             ].map(s => (
               <div key={s.label} className="glass-panel rounded-xl p-3 text-center border th-border">
                 <p className="text-[10px] th-muted font-mono uppercase">{s.label}</p>
@@ -309,9 +309,9 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
               <div className="h-full bg-red-500 rounded-r-full flex-1" />
             </div>
             <div className="flex justify-between text-[10px] font-mono">
-              <span className="text-emerald-400">{won}W</span>
-              <span className="text-yellow-400">{drawn}D</span>
-              <span className="text-red-400">{lost}L</span>
+              <span className="th-acc">{won}W</span>
+              <span className="th-amber">{drawn}D</span>
+              <span className="th-danger">{lost}L</span>
             </div>
             <div className="text-xs th-muted font-mono">{gf} Goals For · {ga} Goals Against · GD {gf - ga > 0 ? "+" : ""}{gf - ga}</div>
           </div>
@@ -320,9 +320,9 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="glass-panel rounded-xl p-4 border th-border space-y-3">
               <div className="flex items-center gap-2">
-                <Zap size={14} className="text-yellow-400" />
+                <Zap size={14} className="th-amber" />
                 <span className="text-xs font-bold th-sub">Training Facility</span>
-                <span className="ml-auto text-xs font-black text-yellow-400">Lvl {trainingLvl}</span>
+                <span className="ml-auto text-xs font-black th-amber">Lvl {trainingLvl}</span>
               </div>
               <div className="flex gap-1">{[...Array(5)].map((_, i) => (
                 <div key={i} className={`h-1.5 flex-1 rounded-full ${i < trainingLvl ? "bg-yellow-400" : "th-wash2"}`} />
@@ -331,7 +331,7 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
               <button
                 onClick={() => onUpgradeFacility(team.id, "training")}
                 disabled={balance < upgradeTrainingCost}
-                className="w-full py-1.5 text-xs font-bold rounded-lg bg-yellow-500/15 text-yellow-400 border border-yellow-500/30 hover:bg-yellow-500/25 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed transition-all"
+                className="w-full py-1.5 text-xs font-bold rounded-lg bg-yellow-500/15 th-amber border border-yellow-500/30 hover:bg-yellow-500/25 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed transition-all"
               >
                 Upgrade → {formatMoney(upgradeTrainingCost)}
               </button>
@@ -339,9 +339,9 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
 
             <div className="glass-panel rounded-xl p-4 border th-border space-y-3">
               <div className="flex items-center gap-2">
-                <Shield size={14} className="text-sky-400" />
+                <Shield size={14} className="th-info" />
                 <span className="text-xs font-bold th-sub">Stadium</span>
-                <span className="ml-auto text-xs font-black text-sky-400">Lvl {stadiumLvl}</span>
+                <span className="ml-auto text-xs font-black th-info">Lvl {stadiumLvl}</span>
               </div>
               <div className="flex gap-1">{[...Array(5)].map((_, i) => (
                 <div key={i} className={`h-1.5 flex-1 rounded-full ${i < stadiumLvl ? "bg-sky-400" : "th-wash2"}`} />
@@ -350,7 +350,7 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
               <button
                 onClick={() => onUpgradeFacility(team.id, "stadium")}
                 disabled={balance < upgradeStadiumCost}
-                className="w-full py-1.5 text-xs font-bold rounded-lg bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed transition-all"
+                className="w-full py-1.5 text-xs font-bold rounded-lg bg-sky-500/15 th-info border border-sky-500/30 hover:bg-sky-500/25 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed transition-all"
               >
                 Upgrade → {formatMoney(upgradeStadiumCost)}
               </button>
@@ -383,8 +383,8 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
                   </div>
                   <span className="text-xs font-bold th-text flex-1 truncate">{cleanPlayerName(p.name)}</span>
                   <span className="text-[9px] font-mono th-muted px-1.5 py-0.5 th-wash rounded">{p.position}</span>
-                  <span className="text-xs font-black text-emerald-400 w-8 text-right">{p.rating}</span>
-                  {p.injured && <span className="text-[8px] text-red-400 font-bold">INJ</span>}
+                  <span className="text-xs font-black th-acc w-8 text-right">{p.rating}</span>
+                  {p.injured && <span className="text-[8px] th-danger font-bold">INJ</span>}
                 </div>
               ))}
             </div>
@@ -413,11 +413,11 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
                   >
                     <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black text-slate-900 th-wash2 shrink-0" />
                     <span className="text-xs font-bold th-sub flex-1 truncate">{cleanPlayerName(p.name)}</span>
-                    {isReservePlayer(p) && <span className="text-[8px] font-bold text-amber-400 px-1 py-0.5 bg-amber-500/10 rounded border border-amber-500/20">RES</span>}
+                    {isReservePlayer(p) && <span className="text-[8px] font-bold th-amber px-1 py-0.5 bg-amber-500/10 rounded border border-amber-500/20">RES</span>}
                     <span className="text-[9px] font-mono th-muted px-1.5 py-0.5 th-wash rounded">{p.position}</span>
                     <span className="text-xs font-black th-muted w-8 text-right">{p.rating}</span>
                     {!healthy && (
-                      <span className="text-[8px] bg-red-500/20 text-red-400 font-bold px-1 py-0.5 rounded border border-red-500/20" title={injLabel ?? undefined}>
+                      <span className="text-[8px] bg-red-500/20 th-danger font-bold px-1 py-0.5 rounded border border-red-500/20" title={injLabel ?? undefined}>
                         {p.injured ? "INJ" : "SUSP"}
                       </span>
                     )}
@@ -446,7 +446,7 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
                   onClick={() => onUpdateOwnership(team.id, { formation: f })}
                   className={`py-2 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
                     formation === f
-                      ? "th-acc-soft text-emerald-400 th-border-acc"
+                      ? "th-acc-soft th-acc th-border-acc"
                       : "th-wash th-muted th-border hover:th-wash2"
                   }`}
                 >
@@ -468,7 +468,7 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
                   onClick={() => onUpdateOwnership(team.id, { mentality: m })}
                   className={`py-2 px-1 text-xs font-bold rounded-lg border transition-all cursor-pointer text-center ${
                     mentality === m
-                      ? "bg-purple-500/20 text-purple-400 border-purple-500/50"
+                      ? "bg-purple-500/20 th-purple border-purple-500/50"
                       : "th-wash th-muted th-border hover:th-wash2"
                   }`}
                 >
@@ -491,7 +491,7 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
                   onClick={() => onUpdateOwnership(team.id, { pressingStyle: ps })}
                   className={`py-2 px-1 text-xs font-bold rounded-lg border transition-all cursor-pointer text-center ${
                     pressing === ps
-                      ? "bg-sky-500/20 text-sky-400 border-sky-500/50"
+                      ? "bg-sky-500/20 th-info border-sky-500/50"
                       : "th-wash th-muted th-border hover:th-wash2"
                   }`}
                 >
@@ -509,9 +509,9 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
-              { label: "Purchase Price", value: formatMoney(ownership?.purchasePrice ?? 0), icon: <Trophy size={14} />, color: "text-amber-400" },
-              { label: "Total Invested", value: formatMoney(ownership?.totalInvested ?? 0), icon: <TrendingUp size={14} />, color: "text-red-400" },
-              { label: "Passive Income/Match", value: formatMoney(ownership?.passiveIncomePerMatch ?? 0), icon: <Star size={14} />, color: "text-emerald-400" },
+              { label: "Purchase Price", value: formatMoney(ownership?.purchasePrice ?? 0), icon: <Trophy size={14} />, color: "th-amber" },
+              { label: "Total Invested", value: formatMoney(ownership?.totalInvested ?? 0), icon: <TrendingUp size={14} />, color: "th-danger" },
+              { label: "Passive Income/Match", value: formatMoney(ownership?.passiveIncomePerMatch ?? 0), icon: <Star size={14} />, color: "th-acc" },
             ].map(s => (
               <div key={s.label} className="glass-panel rounded-xl p-4 border th-border">
                 <div className="flex items-center gap-2 mb-2">
@@ -528,15 +528,15 @@ export const ClubManager: React.FC<ClubManagerProps> = ({
             <div className="space-y-2 text-xs">
               <div className="flex justify-between th-sub">
                 <span>Match Day Revenue (per match)</span>
-                <span className="text-emerald-400 font-bold">{formatMoney((stadiumLvl * 50000))}</span>
+                <span className="th-acc font-bold">{formatMoney((stadiumLvl * 50000))}</span>
               </div>
               <div className="flex justify-between th-sub">
                 <span>Training Bonus (player growth)</span>
-                <span className="text-yellow-400 font-bold">+{trainingLvl * 2}% ratings</span>
+                <span className="th-amber font-bold">+{trainingLvl * 2}% ratings</span>
               </div>
               <div className="flex justify-between th-sub">
                 <span>Win Bonus</span>
-                <span className="text-emerald-400 font-bold">{formatMoney(25000 * (team.rating ?? 1))}/win</span>
+                <span className="th-acc font-bold">{formatMoney(25000 * (team.rating ?? 1))}/win</span>
               </div>
             </div>
           </div>

@@ -64,7 +64,7 @@ export const WinnerCelebrationModal: React.FC<WinnerCelebrationModalProps> = ({
             {/* Carry Over */}
             <button
               onClick={() => onResetRound(true)}
-              className="th-acc-soft hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border th-border-acc rounded-2xl p-3 text-left font-sans flex flex-col justify-between h-[105px] transition-all hover:scale-[1.02] cursor-pointer"
+              className="th-acc-soft hover:bg-emerald-500 hover:text-slate-950 th-acc border th-border-acc rounded-2xl p-3 text-left font-sans flex flex-col justify-between h-[105px] transition-all hover:scale-[1.02] cursor-pointer"
             >
               <span className="text-xs font-black uppercase tracking-wider block leading-snug">Continue<br />Records</span>
               <span className="text-[8.5px] font-mono opacity-80 leading-snug">Preserves balance (${formatMoney(balance, 0)}) & analytics sheets.</span>

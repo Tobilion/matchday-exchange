@@ -19,9 +19,9 @@ interface GlobalEntityPreviewModalProps {
 const tierOf = (rating: number): "gold" | "emerald" | "sky" =>
   rating >= 85 ? "gold" : rating >= 75 ? "emerald" : "sky";
 const TIER_STYLES: Record<string, { ring: string; text: string; glow: string; label: string }> = {
-  gold: { ring: "bg-amber-500/10 border-amber-500/40", text: "text-amber-400", glow: "shadow-[0_0_15px_rgba(245,158,11,0.18)]", label: "GOLD" },
-  emerald: { ring: "th-acc-soft th-border-acc", text: "text-[#10b981]", glow: "shadow-[0_0_15px_rgba(16,185,129,0.12)]", label: "EMERALD" },
-  sky: { ring: "bg-sky-500/10 border-sky-500/30", text: "text-sky-400", glow: "shadow-[0_0_15px_rgba(56,189,248,0.12)]", label: "STANDARD" },
+  gold: { ring: "bg-amber-500/10 border-amber-500/40", text: "th-amber", glow: "shadow-[0_0_15px_rgba(245,158,11,0.18)]", label: "GOLD" },
+  emerald: { ring: "th-acc-soft th-border-acc", text: "th-acc", glow: "shadow-[0_0_15px_rgba(16,185,129,0.12)]", label: "EMERALD" },
+  sky: { ring: "bg-sky-500/10 border-sky-500/30", text: "th-info", glow: "shadow-[0_0_15px_rgba(56,189,248,0.12)]", label: "STANDARD" },
 };
 
 export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> = ({
@@ -86,19 +86,19 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                 {cleanPlayerName(foundPlayer.name)}
               </h3>
               <div className="flex items-center gap-1.5 mt-1.5 justify-center flex-wrap">
-                <span className="px-2 py-0.5 th-wash border th-border rounded text-[9px] font-mono text-[#10b981] font-bold">
+                <span className="px-2 py-0.5 th-wash border th-border rounded text-[9px] font-mono th-acc font-bold">
                   {foundPlayer.position}
                 </span>
                 <span className="px-2 py-0.5 th-wash border th-border rounded text-[9px] font-mono th-sub font-bold">
                   AGE {foundPlayer.age}
                 </span>
                 {foundPlayer.injured && (
-                  <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/40 rounded text-[9px] font-mono text-red-400 font-bold">
+                  <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/40 rounded text-[9px] font-mono th-danger font-bold">
                     INJ
                   </span>
                 )}
                 {(foundPlayer.suspendedRounds ?? 0) > 0 && (
-                  <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/40 rounded text-[9px] font-mono text-red-400 font-bold">
+                  <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/40 rounded text-[9px] font-mono th-danger font-bold">
                     SUSP
                   </span>
                 )}
@@ -108,12 +108,12 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                   </span>
                 )}
                 {isProspect && (
-                  <span className="px-2 py-0.5 bg-amber-500/15 border border-amber-500/40 rounded text-[9px] font-mono text-amber-300 font-bold">
+                  <span className="px-2 py-0.5 bg-amber-500/15 border border-amber-500/40 rounded text-[9px] font-mono th-amber font-bold">
                     🌟 PROSPECT
                   </span>
                 )}
                 {motmCount > 0 && (
-                  <span className="px-2 py-0.5 th-acc-soft border th-border-acc rounded text-[9px] font-mono text-emerald-300 font-bold">
+                  <span className="px-2 py-0.5 th-acc-soft border th-border-acc rounded text-[9px] font-mono th-acc font-bold">
                     🏆 MOTM ×{motmCount}
                   </span>
                 )}
@@ -136,7 +136,7 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                 onClick={() => setGlobalPlayerTab("stats")}
                 className={`py-2 border-b-2 text-center transition-all cursor-pointer font-bold ${
                   globalPlayerTab === "stats"
-                    ? "th-border-acc text-emerald-400 font-black"
+                    ? "th-border-acc th-acc font-black"
                     : "border-transparent th-muted hover:th-text font-medium"
                 }`}
               >
@@ -147,7 +147,7 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                 onClick={() => setGlobalPlayerTab("qualities")}
                 className={`py-2 border-b-2 text-center transition-all cursor-pointer ${
                   globalPlayerTab === "qualities"
-                    ? "th-border-acc text-emerald-400 font-black"
+                    ? "th-border-acc th-acc font-black"
                     : "border-transparent th-muted hover:th-text font-medium"
                 }`}
               >
@@ -173,7 +173,7 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                     <span className="text-[8px] th-muted font-bold uppercase block mt-0.5">Played</span>
                   </div>
                   <div>
-                    <span className="font-black text-emerald-400 block">{foundPlayer.goals}</span>
+                    <span className="font-black th-acc block">{foundPlayer.goals}</span>
                     <span className="text-[8px] th-muted font-bold uppercase block mt-0.5">Goals</span>
                   </div>
                   <div>
@@ -228,7 +228,7 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
             <div className="w-full grid grid-cols-2 gap-2">
               <div className="rounded-xl th-inset border th-border px-3 py-2 text-center">
                 <p className="text-[8px] font-mono uppercase tracking-widest th-muted font-bold">Market value</p>
-                <p className="text-sm font-mono font-black text-emerald-400">
+                <p className="text-sm font-mono font-black th-acc">
                   {marketValue !== null ? `$${Math.round(marketValue).toLocaleString()}` : "—"}
                 </p>
               </div>
@@ -245,7 +245,7 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
             {/* Team Profile Header */}
             <div className="flex flex-col items-center">
               <TeamCrest team={foundTeam} size={56} className="mb-1" />
-              <p className="text-[10px] font-mono tracking-widest text-emerald-400 font-extrabold uppercase mt-1">
+              <p className="text-[10px] font-mono tracking-widest th-acc font-extrabold uppercase mt-1">
                 CHAMPIONSHIP CLUB DOSSIER
               </p>
               <h3 className="text-lg font-black th-text tracking-tight leading-tight mt-1.5 truncate max-w-[240px]">
@@ -268,7 +268,7 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                         <span className="text-[8px] font-mono uppercase tracking-widest th-muted font-bold mr-1">Form</span>
                         {form.map((r, i) => (
                           <span key={i} title={r === "W" ? "Win" : r === "D" ? "Draw" : "Loss"}
-                            className={`h-4 w-4 rounded-full text-[8px] font-black font-mono flex items-center justify-center ${r === "W" ? "th-acc-soft text-emerald-400 border th-border-acc" : r === "D" ? "bg-slate-500/20 th-sub border th-border2" : "bg-red-500/15 text-red-400 border border-red-500/40"}`}>
+                            className={`h-4 w-4 rounded-full text-[8px] font-black font-mono flex items-center justify-center ${r === "W" ? "th-acc-soft th-acc border th-border-acc" : r === "D" ? "bg-slate-500/20 th-sub border th-border2" : "bg-red-500/15 th-danger border border-red-500/40"}`}>
                             {r}
                           </span>
                         ))}
@@ -367,7 +367,7 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
               <button
                 type="button"
                 onClick={() => setExpandGlobalEntity(true)}
-                className="w-full th-acc-soft hover:th-acc-soft text-emerald-400 font-bold font-sans text-xs py-2 px-4 rounded-xl border th-border-acc transition-all cursor-pointer flex items-center justify-center gap-1 hover:scale-[1.01]"
+                className="w-full th-acc-soft hover:th-acc-soft th-acc font-bold font-sans text-xs py-2 px-4 rounded-xl border th-border-acc transition-all cursor-pointer flex items-center justify-center gap-1 hover:scale-[1.01]"
               >
                 👥 EXPAND FULL CLUB ROSTER & RATINGS
               </button>

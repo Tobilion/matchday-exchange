@@ -27,7 +27,7 @@ export const BetBuilderTicketsList: React.FC<BetBuilderTicketsListProps> = ({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-xs font-black tracking-widest text-amber-400 uppercase pt-2">
+      <h3 className="text-xs font-black tracking-widest th-amber uppercase pt-2">
         ⚡ Bet Builder Tickets
       </h3>
       <div className="space-y-2.5">
@@ -55,10 +55,10 @@ export const BetBuilderTicketsList: React.FC<BetBuilderTicketsListProps> = ({
                 <span
                   className={`text-[9px] font-black font-mono uppercase rounded px-2 py-1 ${
                     isWon
-                      ? "th-acc-soft text-emerald-400"
+                      ? "th-acc-soft th-acc"
                       : isLost
-                      ? "bg-red-500/15 text-red-400"
-                      : "bg-amber-500/15 text-amber-400"
+                      ? "bg-red-500/15 th-danger"
+                      : "bg-amber-500/15 th-amber"
                   }`}
                 >
                   {ticket.status}
@@ -74,11 +74,11 @@ export const BetBuilderTicketsList: React.FC<BetBuilderTicketsListProps> = ({
               <div className="px-4 py-2 flex items-center justify-between text-[11px] font-mono border-t th-border th-muted">
                 <span>
                   Stake: <span className="th-text font-bold">${formatMoney(ticket.stake)}</span>
-                  {" · "}Odds: <span className="text-amber-400 font-bold">{ticket.combinedOdds.toFixed(2)}</span>
+                  {" · "}Odds: <span className="th-amber font-bold">{ticket.combinedOdds.toFixed(2)}</span>
                 </span>
                 <span>
                   {isWon ? "Returned: " : "Potential: "}
-                  <span className={`font-bold ${isWon ? "text-emerald-400" : isLost ? "text-red-400 line-through" : "th-text"}`}>
+                  <span className={`font-bold ${isWon ? "th-acc" : isLost ? "th-danger line-through" : "th-text"}`}>
                     ${formatMoney(ticket.potentialPayout)}
                   </span>
                 </span>

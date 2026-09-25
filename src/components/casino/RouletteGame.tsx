@@ -149,7 +149,7 @@ export const RouletteGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
           {OUTSIDE_BETS.map(b => (
             <button key={b.type} onClick={() => setSelectedBet(b)} disabled={spinning}
               className={`py-2 text-[10px] font-bold rounded-xl border transition-all cursor-pointer uppercase ${
-                selectedBet.type === b.type ? "bg-amber-500/20 border-amber-500 text-amber-400" : "th-wash th-border th-muted hover:th-border2"
+                selectedBet.type === b.type ? "bg-amber-500/20 border-amber-500 th-amber" : "th-wash th-border th-muted hover:th-border2"
               }`}>
               {b.label}<br/><span className="text-[8px] th-muted">{b.payout}x</span>
             </button>

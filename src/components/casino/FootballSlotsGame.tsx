@@ -103,7 +103,7 @@ export const FootballSlotsGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
         {[["3×Cup", "100x"], ["3×Boot", "50x"], ["3×Ball", "30x"], ["Pair Cup/Boot/Ball", "4/3/2x"]].map(([label, val]) => (
           <div key={label} className="th-wash rounded-lg py-1.5 px-1">
             <div className="text-[9px] th-muted font-mono">{label}</div>
-            <div className="text-[11px] font-black text-amber-400 font-mono mt-0.5">{val}</div>
+            <div className="text-[11px] font-black th-amber font-mono mt-0.5">{val}</div>
           </div>
         ))}
       </div>

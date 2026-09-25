@@ -107,7 +107,7 @@ export const WheelOfWealthGame: React.FC<GameProps> = ({ balance, onUpdateBalanc
       </div>
 
       {result && (
-        <div className={`text-center py-2 rounded-xl border font-black text-sm ${result.multiplier >= 5 ? "th-acc-soft th-border-acc text-emerald-400" : result.multiplier === 0 ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-amber-500/10 border-amber-500/20 text-amber-400"}`}>
+        <div className={`text-center py-2 rounded-xl border font-black text-sm ${result.multiplier >= 5 ? "th-acc-soft th-border-acc th-acc" : result.multiplier === 0 ? "bg-red-500/10 border-red-500/20 th-danger" : "bg-amber-500/10 border-amber-500/20 th-amber"}`}>
           {result.label} → {result.multiplier}x
         </div>
       )}

@@ -46,7 +46,7 @@ export const StakeSlider: React.FC<StakeSliderProps> = ({
         <span className="th-muted font-sans uppercase font-semibold tracking-wide">
           {label ?? "WAGER STAKE"}
         </span>
-        <span className="font-mono text-emerald-400 font-black text-sm">
+        <span className="font-mono th-acc font-black text-sm">
           ${clampedValue.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -55,7 +55,7 @@ export const StakeSlider: React.FC<StakeSliderProps> = ({
       </div>
       {isEmpty ? (
         <div className="w-full h-7 flex items-center justify-center bg-red-500/10 border border-red-500/20 rounded-xl">
-          <span className="text-[10px] text-red-400 font-mono uppercase font-bold">
+          <span className="text-[10px] th-danger font-mono uppercase font-bold">
             ⚠️ No balance – top up via the Wallet to keep playing
           </span>
         </div>

@@ -72,12 +72,12 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ onEnter })
             >
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-2xl th-acc-soft flex items-center justify-center mb-6 border th-border-acc group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <svg className="w-8 h-8 th-acc" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 0M12 14.25a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm9 2.25H3M21 12H3m18-4.25H3" />
                     <circle cx="12" cy="11.25" r="9" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold th-text mb-3 group-hover:text-emerald-400 transition-colors">
+                <h3 className="text-lg font-bold th-text mb-3 group-hover:th-acc transition-colors">
                   Simulate Matches
                 </h3>
                 <p className="text-xs th-muted leading-relaxed">
@@ -102,11 +102,11 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ onEnter })
             >
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-2xl th-acc-soft flex items-center justify-center mb-6 border th-border-acc group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <svg className="w-8 h-8 th-acc" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182.553-.44 1.278-.659 2.003-.659.768 0 1.536.218 2.121.658m-.779.66c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C17.536 7.219 16.768 7 16 7" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold th-text mb-3 group-hover:text-emerald-400 transition-colors">
+                <h3 className="text-lg font-bold th-text mb-3 group-hover:th-acc transition-colors">
                   Bet & Play Casino
                 </h3>
                 <p className="text-xs th-muted leading-relaxed">
@@ -131,11 +131,11 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ onEnter })
             >
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-2xl bg-cyan-500/5 flex items-center justify-center mb-6 border border-cyan-500/15 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <svg className="w-8 h-8 th-info" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21V9m0 12h.008M12 3a9 9 0 0 1 7.18 3.63L13.5 9H21v3h-3.75l-2.25-3-1.5 2.25M12 3a9 9 0 0 0-7.18 3.63L10.5 9H3v3h3.75l2.25-3 1.5 2.25" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold th-text mb-3 group-hover:text-cyan-400 transition-colors">
+                <h3 className="text-lg font-bold th-text mb-3 group-hover:th-info transition-colors">
                   Build Your Club
                 </h3>
                 <p className="text-xs th-muted leading-relaxed">

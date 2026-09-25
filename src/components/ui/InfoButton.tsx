@@ -26,7 +26,7 @@ export const InfoButton: React.FC<InfoButtonProps> = ({ title, body, text }) => 
         {isOpen && (
           <div className="absolute top-6 left-0 z-50 w-48 p-2 text-xs th-text th-solid2 border th-border2 rounded-md shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-start mb-1">
-              <span className="font-bold text-emerald-400">Info</span>
+              <span className="font-bold th-acc">Info</span>
               <button onClick={() => setIsOpen(false)} className="th-muted hover:th-text"><X size={12} /></button>
             </div>
             <p className="leading-tight th-sub">{text}</p>
@@ -71,7 +71,7 @@ export const InfoButton: React.FC<InfoButtonProps> = ({ title, body, text }) => 
               </button>
               
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-sky-500/20 th-info flex items-center justify-center">
                   <Info size={20} />
                 </div>
                 <h3 className="text-lg font-bold th-text tracking-tight">{title}</h3>

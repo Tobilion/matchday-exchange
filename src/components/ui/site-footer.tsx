@@ -152,7 +152,7 @@ export const AvatarCredit = ({ username, className }: { username: string; classN
         onClick={() => setIsOpen((o) => !o)}
         aria-expanded={isOpen}
         aria-label="Tobiloba Jagun — show credit"
-        className="h-8 w-8 shrink-0 rounded-full bg-emerald-500 flex items-center justify-center font-black text-slate-900 border border-emerald-400 shadow-lg shadow-emerald-500/20 cursor-pointer touch-manipulation"
+        className="h-8 w-8 shrink-0 rounded-full bg-emerald-500 flex items-center justify-center font-black text-slate-900 border th-border-acc shadow-lg shadow-emerald-500/20 cursor-pointer touch-manipulation"
       >
         {username.slice(0, 2).toUpperCase()}
       </button>

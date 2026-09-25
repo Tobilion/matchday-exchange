@@ -137,7 +137,7 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
   return (
     <div className="space-y-4">
       <div className="th-inset border th-border rounded-xl p-4 text-center">
-        <span className="text-[9px] font-mono text-emerald-400 uppercase font-black">ROUND STREAK STATUS — BOOSTED ODDS</span>
+        <span className="text-[9px] font-mono th-acc uppercase font-black">ROUND STREAK STATUS — BOOSTED ODDS</span>
         <div className="flex justify-center items-center gap-3 my-4">
           {[1, 2, 3, 4].map(r => {
             const isCleared = round > r;
@@ -147,9 +147,9 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
                 key={r}
                 className={`h-12 w-12 rounded-xl flex flex-col items-center justify-center border font-mono transition-all ${
                   isCleared
-                    ? "th-acc-soft th-border-acc text-emerald-400"
+                    ? "th-acc-soft th-border-acc th-acc"
                     : isCurrent
-                    ? "bg-amber-500/20 border-amber-500 text-amber-400 animate-pulse font-bold"
+                    ? "bg-amber-500/20 border-amber-500 th-amber animate-pulse font-bold"
                     : "th-wash th-border th-muted"
                 }`}
               >
@@ -163,7 +163,7 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
         <div className="min-h-24 flex items-center justify-center border th-border rounded-xl th-inset p-4">
           {spinning ? (
             <div className="flex flex-col items-center gap-2">
-              <RefreshCw className="animate-spin text-amber-400" size={24} />
+              <RefreshCw className="animate-spin th-amber" size={24} />
               <span className="text-xs th-muted font-mono uppercase">Shuffling decks...</span>
             </div>
           ) : lastDraw ? (
@@ -197,8 +197,8 @@ export const RedOrBlackGame: React.FC<GameProps> = ({ balance, onUpdateBalance, 
         />
       ) : (
         <div className="th-inset border th-border rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-          <span>Active Streak: <b className="text-emerald-400">Round {round}</b></span>
-          <span>Rolling Pool: <b className="text-emerald-400">${formatMoney(currentPool)}</b></span>
+          <span>Active Streak: <b className="th-acc">Round {round}</b></span>
+          <span>Rolling Pool: <b className="th-acc">${formatMoney(currentPool)}</b></span>
         </div>
       )}
 

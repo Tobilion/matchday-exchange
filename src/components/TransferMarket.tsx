@@ -99,7 +99,7 @@ export const TransferMarket: React.FC<TransferMarketProps> = ({
           </div>
           <div className="text-right">
             <p className="text-xs th-muted">Overall</p>
-            <p className="text-amber-400 font-bold text-sm">{player?.rating ?? "—"}</p>
+            <p className="th-amber font-bold text-sm">{player?.rating ?? "—"}</p>
           </div>
         </div>
 
@@ -110,11 +110,11 @@ export const TransferMarket: React.FC<TransferMarketProps> = ({
           </div>
           <div className="th-wash rounded-lg p-2 text-center">
             <p className="th-muted text-[10px]">Ask Price</p>
-            <p className="text-emerald-400 font-semibold">${formatMoney(listing.askingPrice, 0)}</p>
+            <p className="th-acc font-semibold">${formatMoney(listing.askingPrice, 0)}</p>
           </div>
           <div className="th-wash rounded-lg p-2 text-center">
             <p className="th-muted text-[10px]">Rounds Left</p>
-            <p className={roundsLeft <= 1 ? "text-red-400 font-semibold" : "th-text font-semibold"}>
+            <p className={roundsLeft <= 1 ? "th-danger font-semibold" : "th-text font-semibold"}>
               {roundsLeft}
             </p>
           </div>
@@ -122,9 +122,9 @@ export const TransferMarket: React.FC<TransferMarketProps> = ({
 
         <div className="flex items-center justify-between text-xs pt-1 border-t th-border">
           <span className="th-muted">Highest Bid</span>
-          <span className={userLeading ? "text-amber-400 font-semibold flex items-center gap-1" : "th-text"}>
+          <span className={userLeading ? "th-amber font-semibold flex items-center gap-1" : "th-text"}>
             ${formatMoney(highest, 0)}
-            {userLeading && <span className="bg-amber-400/20 text-amber-400 text-[8px] font-bold px-1 py-0.5 rounded">🏆 Leading</span>}
+            {userLeading && <span className="bg-amber-400/20 th-amber text-[8px] font-bold px-1 py-0.5 rounded">🏆 Leading</span>}
           </span>
         </div>
 
@@ -154,13 +154,13 @@ export const TransferMarket: React.FC<TransferMarketProps> = ({
           </div>
         ) : (
           <div className="flex items-center justify-between bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-1.5">
-            <span className="text-amber-400 text-xs font-semibold">
+            <span className="th-amber text-xs font-semibold">
               Your bid: ${formatMoney(userBidForThis.amount, 0)}
             </span>
             <button
               type="button"
               onClick={() => onWithdrawBid(listing.id)}
-              className="th-muted hover:text-red-400 text-xs font-bold transition-colors cursor-pointer"
+              className="th-muted hover:th-danger text-xs font-bold transition-colors cursor-pointer"
             >
               Withdraw
             </button>
@@ -192,7 +192,7 @@ export const TransferMarket: React.FC<TransferMarketProps> = ({
         </div>
         <div className="text-right">
           <p className="text-xs th-muted">Highest</p>
-          <p className="text-red-400 font-semibold text-sm">${formatMoney(highest, 0)}</p>
+          <p className="th-danger font-semibold text-sm">${formatMoney(highest, 0)}</p>
         </div>
       </div>
     );
@@ -246,7 +246,7 @@ export const TransferMarket: React.FC<TransferMarketProps> = ({
             {onRefresh && (
               <button
                 onClick={onRefresh}
-                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-emerald-400 hover:text-emerald-300 th-acc-soft hover:th-acc-soft border th-border-acc px-2.5 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide th-acc hover:th-acc th-acc-soft hover:th-acc-soft border th-border-acc px-2.5 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer"
                 title="Replace the list with a fresh set of players ($25,000 fee). Bids you've placed are kept."
               >
                 🔄 Refresh list <span className="th-muted normal-case">($25K)</span>
@@ -297,17 +297,17 @@ export const TransferMarket: React.FC<TransferMarketProps> = ({
                         </div>
                         <span className={`text-[8px] font-black px-1.5 py-0.5 rounded uppercase ${
                           userLeading
-                            ? "th-acc-soft text-emerald-400 border th-border-acc"
-                            : "bg-red-500/20 text-red-400 border border-red-500/10"
+                            ? "th-acc-soft th-acc border th-border-acc"
+                            : "bg-red-500/20 th-danger border border-red-500/10"
                         }`}>
                           {userLeading ? "Leading" : "Outbid"}
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-[10px] pt-1.5 border-t th-border">
-                        <span className="th-muted">Bid: <b className="text-emerald-400">${formatMoney(bid.amount, 0)}</b></span>
+                        <span className="th-muted">Bid: <b className="th-acc">${formatMoney(bid.amount, 0)}</b></span>
                         <button
                           onClick={() => onWithdrawBid(bid.listingId)}
-                          className="text-[9px] th-muted hover:text-red-400 font-bold underline cursor-pointer"
+                          className="text-[9px] th-muted hover:th-danger font-bold underline cursor-pointer"
                         >
                           Withdraw
                         </button>
@@ -338,7 +338,7 @@ export const TransferMarket: React.FC<TransferMarketProps> = ({
           {/* Balance reminder */}
           <div className="th-wash rounded-xl p-3.5 flex-shrink-0">
             <p className="text-[10px] th-muted font-bold uppercase tracking-wider">Spendable Balance</p>
-            <p className="text-base font-black text-emerald-400 mt-0.5">${formatMoney(balance, 0)}</p>
+            <p className="text-base font-black th-acc mt-0.5">${formatMoney(balance, 0)}</p>
             <p className="text-[9px] th-muted mt-1 leading-normal">
               Bid wagers are reserved from your balance immediately and refunded if you are outbid or withdraw.
             </p>

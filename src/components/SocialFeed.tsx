@@ -282,7 +282,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
         </div>
         <button
           onClick={handleResetFeed}
-          className="flex items-center gap-1.5 th-wash hover:th-wash2 th-sub hover:text-emerald-400 px-3 py-1.5 rounded-xl text-xs transition-all border th-border cursor-pointer"
+          className="flex items-center gap-1.5 th-wash hover:th-wash2 th-sub hover:th-acc px-3 py-1.5 rounded-xl text-xs transition-all border th-border cursor-pointer"
         >
           <RefreshCw size={12} />
           Reset Banter
@@ -379,10 +379,10 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
                               {post.authorName}
                             </span>
                             {post.isVerified && (
-                              <CheckCircle2 size={11} className="text-sky-400 fill-sky-400/10 shrink-0" />
+                              <CheckCircle2 size={11} className="th-info fill-sky-400/10 shrink-0" />
                             )}
                             {post.isTipster && (
-                              <span className="text-[8px] th-acc-soft border th-border-acc text-emerald-400 px-1 py-0.2 rounded font-mono uppercase font-extrabold select-none shrink-0">
+                              <span className="text-[8px] th-acc-soft border th-border-acc th-acc px-1 py-0.2 rounded font-mono uppercase font-extrabold select-none shrink-0">
                                 PRO TIPSTER
                               </span>
                             )}
@@ -417,8 +417,8 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({ fixtures, teams, roundLa
                     <div className="flex items-center gap-6 text-[10px] font-mono th-muted pl-11 pt-1 border-t th-border select-none">
                       <button
                         onClick={(e) => handleLike(post.id, e)}
-                        className={`flex items-center gap-1 px-1 py-0.5 rounded hover:text-red-400 transition-all cursor-pointer ${
-                          post.isLikedByUser ? "text-red-400" : ""
+                        className={`flex items-center gap-1 px-1 py-0.5 rounded hover:th-danger transition-all cursor-pointer ${
+                          post.isLikedByUser ? "th-danger" : ""
                         }`}
                       >
                         <Heart size={12} className={post.isLikedByUser ? "fill-red-400/20" : ""} />

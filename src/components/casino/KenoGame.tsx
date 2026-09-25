@@ -94,7 +94,7 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
     <div className="space-y-3 select-none">
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-mono th-muted uppercase font-bold">PICKS: {picks.size}/10</span>
-        {phase === "done" && <span className={`text-[10px] font-mono font-bold ${hits >= 5 ? "text-emerald-400" : "th-muted"}`}>HITS: {hits}/{picks.size}</span>}
+        {phase === "done" && <span className={`text-[10px] font-mono font-bold ${hits >= 5 ? "th-acc" : "th-muted"}`}>HITS: {hits}/{picks.size}</span>}
       </div>
 
       {/* Number grid */}
@@ -107,8 +107,8 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
             <button key={n} onClick={() => togglePick(n)} disabled={phase !== "idle"}
               className={`h-8 sm:h-9 rounded-lg text-[11px] font-black transition-all active:scale-90 ${
                 isHit ? "bg-emerald-500 th-text ring-2 ring-emerald-400 scale-110" :
-                isDrawn ? "bg-red-700/60 text-red-300 border border-red-500/30" :
-                isPick ? "bg-amber-500/30 border-2 border-amber-500 text-amber-400" :
+                isDrawn ? "bg-red-700/60 th-danger border border-red-500/30" :
+                isPick ? "bg-amber-500/30 border-2 border-amber-500 th-amber" :
                 "th-wash border th-border th-muted hover:th-wash2 cursor-pointer"
               }`}>
               {n}
@@ -122,7 +122,7 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
         <div className="text-[8px] font-mono th-muted uppercase mb-1.5 text-center">Payouts for {picks.size || 10}-pick ticket</div>
         <div className="grid grid-cols-6 gap-1 text-center">
           {Object.entries(activeTable).map(([k, v]) => (
-            <div key={k} className={`text-[9px] font-mono ${hits === parseInt(k) && phase === "done" ? "text-emerald-400 font-black" : "th-muted"}`}>
+            <div key={k} className={`text-[9px] font-mono ${hits === parseInt(k) && phase === "done" ? "th-acc font-black" : "th-muted"}`}>
               <div className="text-[8px]">{k}H</div>
               <div className="font-bold">{v}x</div>
             </div>
@@ -145,7 +145,7 @@ export const KenoGame: React.FC<GameProps> = ({ balance, onUpdateBalance, addLog
           🔄 NEW TICKET
         </button>
       ) : (
-        <div className="w-full th-wash border th-border rounded-2xl py-3 text-center text-xs text-amber-400 font-mono animate-pulse">
+        <div className="w-full th-wash border th-border rounded-2xl py-3 text-center text-xs th-amber font-mono animate-pulse">
           Drawing numbers...
         </div>
       )}

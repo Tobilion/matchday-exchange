@@ -92,7 +92,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
               {/* Profile Block */}
               <div className="flex items-start gap-3.5 flex-1 select-none">
                 {/* Ranking Position */}
-                <div className="h-10 w-16 shrink-0 rounded-xl th-inset border th-border flex items-center justify-center text-xs font-black font-mono text-emerald-400">
+                <div className="h-10 w-16 shrink-0 rounded-xl th-inset border th-border flex items-center justify-center text-xs font-black font-mono th-acc">
                   {rankIcon}
                 </div>
 
@@ -100,14 +100,14 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
 
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className={`text-sm font-extrabold ${isUser ? "text-emerald-400" : "th-text"}`}>
+                    <h3 className={`text-sm font-extrabold ${isUser ? "th-acc" : "th-text"}`}>
                       {comp.name}
                     </h3>
                     
                     {/* Risk profile tag */}
                     <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${
-                      comp.riskProfile === "SAFE" ? "th-acc-soft text-emerald-400" :
-                      comp.riskProfile === "BALANCED" ? "bg-blue-500/10 text-blue-400" : "bg-red-500/10 text-red-400"
+                      comp.riskProfile === "SAFE" ? "th-acc-soft th-acc" :
+                      comp.riskProfile === "BALANCED" ? "bg-blue-500/10 th-info" : "bg-red-500/10 th-danger"
                     }`}>
                       {comp.riskProfile} STYLE
                     </span>
@@ -125,7 +125,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                 {/* Stats Columns */}
                 <div className="text-left font-mono select-none">
                   <span className="text-[8px] th-muted block uppercase font-bold leading-none">PREDICT BALANCE</span>
-                  <span className="text-sm font-black text-emerald-400 block mt-0.5 whitespace-nowrap">
+                  <span className="text-sm font-black th-acc block mt-0.5 whitespace-nowrap">
                     ${comp.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -169,7 +169,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                         <span
                           key={i}
                           className={`h-5 w-5 rounded flex items-center justify-center text-[9px] font-black ${
-                            r === "W" ? "th-acc-soft text-emerald-400" : "bg-red-500/20 text-red-400"
+                            r === "W" ? "th-acc-soft th-acc" : "bg-red-500/20 th-danger"
                           }`}
                         >
                           {r}
@@ -184,7 +184,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                     </div>
                     <div className="th-inset rounded-lg p-2 border th-border">
                       <span className="text-[8px] th-muted uppercase block font-bold">Strike Rate</span>
-                      <span className="text-xs font-black text-emerald-400">{comp.accuracy}%</span>
+                      <span className="text-xs font-black th-acc">{comp.accuracy}%</span>
                     </div>
                     <div className="th-inset rounded-lg p-2 border th-border">
                       <span className="text-[8px] th-muted uppercase block font-bold">Balance</span>

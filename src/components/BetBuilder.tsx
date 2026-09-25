@@ -124,12 +124,12 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
         onClick={() => toggleSel({ marketType, selectionId, odds, label })}
         className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs border transition-all cursor-pointer ${
           active
-            ? "bg-amber-500/20 border-amber-500/60 text-amber-300 font-bold"
+            ? "bg-amber-500/20 border-amber-500/60 th-amber font-bold"
             : "th-wash th-border th-sub hover:th-border2 hover:th-text"
         }`}
       >
         <span className="truncate mr-2">{label}</span>
-        <span className={`font-mono font-bold shrink-0 ${active ? "text-amber-400" : "text-emerald-400"}`}>
+        <span className={`font-mono font-bold shrink-0 ${active ? "th-amber" : "th-acc"}`}>
           {odds.toFixed(2)}
         </span>
       </button>
@@ -279,8 +279,8 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b th-border th-wash shrink-0">
           <div className="flex items-center gap-2">
-            <Zap size={14} className="text-amber-400" />
-            <span className="text-sm font-black text-amber-400 uppercase tracking-widest">Bet Builder</span>
+            <Zap size={14} className="th-amber" />
+            <span className="text-sm font-black th-amber uppercase tracking-widest">Bet Builder</span>
             <TeamCrest team={homeTeam} size={20} />
             <span className="text-xs th-sub font-semibold">{homeTeam.shortName} vs {awayTeam.shortName}</span>
             <TeamCrest team={awayTeam} size={20} />
@@ -296,7 +296,7 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
             <div className="flex border-b th-border shrink-0">
               {(["MAIN","GOALS","TOTALS","PLAYERS"] as Category[]).map((cat) => (
                 <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
-                  className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${activeCategory===cat?"text-amber-400 border-b-2 border-amber-400 bg-amber-500/5":"th-muted hover:th-sub"}`}>
+                  className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${activeCategory===cat?"th-amber border-b-2 border-amber-400 bg-amber-500/5":"th-muted hover:th-sub"}`}>
                   {cat}
                 </button>
               ))}
@@ -320,10 +320,10 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
               ) : (
                 selections.map((s) => (
                   <div key={selKey(s)} className="flex items-center justify-between bg-amber-500/10 border border-amber-500/25 rounded-lg px-2.5 py-1.5 gap-2">
-                    <span className="text-xs text-amber-300 truncate">{s.label}</span>
+                    <span className="text-xs th-amber truncate">{s.label}</span>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[10px] font-mono font-bold text-amber-400">{s.odds.toFixed(2)}</span>
-                      <button type="button" onClick={() => setSelections((p) => p.filter((x) => selKey(x) !== selKey(s)))} className="th-muted hover:text-red-400 transition-colors cursor-pointer">
+                      <span className="text-[10px] font-mono font-bold th-amber">{s.odds.toFixed(2)}</span>
+                      <button type="button" onClick={() => setSelections((p) => p.filter((x) => selKey(x) !== selKey(s)))} className="th-muted hover:th-danger transition-colors cursor-pointer">
                         <X size={10} />
                       </button>
                     </div>
@@ -336,7 +336,7 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
             <div className="p-4 border-t th-border space-y-3 shrink-0">
               <div className="text-center">
                 <p className="text-[9px] th-muted font-mono uppercase">Combined Odds</p>
-                <p className="text-3xl font-black font-mono text-amber-400">{combinedOdds.toFixed(2)}</p>
+                <p className="text-3xl font-black font-mono th-amber">{combinedOdds.toFixed(2)}</p>
                 <p className="text-[9px] th-faint font-mono">incl. 7% correlation discount/leg</p>
               </div>
               <input
@@ -346,10 +346,10 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
               />
               {stakeNum > 0 && (
                 <p className="text-[10px] text-center font-mono th-muted">
-                  Potential: <span className="text-emerald-400 font-bold">${formatMoney(payout)}</span>
+                  Potential: <span className="th-acc font-bold">${formatMoney(payout)}</span>
                 </p>
               )}
-              {toast && <p className="text-[10px] text-amber-400 font-mono text-center">{toast}</p>}
+              {toast && <p className="text-[10px] th-amber font-mono text-center">{toast}</p>}
               <button
                 type="button" onClick={handlePlace}
                 disabled={!!validationErr || stakeNum <= 0 || stakeNum > balance}

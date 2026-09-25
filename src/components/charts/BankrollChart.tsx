@@ -125,7 +125,7 @@ export const BankrollChart: React.FC<BankrollChartProps> = ({ history, startingB
           className="absolute top-0 pointer-events-none z-10 th-solid border th-border rounded-lg px-2.5 py-1.5 text-[10px] font-mono shadow-xl"
           style={{ left: Math.min(hoveredX / W * 100, 75) + "%", transform: "translateX(-50%)" }}
         >
-          <p className={`font-bold ${hoveredPt.balance >= startingBalance ? "text-emerald-400" : "text-red-400"}`}>
+          <p className={`font-bold ${hoveredPt.balance >= startingBalance ? "th-acc" : "th-danger"}`}>
             ${hoveredPt.balance.toLocaleString()}
           </p>
           <p className="th-muted">{hoveredPt.detail}</p>

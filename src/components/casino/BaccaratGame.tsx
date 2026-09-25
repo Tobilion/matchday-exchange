@@ -102,7 +102,7 @@ export const BaccaratGame: React.FC<GameProps> = ({ balance, onUpdateBalance, ad
           <div key={label} className="th-inset border th-border rounded-xl p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[9px] font-mono th-muted uppercase font-bold">{label}</span>
-              {hand.length > 0 && <span className="text-lg font-black text-emerald-400 font-mono">{pts}</span>}
+              {hand.length > 0 && <span className="text-lg font-black th-acc font-mono">{pts}</span>}
             </div>
             <div className="flex gap-1.5 min-h-[3.5rem]">
               {hand.map((c, i) => <CardUI key={i} card={c} />)}

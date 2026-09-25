@@ -58,7 +58,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
         <div className="text-center space-y-1 select-none">
           <span className="text-2xl block">🏦</span>
-          <h3 className="text-sm font-black tracking-wider uppercase text-emerald-400 font-sans mt-2">
+          <h3 className="text-sm font-black tracking-wider uppercase th-acc font-sans mt-2">
             Matchday Exchange Wallet Centre
           </h3>
           <p className="text-[9px] th-muted font-mono tracking-tight">
@@ -133,7 +133,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
         {balance < 50 && !grantClaimed && (
           <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-center space-y-2 animate-fade-in">
-            <span className="text-[10px] text-amber-400 font-mono uppercase font-black block">
+            <span className="text-[10px] th-amber font-mono uppercase font-black block">
               ⚠️ EMERGENCY FUNDS AVAILABLE
             </span>
             <p className="text-[9px] th-muted">
@@ -155,7 +155,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         )}
 
         {walletSuccessMsg && (
-          <div className="text-[10px] th-acc-soft border th-border-acc text-emerald-400 p-2 rounded-xl text-center font-bold">
+          <div className="text-[10px] th-acc-soft border th-border-acc th-acc p-2 rounded-xl text-center font-bold">
             {walletSuccessMsg}
           </div>
         )}

@@ -23,7 +23,7 @@ export const OwnerRevenueModal: React.FC<OwnerRevenueModalProps> = ({
   onClose,
 }) => {
   const resultColor = (r: RevenueFixture["result"]) =>
-    r === "WIN" ? "text-emerald-400" : r === "LOSS" ? "text-red-400" : "th-muted";
+    r === "WIN" ? "th-acc" : r === "LOSS" ? "th-danger" : "th-muted";
   const resultIcon = (r: RevenueFixture["result"]) =>
     r === "WIN" ? "🏆" : r === "LOSS" ? "😞" : "🤝";
   const resultLabel = (r: RevenueFixture["result"]) =>
@@ -49,7 +49,7 @@ export const OwnerRevenueModal: React.FC<OwnerRevenueModalProps> = ({
         {/* Header */}
         <div className="text-center mb-5">
           <div className="text-3xl mb-2">🏟️</div>
-          <p className="text-[10px] font-mono tracking-widest text-emerald-400 font-black uppercase">
+          <p className="text-[10px] font-mono tracking-widest th-acc font-black uppercase">
             CLUB OWNERSHIP · MATCHDAY REPORT
           </p>
           <h2 className="text-lg font-black th-text mt-1">{teamName}</h2>
@@ -57,10 +57,10 @@ export const OwnerRevenueModal: React.FC<OwnerRevenueModalProps> = ({
 
         {/* Total revenue banner */}
         <div className="th-acc-soft border th-border-acc rounded-2xl p-4 text-center mb-4">
-          <p className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-widest mb-1">
+          <p className="text-[10px] th-acc font-mono font-bold uppercase tracking-widest mb-1">
             MATCHDAY REVENUE CREDITED
           </p>
-          <p className="text-3xl font-black text-emerald-400 font-mono">
+          <p className="text-3xl font-black th-acc font-mono">
             +${formatMoney(revenue)}
           </p>
           <p className="text-[10px] th-muted mt-1">Added to your wallet</p>
@@ -85,14 +85,14 @@ export const OwnerRevenueModal: React.FC<OwnerRevenueModalProps> = ({
                   <p className="text-[9px] th-muted font-mono">
                     Base: ${formatMoney(f.baseIncome)}
                     {f.bonus !== 0 && (
-                      <span className={f.bonus > 0 ? " text-emerald-400" : " text-red-400"}>
+                      <span className={f.bonus > 0 ? " th-acc" : " th-danger"}>
                         {f.bonus > 0 ? ` +$${formatMoney(f.bonus)} WIN BONUS` : ` -$${formatMoney(Math.abs(f.bonus))} LOSS PENALTY`}
                       </span>
                     )}
                   </p>
                 </div>
               </div>
-              <span className={`text-sm font-black font-mono ${f.bonus > 0 ? "text-emerald-400" : f.bonus < 0 ? "text-red-400" : "th-sub"}`}>
+              <span className={`text-sm font-black font-mono ${f.bonus > 0 ? "th-acc" : f.bonus < 0 ? "th-danger" : "th-sub"}`}>
                 +${formatMoney(f.baseIncome + f.bonus)}
               </span>
             </div>
@@ -102,7 +102,7 @@ export const OwnerRevenueModal: React.FC<OwnerRevenueModalProps> = ({
         {/* Perks reminder */}
         <div className="th-wash border th-border rounded-xl p-3 text-center mb-4">
           <p className="text-[10px] th-muted font-mono">
-            💡 <span className="text-emerald-400 font-bold">OWNER PERK</span> — You get 5% boosted odds on your club's matches. Upgrade your <span className="text-yellow-400 font-bold">Stadium</span> in My Club to increase matchday revenue.
+            💡 <span className="th-acc font-bold">OWNER PERK</span> — You get 5% boosted odds on your club's matches. Upgrade your <span className="th-amber font-bold">Stadium</span> in My Club to increase matchday revenue.
           </p>
         </div>
 

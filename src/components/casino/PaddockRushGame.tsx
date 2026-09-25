@@ -148,8 +148,8 @@ export const PaddockRushGame: React.FC<GameProps> = ({
               isCrashed
                 ? "text-red-500"
                 : isCashedOut
-                  ? "text-emerald-400"
-                  : "text-amber-400 animate-pulse"
+                  ? "th-acc"
+                  : "th-amber animate-pulse"
             }`}
           >
             {multiplier.toFixed(2)}x
@@ -166,7 +166,7 @@ export const PaddockRushGame: React.FC<GameProps> = ({
           <span className="text-[10px] font-mono th-sub z-10 uppercase font-bold">
             START 1.0x
           </span>
-          <span className="text-[10px] font-mono text-amber-400 z-10 font-black">
+          <span className="text-[10px] font-mono th-amber z-10 font-black">
             CRASH POINT
           </span>
         </div>

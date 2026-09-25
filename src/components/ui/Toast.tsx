@@ -34,12 +34,12 @@ const ACCENT_COLOR: Record<string, string> = {
 };
 
 const TITLE_COLOR: Record<string, string> = {
-  goal: "text-emerald-400",
-  win: "text-emerald-400",
-  loss: "text-red-400",
-  cashout: "text-cyan-400",
-  transfer: "text-purple-400",
-  info: "text-blue-400",
+  goal: "th-acc",
+  win: "th-acc",
+  loss: "th-danger",
+  cashout: "th-info",
+  transfer: "th-purple",
+  info: "th-info",
   tip: "text-violet-400",
 };
 

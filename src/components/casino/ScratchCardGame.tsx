@@ -127,7 +127,7 @@ export const ScratchCardGame: React.FC<GameProps> = ({ balance, onUpdateBalance,
         {Object.entries(PRIZE_TABLE).filter(([,v]) => v > 0).slice(0,5).map(([sym, v]) => (
           <div key={sym} className="th-wash border th-border rounded-lg p-1.5 text-center">
             <div className="text-lg">{sym}</div>
-            <div className="text-[9px] font-mono text-emerald-400 font-bold">{v}x</div>
+            <div className="text-[9px] font-mono th-acc font-bold">{v}x</div>
           </div>
         ))}
       </div>
@@ -147,8 +147,8 @@ export const ScratchCardGame: React.FC<GameProps> = ({ balance, onUpdateBalance,
       </div>
 
       <p className={`text-xs text-center font-bold py-2.5 px-3 rounded-xl border leading-snug ${
-        phase === "done" && message.includes("WIN") ? "th-acc-soft th-border-acc text-emerald-400" :
-        phase === "done" ? "bg-red-500/10 border-red-500/20 text-red-400" : "th-wash th-border th-sub"
+        phase === "done" && message.includes("WIN") ? "th-acc-soft th-border-acc th-acc" :
+        phase === "done" ? "bg-red-500/10 border-red-500/20 th-danger" : "th-wash th-border th-sub"
       }`}>{message}</p>
 
       {phase === "idle" || phase === "done" ? (

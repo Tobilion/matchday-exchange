@@ -90,7 +90,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
         <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
           {/* Rank Badge */}
           <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-yellow-400 to-amber-500 p-0.5 flex items-center justify-center text-slate-950 shadow-md transform hover:scale-105 active:scale-95 transition-all">
-            <div className="th-solid text-amber-400 h-full w-full rounded-2xl flex flex-col items-center justify-center font-bold">
+            <div className="th-solid th-amber h-full w-full rounded-2xl flex flex-col items-center justify-center font-bold">
               <span className="text-[9px] uppercase leading-none font-black tracking-widest th-muted font-sans">RANK</span>
               <span className="text-xl font-sans leading-none mt-1 font-extrabold">#1</span>
             </div>
@@ -107,7 +107,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
               </button>
               <h4 
                 onClick={() => triggerGlobalEntity("player", player.id)}
-                className="text-sm font-black th-text hover:text-emerald-400 cursor-pointer hover:underline transition-all font-sans tracking-tight"
+                className="text-sm font-black th-text hover:th-acc cursor-pointer hover:underline transition-all font-sans tracking-tight"
                 title="View Player Portrait Capabilities"
               >
                 {player.name}
@@ -115,7 +115,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
             </div>
             
             <p className="text-[10px] th-muted font-mono">
-              Club: <span onClick={() => triggerGlobalEntity("team", player.teamCrest.id)} className="th-sub hover:text-emerald-405 font-bold hover:underline cursor-pointer">{player.teamName}</span> • Position: <span className="font-bold text-emerald-400">{player.position}</span> (OVR {player.rating})
+              Club: <span onClick={() => triggerGlobalEntity("team", player.teamCrest.id)} className="th-sub hover:th-acc font-bold hover:underline cursor-pointer">{player.teamName}</span> • Position: <span className="font-bold th-acc">{player.position}</span> (OVR {player.rating})
             </p>
           </div>
         </div>
@@ -125,7 +125,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
           <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded leading-none ${labelBg}`}>
             {metricLabel}
           </span>
-          <span className="text-2xl font-mono font-black text-emerald-400 mt-1 block leading-none">
+          <span className="text-2xl font-mono font-black th-acc mt-1 block leading-none">
             {metricValue}
           </span>
           <span className="text-[9px] th-muted font-mono mt-1 block uppercase">
@@ -237,7 +237,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
             </div>
             <div className="text-right">
               <p className="text-[9px] th-muted font-mono">Current</p>
-              <p className={`text-sm font-black font-mono ${userProfile.balance >= 1000 ? "text-emerald-400" : "text-red-400"}`}>
+              <p className={`text-sm font-black font-mono ${userProfile.balance >= 1000 ? "th-acc" : "th-danger"}`}>
                 ${userProfile.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
@@ -251,7 +251,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
         <button
           onClick={() => setPrimaryTab("finance")}
           className={`flex-1 py-1.5 text-xs font-bold font-mono uppercase tracking-wider rounded-lg transition-all ${
-            primaryTab === "finance" ? "th-wash2 text-emerald-400 shadow" : "th-muted hover:th-text"
+            primaryTab === "finance" ? "th-wash2 th-acc shadow" : "th-muted hover:th-text"
           }`}
         >
           My Finance
@@ -259,7 +259,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
         <button
           onClick={() => setPrimaryTab("sports")}
           className={`flex-1 py-1.5 text-xs font-bold font-mono uppercase tracking-wider rounded-lg transition-all ${
-            primaryTab === "sports" ? "th-wash2 text-emerald-400 shadow" : "th-muted hover:th-text"
+            primaryTab === "sports" ? "th-wash2 th-acc shadow" : "th-muted hover:th-text"
           }`}
         >
           Sports Stats
@@ -293,7 +293,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
 
         <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
           <span className="text-[9px] th-muted font-bold uppercase font-sans">TOTAL GOALS SCORED</span>
-          <span className="text-base font-black font-mono text-emerald-400 mt-1">
+          <span className="text-base font-black font-mono th-acc mt-1">
             {totalGoals}
           </span>
           <p className="text-[8px] th-faint font-mono mt-1 uppercase">
@@ -335,7 +335,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                 onClick={() => setActiveStatTab(tab)}
                 className={`py-2 rounded-xl text-[10px] font-bold tracking-wider uppercase transition-all cursor-pointer ${
                   activeStatTab === tab
-                    ? "th-wash2 text-emerald-400 border th-border shadow-sm"
+                    ? "th-wash2 th-acc border th-border shadow-sm"
                     : "th-muted hover:th-text"
                 }`}
               >
@@ -359,7 +359,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                   {topScorers.length > 0 ? (
                     <>
                       {/* Hero First Person */}
-                      {renderFirstPlaceHero(topScorers[0], "GOLDEN BOOT", `${topScorers[0].goals} Goals`, "TOTAL SCORES", "th-acc-soft text-emerald-400")}
+                      {renderFirstPlaceHero(topScorers[0], "GOLDEN BOOT", `${topScorers[0].goals} Goals`, "TOTAL SCORES", "th-acc-soft th-acc")}
                       
                       {/* Interactive toggle for the remaining top 5 */}
                       <button
@@ -392,7 +392,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                   <TeamCrest team={p.teamCrest} size={20} />
                                 </button>
                                 <div>
-                                  <span className="font-black th-text hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
+                                  <span className="font-black th-text hover:th-acc font-sans block text-xs">{p.name}</span>
                                   <span className="text-[10px] th-muted font-mono block">
                                     <span 
                                       onClick={(e) => {
@@ -456,7 +456,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                   <TeamCrest team={p.teamCrest} size={20} />
                                 </button>
                                 <div>
-                                  <span className="font-black th-text hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
+                                  <span className="font-black th-text hover:th-acc font-sans block text-xs">{p.name}</span>
                                   <span className="text-[10px] th-muted font-mono block">
                                     <span 
                                       onClick={(e) => {
@@ -471,7 +471,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                 </div>
                               </div>
                               <div className="text-right">
-                                <span className="text-[13px] font-mono font-black text-sky-400">{p.assists}</span>
+                                <span className="text-[13px] font-mono font-black th-info">{p.assists}</span>
                                 <span className="text-[9px] th-muted font-mono block uppercase leading-none mt-0.5">Assists</span>
                               </div>
                             </div>
@@ -489,7 +489,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                 <>
                   {topSaves.length > 0 ? (
                     <>
-                      {renderFirstPlaceHero(topSaves[0], "GOLDEN GLOVE", `${topSaves[0].saves} Saves`, "REFLEX BLOCKS", "th-acc-soft text-emerald-400")}
+                      {renderFirstPlaceHero(topSaves[0], "GOLDEN GLOVE", `${topSaves[0].saves} Saves`, "REFLEX BLOCKS", "th-acc-soft th-acc")}
                       
                       <button
                         onClick={() => toggleTop5("saves")}
@@ -520,7 +520,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                   <TeamCrest team={p.teamCrest} size={20} />
                                 </button>
                                 <div>
-                                  <span className="font-black th-text hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
+                                  <span className="font-black th-text hover:th-acc font-sans block text-xs">{p.name}</span>
                                   <span className="text-[10px] th-muted font-mono block">
                                     <span 
                                       onClick={(e) => {
@@ -586,7 +586,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                                     <TeamCrest team={p.teamCrest} size={20} />
                                   </button>
                                   <div>
-                                    <span className="font-black th-text hover:text-emerald-400 font-sans block text-xs">{p.name}</span>
+                                    <span className="font-black th-text hover:th-acc font-sans block text-xs">{p.name}</span>
                                     <span className="text-[10px] th-muted font-mono block">
                                       <span 
                                         onClick={(e) => {
@@ -661,7 +661,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
                             {index + 1}
                           </span>
                           <TeamCrest team={td.crest} size={16} />
-                          <span className="truncate max-w-[120px] font-sans th-sub hover:text-emerald-400 hover:underline transition-all">
+                          <span className="truncate max-w-[120px] font-sans th-sub hover:th-acc hover:underline transition-all">
                             {td.name}
                           </span>
                         </div>
@@ -701,7 +701,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
             <span className="text-[9px] th-muted font-bold uppercase font-sans">WIN RATE</span>
-            <span className="text-xl font-black font-mono text-emerald-400 mt-1">
+            <span className="text-xl font-black font-mono th-acc mt-1">
               {financeData?.winRate}%
             </span>
             <p className="text-[8px] th-muted font-mono mt-1 uppercase">
@@ -710,7 +710,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
           </div>
           <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none">
             <span className="text-[9px] th-muted font-bold uppercase font-sans">BIGGEST WIN</span>
-            <span className="text-xl font-black font-mono text-amber-400 mt-1">
+            <span className="text-xl font-black font-mono th-amber mt-1">
               ${financeData ? formatMoney(financeData.biggestWin) : "0.00"}
             </span>
             <p className="text-[8px] text-amber-500/60 font-mono mt-1 uppercase">
@@ -719,7 +719,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
           </div>
           <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between text-center select-none col-span-2">
             <span className="text-[9px] th-muted font-bold uppercase font-sans">MOST PROFITABLE MARKET</span>
-            <span className="text-xl font-black font-sans text-sky-400 mt-1 uppercase tracking-tight">
+            <span className="text-xl font-black font-sans th-info mt-1 uppercase tracking-tight">
               {financeData?.bestMarket}
             </span>
             <p className="text-[8px] text-sky-500/60 font-mono mt-1 uppercase">
@@ -734,7 +734,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ teams, fixtures, userProfi
              <h3 className="text-xs font-bold th-sub font-sans tracking-tight uppercase tracking-wider">
                Bankroll Trajectory
              </h3>
-             <p className="text-[10px] th-muted font-mono">Current Balance: <span className="text-emerald-400 font-bold">${userProfile ? formatMoney(userProfile.balance) : "0.00"}</span></p>
+             <p className="text-[10px] th-muted font-mono">Current Balance: <span className="th-acc font-bold">${userProfile ? formatMoney(userProfile.balance) : "0.00"}</span></p>
           </div>
           <div className="h-72 w-full mt-8">
             <ResponsiveContainer width="100%" height="100%">

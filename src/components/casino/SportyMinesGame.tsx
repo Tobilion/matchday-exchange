@@ -184,7 +184,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
                     cell.revealed
                       ? cell.mine
                         ? "bg-red-700/80 border-red-500 th-text"
-                        : "th-acc-soft th-border-acc text-emerald-400"
+                        : "th-acc-soft th-border-acc th-acc"
                       : inGame
                         ? "th-solid2 th-border hover:th-border-acc hover:th-track th-sub cursor-pointer"
                         : "th-solid th-border th-faint cursor-default"
@@ -223,7 +223,7 @@ export const SportyMinesGame: React.FC<GameProps> = ({
                   onClick={() => setMineCount(density)}
                   className={`flex-1 py-2 px-2 rounded-xl border text-xs font-mono font-bold transition-all ${
                     mineCount === density
-                      ? "bg-amber-500/20 border-amber-500 text-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.15)]"
+                      ? "bg-amber-500/20 border-amber-500 th-amber shadow-[0_0_8px_rgba(245,158,11,0.15)]"
                       : "th-wash th-border th-muted hover:th-border cursor-pointer"
                   }`}
                 >
@@ -250,12 +250,12 @@ export const SportyMinesGame: React.FC<GameProps> = ({
         <>
           <div className="th-inset border th-border rounded-xl p-2.5 flex justify-between text-xs font-mono">
             <span>
-              Revealed: <b className="text-emerald-400">{revealedCount}</b> safe
+              Revealed: <b className="th-acc">{revealedCount}</b> safe
               cells
             </span>
             <span>
               Cashout:{" "}
-              <b className="text-emerald-400">
+              <b className="th-acc">
                 ${formatMoney(stakeRef.current * multiplier)} ({multiplier}x)
               </b>
             </span>

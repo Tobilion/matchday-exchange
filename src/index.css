@@ -19,6 +19,9 @@
   --muted: #8b93a3;
   --accent: #10b981;        /* Emerald green — through-line across all themes */
   --accent-2: #06b6d4;      /* Cyan */
+  --amber: #fbbf24;
+  --danger: #f87171;
+  --purple: #c084fc;
   --inset: rgba(0,0,0,0.35); /* sunken wells (tickers, stat rows) */
   --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
   --radius: 16px;
@@ -39,6 +42,9 @@
   --muted: #8fa0c7;
   --accent: #10b981;
   --accent-2: #38bdf8;
+  --amber: #fbbf24;
+  --danger: #f87171;
+  --purple: #c084fc;
   --inset: rgba(1,4,12,0.45);
   --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
   --radius: 16px;
@@ -59,6 +65,9 @@
   --muted: #6f6455;
   --accent: #047857;
   --accent-2: #0e7490;
+  --amber: #b45309;
+  --danger: #b91c1c;
+  --purple: #7e22ce;
   --inset: rgba(74,58,28,0.07);
   --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
   --radius: 16px;
@@ -88,6 +97,10 @@
 @utility th-border { border-color: var(--border); }
 @utility th-border2 { border-color: var(--border-hover); }
 @utility th-acc { color: var(--accent); }
+@utility th-amber { color: var(--amber); }
+@utility th-info { color: var(--accent-2); }
+@utility th-danger { color: var(--danger); }
+@utility th-purple { color: var(--purple); }
 @utility th-acc-soft { background-color: color-mix(in srgb, var(--accent) 14%, transparent); }
 @utility th-selected {
   background-color: color-mix(in srgb, var(--accent) 15%, transparent);

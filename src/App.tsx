@@ -33,7 +33,7 @@ function AppContent() {
   if (booting) {
     return (
       <div className="min-h-screen th-app flex flex-col items-center justify-center gap-5">
-        <div className="text-3xl font-black tracking-widest text-emerald-400">MATCHDAY EXCHANGE</div>
+        <div className="text-3xl font-black tracking-widest th-acc">MATCHDAY EXCHANGE</div>
         <div className="w-48 h-1 th-wash2 rounded-full overflow-hidden">
           <div className="h-full w-3/4 bg-emerald-400 rounded-full animate-pulse" />
         </div>

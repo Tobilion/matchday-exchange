@@ -103,7 +103,7 @@ export const PenaltyShootoutGame: React.FC<GameProps> = ({ balance, onUpdateBala
       <div className="th-app border th-border rounded-2xl p-4 flex flex-col items-center justify-center relative h-52 select-none overflow-hidden">
         <div className="absolute inset-x-8 top-10 bottom-6 border-4 border-b-0 th-border2 th-wash rounded-t-3xl flex items-center justify-center">
           {firing ? (
-            <div className="flex flex-col items-center justify-center z-10 animate-pulse text-amber-400">
+            <div className="flex flex-col items-center justify-center z-10 animate-pulse th-amber">
               <Sparkles size={28} className="animate-spin mb-1" />
               <span className="text-[10px] uppercase font-mono tracking-widest font-black">Keeper Diving!</span>
             </div>
@@ -124,7 +124,7 @@ export const PenaltyShootoutGame: React.FC<GameProps> = ({ balance, onUpdateBala
         <div className="flex gap-2 justify-center font-mono text-[10px] th-inset py-2 px-3 border th-border rounded-xl select-none">
           {SHOT_MULTIS.map((m, i) => (
             <React.Fragment key={i}>
-              <span className={roundsCount === i + 2 ? "text-amber-400 font-black animate-pulse" : roundsCount > i + 1 ? "text-emerald-400" : "th-muted"}>
+              <span className={roundsCount === i + 2 ? "th-amber font-black animate-pulse" : roundsCount > i + 1 ? "th-acc" : "th-muted"}>
                 R{i + 1}: {m}x
               </span>
               {i < 3 && <span className="th-faint">•</span>}
@@ -141,7 +141,7 @@ export const PenaltyShootoutGame: React.FC<GameProps> = ({ balance, onUpdateBala
             key={tar.id}
             disabled={firing}
             onClick={() => handleShoot(tar.id)}
-            className="th-solid2 hover:th-wash border th-border hover:th-border-acc text-emerald-400 font-sans font-black text-xs py-3 rounded-2xl transition-all active:scale-95 disabled:opacity-50 cursor-pointer uppercase text-center"
+            className="th-solid2 hover:th-wash border th-border hover:th-border-acc th-acc font-sans font-black text-xs py-3 rounded-2xl transition-all active:scale-95 disabled:opacity-50 cursor-pointer uppercase text-center"
           >
             {tar.label}
           </button>

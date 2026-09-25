@@ -295,7 +295,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
         <div className="fixed bottom-5 right-4 md:hidden z-50">
           <button
             onClick={() => setCollapsed(false)}
-            className={`flex items-center gap-2 shadow-emerald-500/30 font-black transition-all cursor-pointer bg-emerald-500 hover:bg-emerald-600 text-slate-950 border border-emerald-400 shadow-lg ${selections.length > 0 ? "h-12 px-4 rounded-full" : "h-12 w-12 rounded-full justify-center"}`}
+            className={`flex items-center gap-2 shadow-emerald-500/30 font-black transition-all cursor-pointer bg-emerald-500 hover:bg-emerald-600 text-slate-950 border th-border-acc shadow-lg ${selections.length > 0 ? "h-12 px-4 rounded-full" : "h-12 w-12 rounded-full justify-center"}`}
             title="Open Betting Slip"
           >
             <span>🎫</span>
@@ -310,7 +310,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
         <div className="hidden md:flex absolute -right-8 top-1/2 -translate-y-1/2 -rotate-90 items-center gap-2 z-50 pointer-events-none">
           <button
             onClick={() => setCollapsed(false)}
-            className={`pointer-events-auto flex items-center gap-2 shadow-emerald-500/20 font-black shrink-0 transition-all cursor-pointer bg-emerald-500 hover:bg-emerald-600 text-slate-950 border border-emerald-400 ${selections.length > 0 ? "h-10 w-auto px-4 rounded-full gap-3 shadow-lg" : "h-10 w-10 rounded-full justify-center shadow-lg"}`}
+            className={`pointer-events-auto flex items-center gap-2 shadow-emerald-500/20 font-black shrink-0 transition-all cursor-pointer bg-emerald-500 hover:bg-emerald-600 text-slate-950 border th-border-acc ${selections.length > 0 ? "h-10 w-auto px-4 rounded-full gap-3 shadow-lg" : "h-10 w-10 rounded-full justify-center shadow-lg"}`}
             title="Open Betting Slip"
           >
             <span>🎫</span>
@@ -353,7 +353,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
           {selections.length > 0 && (
             <button
               onClick={onClearAll}
-              className="text-[10px] text-red-400 hover:text-red-300 underline font-mono cursor-pointer"
+              className="text-[10px] th-danger hover:th-danger underline font-mono cursor-pointer"
             >
               Clear All
             </button>
@@ -402,10 +402,10 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
       <div className="bg-amber-500/5 border-b border-amber-500/10 p-2.5">
         <button
           onClick={() => setShowAdvisor(!showAdvisor)}
-          className="w-full flex items-center justify-between text-xs font-bold text-amber-400 hover:text-amber-300 transition-all cursor-pointer"
+          className="w-full flex items-center justify-between text-xs font-bold th-amber hover:th-amber transition-all cursor-pointer"
         >
           <div className="flex items-center gap-2">
-            <Sparkles size={14} className="text-amber-400 animate-pulse animate-duration-[3000ms]" />
+            <Sparkles size={14} className="th-amber animate-pulse animate-duration-[3000ms]" />
             <span className="font-heading">🔮 STATS-BASED BET ADVISOR</span>
           </div>
           <div className="flex items-center gap-1.5 font-sans">
@@ -460,7 +460,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
                 <div className="space-y-1">
                   <span className="text-[9px] th-muted font-mono tracking-wider block uppercase flex justify-between font-bold">
                     <span>2. STATS PREVIEW & ADVICE:</span>
-                    <span className="text-amber-400 font-black font-mono text-[10px]">Combined: @{recommendedSels.reduce((acc, s) => acc * s.odds, 1).toFixed(2)}</span>
+                    <span className="th-amber font-black font-mono text-[10px]">Combined: @{recommendedSels.reduce((acc, s) => acc * s.odds, 1).toFixed(2)}</span>
                   </span>
                   <div className="th-inset rounded-xl border th-border p-2.5 space-y-3 max-h-[170px] overflow-y-auto no-scrollbar glass-scrollbar">
                     {recommendedSels.map((sel, idx) => (
@@ -469,9 +469,9 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
                           <span className="truncate max-w-[170px]">
                             {idx + 1}. {sel.fixtureName}
                           </span>
-                          <span className="text-amber-400 font-mono text-[10px] th-wash px-1 py-0.5 rounded leading-none">@{sel.odds.toFixed(2)}</span>
+                          <span className="th-amber font-mono text-[10px] th-wash px-1 py-0.5 rounded leading-none">@{sel.odds.toFixed(2)}</span>
                         </div>
-                        <div className="text-emerald-400 font-mono font-black text-[9px] uppercase leading-none mt-0.5">
+                        <div className="th-acc font-mono font-black text-[9px] uppercase leading-none mt-0.5">
                           👉 {sel.details} (Match Winner)
                         </div>
                         <p className="text-[10px] th-muted leading-tight italic pl-1.5 border-l-2 border-amber-500/20 py-0.5">
@@ -533,7 +533,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
                 {/* Delete cross */}
                 <button
                   onClick={() => onRemoveSelection(sel.fixtureId, sel.marketType, sel.selectionId)}
-                  className="absolute top-1.5 right-1.5 text-xs th-muted hover:text-red-400 cursor-pointer"
+                  className="absolute top-1.5 right-1.5 text-xs th-muted hover:th-danger cursor-pointer"
                   title="Remove selection"
                 >
                   ✕
@@ -546,7 +546,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
 
                 {/* Selection and Odds */}
                 <div className="flex items-center justify-between pr-4 mt-0.5">
-                  <span className="text-xs font-black text-emerald-400">
+                  <span className="text-xs font-black th-acc">
                     {sel.details}
                   </span>
                   <span className="text-[10px] font-extrabold th-text font-mono th-wash border th-border px-1.5 py-0.5 rounded-md">
@@ -568,13 +568,13 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
                         placeholder="Stake"
                         value={sValue}
                         onChange={(e) => handleSingleStakeChange(stakeKey, e.target.value)}
-                        className="w-full bg-transparent border-none text-xs text-emerald-400 focus:outline-none placeholder:th-muted font-mono font-bold leading-none"
+                        className="w-full bg-transparent border-none text-xs th-acc focus:outline-none placeholder:th-muted font-mono font-bold leading-none"
                       />
                     </div>
                     {/* Live payout update as specified */}
                     <div className="text-right">
                       <span className="text-[8px] th-muted block leading-none font-mono">EST PAYOUT</span>
-                      <span className="text-xs font-bold text-emerald-400 font-mono">
+                      <span className="text-xs font-bold th-acc font-mono">
                         ${formatMoney(singlePayout)}
                       </span>
                     </div>
@@ -605,12 +605,12 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
                     const v = e.target.value;
                     if (v === "" || /^\d*\.?\d*$/.test(v)) setDistributeAmount(v);
                   }}
-                  className="w-full bg-transparent border-none text-xs text-emerald-400 focus:outline-none font-mono font-bold leading-none"
+                  className="w-full bg-transparent border-none text-xs th-acc focus:outline-none font-mono font-bold leading-none"
                 />
               </div>
               <button
                 onClick={() => applyStakeDistribution("split")}
-                className="text-[9px] font-bold uppercase th-acc-soft hover:th-acc-soft text-emerald-400 border th-border-acc px-2 py-1.5 rounded-lg cursor-pointer transition-all"
+                className="text-[9px] font-bold uppercase th-acc-soft hover:th-acc-soft th-acc border th-border-acc px-2 py-1.5 rounded-lg cursor-pointer transition-all"
                 title="Divide the amount equally across all singles"
               >
                 Split total
@@ -640,7 +640,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
               <span className="text-xs th-muted">
                 Combined Odds (product of legs):
               </span>
-              <span className="text-xs font-black text-emerald-400 font-mono">
+              <span className="text-xs font-black th-acc font-mono">
                 @{formattedAccaOdds.toFixed(2)}
               </span>
             </div>
@@ -653,13 +653,13 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
                   placeholder="Acca Stake"
                   value={accaStake}
                   onChange={(e) => handleAccaStakeChange(e.target.value)}
-                  className="w-full bg-transparent border-none text-xs text-emerald-400 focus:outline-none font-mono font-bold leading-none"
+                  className="w-full bg-transparent border-none text-xs th-acc focus:outline-none font-mono font-bold leading-none"
                 />
               </div>
 
               <div className="text-right">
                 <span className="text-[8px] th-muted block leading-none font-mono">EST PAYOUT</span>
-                <span className="text-xs font-black text-emerald-400 font-mono">
+                <span className="text-xs font-black th-acc font-mono">
                   ${formatMoney(accaPayout)}
                 </span>
               </div>
@@ -669,7 +669,7 @@ export const BettingSlip: React.FC<BettingSlipProps> = ({
 
         {/* Warning messages */}
         {errorMessage && (
-          <div className="bg-red-500/10 border border-red-550/20 text-red-400 p-2 rounded-lg text-center text-[10px] font-semibold leading-tight">
+          <div className="bg-red-500/10 border border-red-550/20 th-danger p-2 rounded-lg text-center text-[10px] font-semibold leading-tight">
             ⚠️ {errorMessage}
           </div>
         )}

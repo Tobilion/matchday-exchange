@@ -221,7 +221,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
         {/* Net Profit Card */}
         <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between">
           <span className="text-[10px] th-muted font-bold uppercase font-sans">NET PERFORMANCE</span>
-          <span className={`text-lg font-black font-mono mt-1 ${totalNetProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+          <span className={`text-lg font-black font-mono mt-1 ${totalNetProfit >= 0 ? "th-acc" : "th-danger"}`}>
             {totalNetProfit >= 0 ? "+" : ""}${totalNetProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           <p className="text-[9px] th-muted font-mono mt-2 uppercase leading-none">
@@ -245,7 +245,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
         {/* Accuracy Card */}
         <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between">
           <span className="text-[10px] th-muted font-bold uppercase font-sans">PREDICTION HIT ACCURACY</span>
-          <span className="text-lg font-black font-mono text-emerald-400 mt-1">
+          <span className="text-lg font-black font-mono th-acc mt-1">
             {accuracy}%
           </span>
           <p className="text-[9px] th-muted font-mono mt-2 uppercase leading-none">
@@ -256,7 +256,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
         {/* Current Wealth Card */}
         <div className="glass-card border th-border rounded-2xl p-4 flex flex-col justify-between">
           <span className="text-[10px] th-muted font-bold uppercase font-sans">TOTAL SYSTEM WEALTH</span>
-          <span className="text-lg font-black font-mono text-emerald-400 mt-1">
+          <span className="text-lg font-black font-mono th-acc mt-1">
             ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           <p className="text-[9px] th-muted font-mono mt-2 uppercase leading-none">
@@ -317,7 +317,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                   >
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold tracking-tight uppercase ${
-                        ticket.type === "ACCUMULATOR" ? "th-acc-soft th-acc border th-border-acc" : "bg-sky-500/15 text-sky-400 border border-sky-500/10"
+                        ticket.type === "ACCUMULATOR" ? "th-acc-soft th-acc border th-border-acc" : "bg-sky-500/15 th-info border border-sky-500/10"
                       }`}>
                         {ticket.type}
                       </span>
@@ -341,11 +341,11 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                       {/* Status Tag */}
                       <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold text-center w-auto min-w-[72px] ${
                         isWon
-                          ? "th-acc-soft text-emerald-400"
+                          ? "th-acc-soft th-acc"
                           : isLost
-                          ? "bg-red-500/20 text-red-400"
+                          ? "bg-red-500/20 th-danger"
                           : isCashedOut
-                          ? "bg-amber-500/20 text-amber-400"
+                          ? "bg-amber-500/20 th-amber"
                           : "th-wash th-muted"
                       }`}>
                         {ticket.status}
@@ -353,7 +353,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                       
                       {/* Live cash-out pip in header */}
                       {coEligible && cashOutValue !== null && cashOutValue > 0 && (
-                        <span className="text-[9px] font-mono font-bold text-emerald-400 th-acc-soft border th-border-acc px-2 py-0.5 rounded animate-pulse">
+                        <span className="text-[9px] font-mono font-bold th-acc th-acc-soft border th-border-acc px-2 py-0.5 rounded animate-pulse">
                           💰 LIVE CO
                         </span>
                       )}
@@ -369,7 +369,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                   {coEligible && cashOutValue !== null && onCashOut && (
                     <div className={`px-4 py-2.5 flex items-center justify-between border-y ${cashOutValue >= ticket.stake ? "th-acc-soft th-border-acc" : "bg-red-500/8 border-red-500/20"}`}>
                       <div>
-                        <p className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider">
+                        <p className="text-[10px] font-mono font-bold th-acc uppercase tracking-wider">
                           ⚡ Live Cash Out Available
                         </p>
                         <p className="text-[9px] th-muted font-mono">
@@ -419,7 +419,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                             <span className="font-semibold th-text">{matchupLabel}</span>
                             <span className="th-muted font-mono">•</span>
                             <span className="th-muted font-mono text-[9px]">{sel.details}</span>
-                            <span className="text-emerald-400 font-mono font-bold text-[9px] th-acc-soft px-1 rounded">@{sel.odds.toFixed(2)}</span>
+                            <span className="th-acc font-mono font-bold text-[9px] th-acc-soft px-1 rounded">@{sel.odds.toFixed(2)}</span>
                           </div>
                         );
                       })}
@@ -429,10 +429,10 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                   {/* Summary Net performance and payout bar */}
                   <div className="th-inset px-3.5 py-2 px-3 flex items-center justify-between text-[11px] font-mono border-t th-border th-muted select-none">
                     <span>
-                      Est Payout: <b className="text-emerald-400 font-bold">${formatMoney(ticket.potentialPayout)}</b>
+                      Est Payout: <b className="th-acc font-bold">${formatMoney(ticket.potentialPayout)}</b>
                     </span>
                     {!isPending && (
-                      <span className={`${netRet >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                      <span className={`${netRet >= 0 ? "th-acc" : "th-danger"}`}>
                         {netRet >= 0 ? `Net Gain: +$${formatMoney(netRet)}` : `Net Cost: -$${formatMoney(Math.abs(netRet))}`}
                       </span>
                     )}
@@ -461,7 +461,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                                         <button
                                           type="button"
                                           onClick={() => window.dispatchEvent(new CustomEvent("open-global-entity", { detail: { type: "team", id: fix.homeTeamId } }))}
-                                          className="hover:underline hover:text-emerald-400 cursor-pointer bg-transparent border-0 p-0 font-bold th-sub"
+                                          className="hover:underline hover:th-acc cursor-pointer bg-transparent border-0 p-0 font-bold th-sub"
                                         >
                                           {getTeamName(fix.homeTeamId, true)}
                                         </button>
@@ -469,7 +469,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                                         <button
                                           type="button"
                                           onClick={() => window.dispatchEvent(new CustomEvent("open-global-entity", { detail: { type: "team", id: fix.awayTeamId } }))}
-                                          className="hover:underline hover:text-emerald-400 cursor-pointer bg-transparent border-0 p-0 font-bold th-sub"
+                                          className="hover:underline hover:th-acc cursor-pointer bg-transparent border-0 p-0 font-bold th-sub"
                                         >
                                           {getTeamName(fix.awayTeamId, true)}
                                         </button>
@@ -483,7 +483,7 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                                   </span>
                                 </div>
                                 <p className="text-[11px] th-muted">
-                                  Selected: <b className="text-emerald-400">{sel.details}</b> @ odds <b className="th-sub">@{sel.odds.toFixed(2)}</b>
+                                  Selected: <b className="th-acc">{sel.details}</b> @ odds <b className="th-sub">@{sel.odds.toFixed(2)}</b>
                                 </p>
                                 {indStake !== undefined && (
                                   <p className="text-[9px] th-muted font-mono">
@@ -501,9 +501,9 @@ export const MyBets: React.FC<MyBetsProps> = ({ tickets, fixtures, teams, balanc
                                 {/* Selection validation indicator tag */}
                                 <span className={`px-2 py-0.5 rounded text-[8px] tracking-tight uppercase font-black ${
                                   isSelWon || resultObj.state === "WON_EARLY"
-                                    ? "th-acc-soft text-emerald-400"
+                                    ? "th-acc-soft th-acc"
                                     : isSelLost || resultObj.state === "LOST_EARLY"
-                                    ? "bg-red-500/20 text-red-400"
+                                    ? "bg-red-500/20 th-danger"
                                     : "th-wash th-muted border th-border"
                                 }`}>
                                   {resultObj.state.replace("_", " ")}

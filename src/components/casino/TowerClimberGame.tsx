@@ -104,7 +104,7 @@ export const TowerClimberGame: React.FC<GameProps> = ({ balance, onUpdateBalance
     
     return (
       <div key={idx} className={`flex items-center gap-2 ${idx > currentFloor && phase === "playing" ? "opacity-30" : ""}`}>
-        <span className={`text-[9px] font-mono w-12 text-right shrink-0 ${idx < currentFloor ? "text-emerald-400" : isActive ? "text-amber-400 font-black" : "th-faint"}`}>
+        <span className={`text-[9px] font-mono w-12 text-right shrink-0 ${idx < currentFloor ? "th-acc" : isActive ? "th-amber font-black" : "th-faint"}`}>
           {FLOOR_MULTIPLIERS[idx]}x
         </span>
         <div className="flex gap-1.5 flex-1">

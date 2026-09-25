@@ -379,7 +379,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                   onClick={togglePauseAtHalftime}
                   className={`px-3 py-1.5 rounded-xl text-[9px] font-bold cursor-pointer transition-all border flex items-center gap-1.5 select-none ${
                     pauseAtHalftime
-                      ? "th-acc-soft text-emerald-400 th-border-acc"
+                      ? "th-acc-soft th-acc th-border-acc"
                       : "th-wash th-muted th-border"
                   }`}
                   title="When on, the match halts at half-time until you continue. When off, it plays straight through to full time."
@@ -465,11 +465,11 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                     {/* Home Team */}
                     <div 
                       onClick={(e) => triggerGlobalEntity("team", fixture.homeTeamId, e)}
-                      className="flex items-center gap-2 max-w-[40%] hover:text-emerald-400 cursor-help"
+                      className="flex items-center gap-2 max-w-[40%] hover:th-acc cursor-help"
                       title="Click to view Team info"
                     >
                       <TeamCrest team={homeCrest} size={24} />
-                      <span className="text-xs font-bold th-sub truncate select-none border-b border-dashed th-border2 hover:border-emerald-400">
+                      <span className="text-xs font-bold th-sub truncate select-none border-b border-dashed th-border2 hover:th-border-acc">
                         {getTeamName(fixture.homeTeamId, true)}
                       </span>
                     </div>
@@ -481,7 +481,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                       </span>
                       {hasShootout(fixture) && (
                         <div className="flex flex-col items-center gap-0.5 mt-0.5">
-                          <span className="text-[8px] font-extrabold text-emerald-400 th-acc-soft px-1 rounded uppercase tracking-wider font-sans border th-border-acc">
+                          <span className="text-[8px] font-extrabold th-acc th-acc-soft px-1 rounded uppercase tracking-wider font-sans border th-border-acc">
                             {getShootoutWinner(fixture) === "home" ? `${getTeamName(fixture.homeTeamId, true)} WPens` : `${getTeamName(fixture.awayTeamId, true)} WPens`}
                           </span>
                           {fixture.penaltyScore && (
@@ -496,11 +496,11 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                     {/* Away Team */}
                     <div 
                       onClick={(e) => triggerGlobalEntity("team", fixture.awayTeamId, e)}
-                      className="flex items-center gap-2 max-w-[40%] flex-row-reverse text-right hover:text-emerald-400 cursor-help"
+                      className="flex items-center gap-2 max-w-[40%] flex-row-reverse text-right hover:th-acc cursor-help"
                       title="Click to view Team info"
                     >
                       <TeamCrest team={awayCrest} size={24} />
-                      <span className="text-xs font-bold th-sub truncate select-none border-b border-dashed th-border2 hover:border-emerald-400">
+                      <span className="text-xs font-bold th-sub truncate select-none border-b border-dashed th-border2 hover:th-border-acc">
                         {getTeamName(fixture.awayTeamId, true)}
                       </span>
                     </div>
@@ -513,7 +513,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                         <div 
                           key={i} 
                           onClick={(e) => triggerGlobalEntity("player", g.playerId, e)}
-                          className="truncate hover:text-emerald-400 cursor-help flex items-center gap-1 select-none"
+                          className="truncate hover:th-acc cursor-help flex items-center gap-1 select-none"
                           title="Click to view Player info"
                         >
                           <span>⚽ {g.playerName} ({g.minute}')</span>
@@ -525,7 +525,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                   {isFT && (
                     <button
                       onClick={(e) => triggerOpenHighlights(fixture.id, e)}
-                      className="mt-2 w-full text-[9px] font-black tracking-widest uppercase text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md py-1 hover:bg-amber-500/20 transition-colors"
+                      className="mt-2 w-full text-[9px] font-black tracking-widest uppercase th-amber bg-amber-500/10 border border-amber-500/20 rounded-md py-1 hover:bg-amber-500/20 transition-colors"
                     >
                       📋 Highlights
                     </button>
@@ -545,7 +545,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                 EVENT FOCUS • GRAPHIC SPORTSCAST
               </span>
               {selectedFixture.weather && (
-                <span className="text-[9px] text-sky-400 block uppercase font-bold font-mono mt-1">
+                <span className="text-[9px] th-info block uppercase font-bold font-mono mt-1">
                   {selectedFixture.weather === "Clear Sky" ? "☀️"
                     : selectedFixture.weather === "Overcast" ? "🌥️"
                     : selectedFixture.weather === "Light Rain" ? "🌦️"
@@ -569,21 +569,21 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
               {isOwnerMatchSelected && ownedTeamObj && (
                 <div className="mx-3 mt-2 bg-yellow-500/10 border border-yellow-500/25 rounded-xl px-3 py-2 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-yellow-400">&#x1F451;</span>
-                    <span className="text-[9px] font-black text-yellow-400 uppercase tracking-widest font-mono">
+                    <span className="th-amber">&#x1F451;</span>
+                    <span className="text-[9px] font-black th-amber uppercase tracking-widest font-mono">
                       YOUR CLUB · LIVE
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-[9px] font-mono">
                     <span className="th-muted">
                       Morale:{" "}
-                      <span className={`font-bold ${(ownedTeamObj.morale ?? 60) >= 70 ? "text-emerald-400" : (ownedTeamObj.morale ?? 60) >= 45 ? "text-yellow-400" : "text-red-400"}`}>
+                      <span className={`font-bold ${(ownedTeamObj.morale ?? 60) >= 70 ? "th-acc" : (ownedTeamObj.morale ?? 60) >= 45 ? "th-amber" : "th-danger"}`}>
                         {(ownedTeamObj.morale ?? 60) >= 70 ? "HIGH" : (ownedTeamObj.morale ?? 60) >= 45 ? "MID" : "LOW"}
                       </span>
                     </span>
                     <span className="th-muted">
                       Fatigue:{" "}
-                      <span className={`font-bold ${ownedTeamFatigue <= 30 ? "text-emerald-400" : ownedTeamFatigue <= 60 ? "text-yellow-400" : "text-red-400"}`}>
+                      <span className={`font-bold ${ownedTeamFatigue <= 30 ? "th-acc" : ownedTeamFatigue <= 60 ? "th-amber" : "th-danger"}`}>
                         {ownedTeamFatigue <= 30 ? "FRESH" : ownedTeamFatigue <= 60 ? "TIRED" : "SPENT"}
                       </span>
                     </span>
@@ -595,11 +595,11 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                             <div className="flex items-center justify-between px-3 mt-2">
                 <div 
                   onClick={(e) => triggerGlobalEntity("team", selectedFixture.homeTeamId, e)}
-                  className="flex flex-col items-center max-w-[35%] cursor-help hover:text-emerald-400"
+                  className="flex flex-col items-center max-w-[35%] cursor-help hover:th-acc"
                   title="Click to view Team info"
                 >
                   <TeamCrest team={getTeamCrest(selectedFixture.homeTeamId)} size={48} />
-                  <span className="text-xs font-black th-text mt-1.5 truncate border-b border-dashed th-border2 hover:border-emerald-400 select-none">
+                  <span className="text-xs font-black th-text mt-1.5 truncate border-b border-dashed th-border2 hover:th-border-acc select-none">
                     {getTeamName(selectedFixture.homeTeamId)}
                   </span>
                 </div>
@@ -620,11 +620,11 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
 
                 <div 
                   onClick={(e) => triggerGlobalEntity("team", selectedFixture.awayTeamId, e)}
-                  className="flex flex-col items-center max-w-[35%] cursor-help hover:text-emerald-400"
+                  className="flex flex-col items-center max-w-[35%] cursor-help hover:th-acc"
                   title="Click to view Team info"
                 >
                   <TeamCrest team={getTeamCrest(selectedFixture.awayTeamId)} size={48} />
-                  <span className="text-xs font-black th-text mt-1.5 truncate border-b border-dashed th-border2 hover:border-emerald-400 select-none">
+                  <span className="text-xs font-black th-text mt-1.5 truncate border-b border-dashed th-border2 hover:th-border-acc select-none">
                     {getTeamName(selectedFixture.awayTeamId)}
                   </span>
                 </div>
@@ -653,7 +653,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                   <div className="flex flex-col items-center gap-1 min-w-0">
                     <span className="th-muted uppercase tracking-wider font-bold text-[8px]">Form</span>
                     <div className="flex gap-0.5">{homeForm.length ? homeForm.map((r,i)=>dot(r,i)) : <span className="th-faint">—</span>}</div>
-                    <span className="th-muted text-[8px]">{homeAvg.scored}G / <span className="text-red-400">{homeAvg.conceded}GA</span></span>
+                    <span className="th-muted text-[8px]">{homeAvg.scored}G / <span className="th-danger">{homeAvg.conceded}GA</span></span>
                   </div>
 
                   {/* H2H centre */}
@@ -662,13 +662,13 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                     {h2h.played > 0 ? (
                       <>
                         <div className="flex items-center gap-1 w-full max-w-[140px]">
-                          <span className="text-emerald-400 font-bold w-6 text-right">{h2h.homeWins}</span>
+                          <span className="th-acc font-bold w-6 text-right">{h2h.homeWins}</span>
                           <div className="flex-1 h-1.5 rounded-full overflow-hidden flex th-wash">
                             <div className="bg-emerald-500 h-full" style={{width:`${(h2h.homeWins/h2h.played)*100}%`}}></div>
                             <div className="bg-yellow-500 h-full" style={{width:`${(h2h.draws/h2h.played)*100}%`}}></div>
                             <div className="bg-red-500 h-full flex-1"></div>
                           </div>
-                          <span className="text-red-400 font-bold w-6">{h2h.awayWins}</span>
+                          <span className="th-danger font-bold w-6">{h2h.awayWins}</span>
                         </div>
                         {h2h.lastMeeting && (
                           <span className="th-muted text-[8px]">Last: <span className="th-text font-bold">{h2h.lastMeeting.scoreline}</span> · R{h2h.lastMeeting.roundIndex+1}</span>
@@ -678,9 +678,9 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                       <span className="th-faint">No previous meetings</span>
                     )}
                     <div className="flex gap-2 text-[8px] th-muted">
-                      <span className="text-emerald-400">Avg {homeAvg.scored}g</span>
+                      <span className="th-acc">Avg {homeAvg.scored}g</span>
                       <span>vs</span>
-                      <span className="text-red-400">Avg {awayAvg.scored}g</span>
+                      <span className="th-danger">Avg {awayAvg.scored}g</span>
                     </div>
                   </div>
 
@@ -688,7 +688,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                   <div className="flex flex-col items-center gap-1 min-w-0">
                     <span className="th-muted uppercase tracking-wider font-bold text-[8px]">Form</span>
                     <div className="flex gap-0.5">{awayForm.length ? awayForm.map((r,i)=>dot(r,i)) : <span className="th-faint">—</span>}</div>
-                    <span className="th-muted text-[8px]">{awayAvg.scored}G / <span className="text-red-400">{awayAvg.conceded}GA</span></span>
+                    <span className="th-muted text-[8px]">{awayAvg.scored}G / <span className="th-danger">{awayAvg.conceded}GA</span></span>
                   </div>
                 </div>
               );
@@ -699,7 +699,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                 <h2 className="text-3xl font-black font-sans th-text tracking-widest uppercase text-center mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                    HALF TIME
                 </h2>
-                <div className="text-[11px] font-mono font-bold text-emerald-400 border th-border-acc th-acc-soft px-3 py-1 rounded-full mb-6">
+                <div className="text-[11px] font-mono font-bold th-acc border th-border-acc th-acc-soft px-3 py-1 rounded-full mb-6">
                    LIVE ODDS UPDATED • IN-PLAY BETTING OPEN
                 </div>
                 
@@ -759,7 +759,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
 
                   {/* Animated Attack Indicators (Pulse Ring) */}
                   <div 
-                    className="absolute h-8 w-8 rounded-full border-2 border-emerald-400 bg-emerald-400/10 animate-ping pointer-events-none duration-1000 transition-all ease-out transform -translate-x-1/2 -translate-y-1/2"
+                    className="absolute h-8 w-8 rounded-full border-2 th-border-acc bg-emerald-400/10 animate-ping pointer-events-none duration-1000 transition-all ease-out transform -translate-x-1/2 -translate-y-1/2"
                     style={{ left: pitchAction.y, top: pitchAction.x }}
                   ></div>
 
@@ -800,9 +800,9 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                 return (
                   <div key={sIdx} className="space-y-1 th-text">
                     <div className="flex items-center justify-between text-[11px] font-mono leading-none select-none">
-                      <span className="font-semibold text-emerald-400">{stat.homeVal}</span>
+                      <span className="font-semibold th-acc">{stat.homeVal}</span>
                       <span className="th-muted font-sans uppercase font-bold text-[9px] text-center">{stat.label}</span>
-                      <span className="font-semibold text-sky-400">{stat.awayVal}</span>
+                      <span className="font-semibold th-info">{stat.awayVal}</span>
                     </div>
                     <div className="h-1.5 th-inset rounded-full overflow-hidden flex relative border th-border">
                       <div className="h-full bg-emerald-500" style={{ width: `${hPct}%` }}></div>
@@ -817,7 +817,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
             {/* LIVE IN-PLAY BETTING */}
             {selectedFixture.status !== "FT" && (
               <div className="p-4 border-b th-border space-y-4">
-                <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold uppercase select-none pb-1 font-mono tracking-wider border-b th-border">
+                <div className="flex items-center justify-between text-[10px] th-acc font-bold uppercase select-none pb-1 font-mono tracking-wider border-b th-border">
                   <span>IN-PLAY MARKETS</span>
                   <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE ODDS</span>
                 </div>
@@ -846,7 +846,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                               m.odds === null
                                 ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                                 : isSelected(selectedFixture.id, "MATCH_WINNER", m.id)
-                                ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                                ? "th-acc-soft th-border-acc th-acc font-bold"
                                 : "th-inset th-border th-sub hover:th-border2 hover:th-wash"
                             }`}
                           >
@@ -883,7 +883,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                               m.odds === null
                                 ? "th-inset border-transparent th-faint cursor-not-allowed opacity-50"
                                 : isSelected(selectedFixture.id, "BOTH_TEAMS_TO_SCORE", m.id)
-                                ? "th-acc-soft th-border-acc text-emerald-400 font-bold"
+                                ? "th-acc-soft th-border-acc th-acc font-bold"
                                 : "th-inset th-border th-sub hover:th-border2 hover:th-wash"
                             }`}
                           >
@@ -940,17 +940,17 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                 const motmTeam = teams.find((t) => t.id === motm.teamId);
                 return (
                   <div className="mt-4 mb-1 rounded-xl border border-yellow-500/40 bg-yellow-500/8 p-3.5 shadow-[0_0_16px_rgba(234,179,8,0.08)]">
-                    <p className="text-[9px] font-mono font-black uppercase tracking-widest text-yellow-400 mb-2">
+                    <p className="text-[9px] font-mono font-black uppercase tracking-widest th-amber mb-2">
                       ⭐ Player of the Match
                     </p>
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <p className="text-sm font-black th-text">{motm.playerName}</p>
-                        <p className="text-[10px] text-yellow-300/70 font-mono">{motmTeam?.shortName ?? motmTeam?.name ?? ""}</p>
+                        <p className="text-[10px] th-amber font-mono">{motmTeam?.shortName ?? motmTeam?.name ?? ""}</p>
                         <p className="text-[10px] th-muted font-mono mt-0.5 capitalize">{motm.reason}</p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-2xl font-black text-yellow-400 font-mono">{motm.score.toFixed(1)}</p>
+                        <p className="text-2xl font-black th-amber font-mono">{motm.score.toFixed(1)}</p>
                         <p className="text-[9px] th-muted font-mono uppercase tracking-wider">Match Rating</p>
                       </div>
                     </div>
@@ -980,7 +980,7 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                 );
                 return (
                   <div className="mt-3 rounded-xl border th-border th-inset p-3">
-                    <p className="text-[9px] font-mono font-black uppercase tracking-widest text-emerald-400 mb-2">📊 Player Ratings (Full Time)</p>
+                    <p className="text-[9px] font-mono font-black uppercase tracking-widest th-acc mb-2">📊 Player Ratings (Full Time)</p>
                     <div className="flex gap-3">
                       {renderCol(hTeam?.shortName ?? "Home", home)}
                       {renderCol(aTeam?.shortName ?? "Away", away)}

@@ -60,12 +60,12 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
         <div className="flex items-center justify-between pb-2 border-b th-border">
           <div>
             <h3 className="text-lg font-sans font-medium th-text flex items-center gap-2">
-              <Award className="text-emerald-400" size={18} />
+              <Award className="th-acc" size={18} />
               Elite Super League Standings
             </h3>
             <p className="text-xs th-muted mt-1">Real-time standings based on played matchday outcomes</p>
           </div>
-          <div className="text-xs font-mono th-acc-soft border th-border-acc text-emerald-400 px-2.5 py-1 rounded-full">
+          <div className="text-xs font-mono th-acc-soft border th-border-acc th-acc px-2.5 py-1 rounded-full">
             Matchday {currentRoundIndex + 1} of 15
           </div>
         </div>
@@ -82,7 +82,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                 <th className="py-2.5 px-2 text-center w-10">D</th>
                 <th className="py-2.5 px-2 text-center w-10">L</th>
                 <th className="py-2.5 px-2 text-center w-16">GD</th>
-                <th className="py-2.5 px-3 text-center w-16 text-emerald-400 font-bold">Pts</th>
+                <th className="py-2.5 px-3 text-center w-16 th-acc font-bold">Pts</th>
                 <th className="py-2.5 px-3 text-center w-28 th-muted">Form</th>
               </tr>
             </thead>
@@ -94,9 +94,9 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                 const isRelegation = idx >= n - 3; // Bottom 3 → relegated
 
                 let rankStyle = "th-solid2 th-sub";
-                if (isCLSpot) rankStyle = "bg-blue-500/20 text-blue-300 border border-blue-500/30 shadow-[0_0_8px_rgba(59,130,246,0.1)]";
-                else if (isELSpot) rankStyle = "bg-orange-500/10 text-orange-300 border border-orange-500/20";
-                else if (isRelegation) rankStyle = "bg-red-500/10 text-red-300 border border-red-500/20";
+                if (isCLSpot) rankStyle = "bg-blue-500/20 th-info border border-blue-500/30 shadow-[0_0_8px_rgba(59,130,246,0.1)]";
+                else if (isELSpot) rankStyle = "bg-orange-500/10 th-amber border border-orange-500/20";
+                else if (isRelegation) rankStyle = "bg-red-500/10 th-danger border border-red-500/20";
 
                 return (
                   <tr 
@@ -119,7 +119,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                           {team.name}
                         </span>
                         {idx === 0 && currentRoundIndex === 14 && (
-                          <span className="text-[10px] bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-1.5 py-0.5 rounded font-bold ml-1 uppercase tracking-wider animate-pulse">
+                          <span className="text-[10px] bg-yellow-500/20 th-amber border border-yellow-500/30 px-1.5 py-0.5 rounded font-bold ml-1 uppercase tracking-wider animate-pulse">
                             🏆 Champ
                           </span>
                         )}
@@ -131,12 +131,12 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                     <td className="py-3 px-2 text-center th-muted font-mono">{team.wonMatches}</td>
                     <td className="py-3 px-2 text-center th-muted font-mono">{team.drawnMatches}</td>
                     <td className="py-3 px-2 text-center th-muted font-mono">{team.lostMatches}</td>
-                    <td className={`py-3 px-2 text-center font-mono ${team.gd > 0 ? "text-emerald-400" : team.gd < 0 ? "text-rose-400" : "th-muted"}`}>
+                    <td className={`py-3 px-2 text-center font-mono ${team.gd > 0 ? "th-acc" : team.gd < 0 ? "text-rose-400" : "th-muted"}`}>
                       {team.gd > 0 ? `+${team.gd}` : team.gd}
                     </td>
 
                     {/* Points */}
-                    <td className="py-3 px-3 text-center text-emerald-400 font-mono font-bold">{team.pts}</td>
+                    <td className="py-3 px-3 text-center th-acc font-mono font-bold">{team.pts}</td>
                     {/* Form */}
                     <td className="py-3 px-3 text-center">
                       <div className="flex items-center justify-center gap-0.5">
@@ -233,7 +233,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                       ? "text-rose-500 animate-pulse font-bold"
                       : fixture.status === "FT"
                         ? "th-muted"
-                        : "text-emerald-400"
+                        : "th-acc"
                   }`}>
                     {fixture.status === "LIVE" 
                       ? "● LIVE IN PROGRESS" 
@@ -243,7 +243,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                     }
                   </span>
                   {fixture.roundIndex === currentRoundIndex && (
-                    <span className="th-acc-soft text-emerald-400 border th-border-acc px-1.5 py-0.5 rounded-full uppercase text-[9px] font-bold">
+                    <span className="th-acc-soft th-acc border th-border-acc px-1.5 py-0.5 rounded-full uppercase text-[9px] font-bold">
                       Current Day
                     </span>
                   )}
@@ -339,7 +339,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                     {inspectedMatch.status === "SCHEDULED" ? "VS" : `${homeGoals} - ${awayGoals}`}
                   </span>
                   {inspectedMatch.homeScore % 1 !== 0 && inspectedMatch.status !== "SCHEDULED" && (
-                    <span className="text-[8px] font-mono text-emerald-400 uppercase font-black mt-1">PENS WIN</span>
+                    <span className="text-[8px] font-mono th-acc uppercase font-black mt-1">PENS WIN</span>
                   )}
                 </div>
 

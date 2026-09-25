@@ -29,7 +29,7 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
       {/* Prestige badge */}
       <div className="glass-card border border-yellow-400/20 rounded-2xl p-6 text-center bg-gradient-to-b from-yellow-400/5 to-transparent">
         <div className="text-5xl mb-2">{icon}</div>
-        <p className="text-2xl font-black text-yellow-400 tracking-widest uppercase">
+        <p className="text-2xl font-black th-amber tracking-widest uppercase">
           {career.prestigeTitle}
         </p>
         <p className="text-[10px] th-muted font-mono uppercase mt-1">
@@ -40,7 +40,7 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
 
       {/* In-progress season (live) */}
       {live && (
-        <div className="glass-card border border-emerald-400/20 rounded-2xl p-4 bg-gradient-to-b from-emerald-400/5 to-transparent">
+        <div className="glass-card border th-border-acc/20 rounded-2xl p-4 bg-gradient-to-b from-emerald-400/5 to-transparent">
           <div className="flex justify-between items-center mb-3">
             <p className="text-[9px] font-black tracking-widest th-muted uppercase">Current Season — In Progress</p>
             <span className="text-[9px] font-mono th-muted uppercase">{gameMode}</span>
@@ -52,7 +52,7 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
             </div>
             <div>
               <p className="text-[8px] th-muted uppercase font-bold">Bets Won</p>
-              <p className="text-lg font-black font-mono text-emerald-400 mt-0.5">{live.totalBetsWon}</p>
+              <p className="text-lg font-black font-mono th-acc mt-0.5">{live.totalBetsWon}</p>
             </div>
             <div>
               <p className="text-[8px] th-muted uppercase font-bold">Win Rate</p>
@@ -60,7 +60,7 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
             </div>
             <div>
               <p className="text-[8px] th-muted uppercase font-bold">Net Profit</p>
-              <p className={`text-lg font-black font-mono mt-0.5 ${live.netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+              <p className={`text-lg font-black font-mono mt-0.5 ${live.netProfit >= 0 ? "th-acc" : "th-danger"}`}>
                 {live.netProfit >= 0 ? "+" : ""}{formatMoney(live.netProfit)}
               </p>
             </div>
@@ -72,7 +72,7 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="glass-card border th-border rounded-2xl p-4">
           <p className="text-[9px] font-black tracking-widest th-muted uppercase">All-Time Profit</p>
-          <p className={`text-2xl font-black font-mono mt-1 ${career.allTimeProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+          <p className={`text-2xl font-black font-mono mt-1 ${career.allTimeProfit >= 0 ? "th-acc" : "th-danger"}`}>
             {career.allTimeProfit >= 0 ? "+" : ""}{formatMoney(career.allTimeProfit)}
           </p>
         </div>
@@ -127,14 +127,14 @@ export const CareerStats: React.FC<CareerStatsProps> = ({ career, liveProfile, g
                     <tr
                       key={r.seasonNumber}
                       className={`border-t th-border text-xs font-mono ${
-                        isBest ? "bg-yellow-400/10 text-yellow-300" : "th-sub"
+                        isBest ? "bg-yellow-400/10 th-amber" : "th-sub"
                       }`}
                     >
                       <td className="px-4 py-2.5 font-black">
                         #{r.seasonNumber} {isBest && "🏆"}
                       </td>
                       <td className="px-4 py-2.5 text-[10px] uppercase">{r.mode}</td>
-                      <td className={`px-4 py-2.5 text-right font-bold ${r.netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                      <td className={`px-4 py-2.5 text-right font-bold ${r.netProfit >= 0 ? "th-acc" : "th-danger"}`}>
                         {r.netProfit >= 0 ? "+" : ""}{formatMoney(r.netProfit)}
                       </td>
                       <td className="px-4 py-2.5 text-right">{r.winRate}%</td>
