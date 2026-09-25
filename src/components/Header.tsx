@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import { Tv, Calendar, Ticket, Users, BarChart3, Trophy, Award, Plus, RotateCcw, Activity, LogOut, Gamepad2, MessageSquare, ShieldCheck, ArrowLeftRight } from "lucide-react";
 import { AvatarCredit } from "./ui/site-footer";
+import { useTheme } from "../hooks/useTheme";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface HeaderProps {
   activeTab: string;
@@ -28,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   hasOwnedClub = false,
 }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const { theme, setTheme } = useTheme();
   const navRef = useRef<HTMLElement>(null);
   const handleNavWheel = (e: React.WheelEvent<HTMLElement>) => {
     const el = navRef.current;
@@ -106,6 +109,10 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Profile & Wallet */}
       <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
+        {/* Theme switcher — dot-only on smaller widths so the tab strip keeps its space */}
+        <div className="hidden md:flex items-center">
+          <ThemeToggle theme={theme} onChange={setTheme} compact />
+        </div>
         {/* Wallet Display */}
         <div className="bg-white/5 px-2 md:px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-1.5 md:gap-2">
           <span className="hidden sm:inline text-[9px] font-mono text-slate-400 tracking-wider">WALLET:</span>

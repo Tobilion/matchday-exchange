@@ -37,8 +37,6 @@ interface UIContextValue {
   booting: boolean;
   gateEntered: boolean;
   setGateEntered: React.Dispatch<React.SetStateAction<boolean>>;
-  footysimSessionSeed: number;
-  setFootysimSessionSeed: React.Dispatch<React.SetStateAction<number>>;
   careerProfile: CareerProfile;
   setCareerProfile: React.Dispatch<React.SetStateAction<CareerProfile>>;
 }
@@ -66,7 +64,6 @@ export function UIProvider({ children }: { children: ReactNode }) {
   );
   const [booting, setBooting] = useState<boolean>(true);
   const [gateEntered, setGateEntered] = useState<boolean>(false);
-  const [footysimSessionSeed, setFootysimSessionSeed] = useState(() => Math.floor(Math.random() * 1e9));
   const [careerProfile, setCareerProfile] = useState<CareerProfile>(() => loadCareerProfile());
 
   useEffect(() => {
@@ -98,7 +95,6 @@ export function UIProvider({ children }: { children: ReactNode }) {
     footysim2DId, setFootysim2DId,
     selectedFixtureId, setSelectedFixtureId,
     booting, gateEntered, setGateEntered,
-    footysimSessionSeed, setFootysimSessionSeed,
     careerProfile, setCareerProfile,
   };
 

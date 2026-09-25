@@ -295,9 +295,11 @@ export const LiveMatches: React.FC<LiveMatchesProps> = ({
                     <button
                       onClick={() => onWatch2D(selectedFixtureId)}
                       className="bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 font-black px-4 py-2 rounded-xl text-xs cursor-pointer flex items-center gap-1 transition-all"
-                      title="Simulate this match with the high-fidelity spatial engine and watch it in 2D"
+                      title={isSelectedFT
+                        ? "Replay this finished match in 2D — replay never overwrites the official result"
+                        : "Simulate this match with the high-fidelity spatial engine and watch it in 2D — the 2D result becomes official at full time"}
                     >
-                      🛰️ WATCH IN 2D
+                      {isSelectedFT ? "↻ REPLAY IN 2D" : "🛰️ WATCH IN 2D"}
                     </button>
                   )}
 

@@ -134,6 +134,28 @@ No environment variables, database or server-side code required.
 
 ## Changelog (latest)
 
+### September 2026 — Entry Flow, 2D Viewer, Odds & Cards
+
+**Entry flow (WelcomeScreen):**
+- Three themes — matte black (default), navy dark, cream light — via a toggle on the entry screen and in the header, persisted to localStorage; emerald accent kept across all three
+- Save slots expand to show real save details (wallet, stage/round, games played, bets) with distinct Continue Save / Reset actions; starting a campaign on an occupied slot now requires overwrite confirmation
+
+**2D match viewer:**
+- Fixed the score-drift bug: reopening a fixture replays the same cached 2D sim (stable per-fixture seed) instead of simulating a fresh random match; playback position survives closing the modal
+- The 2D result is authoritative when the fixture isn't finished yet (classic engine is the fallback); finished fixtures open in replay mode that can never overwrite the official score, with the official score shown alongside
+- Compact broadcast layout with a stats panel (possession, shots, corners, cards…), commentary feed (All / Key / Attack filters), pinned goals list, and extra-time/shootout states
+
+**Odds & Bet Builder:**
+- New same-game markets, all priced from the single Poisson matrix: team totals (home/away 0.5–3.5), expanded correct scores (24 lines + any-other-home/draw/away), clean sheets, win-to-nil, result+BTTS combos, half-time/full-time
+- Bet Builder gains TOTALS tab, correct-score and combo sections; exclusivity re-verified (new `tests/markets.test.ts`: settlement, matrix consistency, acca/singles/builder guards)
+- No assist betting market by design: the spatial engine now maps assisters (bridge) for display, but assists aren't offered as odds until both engines record them identically
+
+**Cards & engagement:**
+- Player/club preview cards gain Sorare-style tiers (gold/emerald/standard), status badges (INJ/SUSP/RES/prospect), transfer-value valuation, per-match involvement rate, MOTM count, club form dots and last-season line
+
+**Bug sweep:**
+- 2D session cache is cleared on save-slot/mode switch (fixture ids repeat across slots — same divergence class as the drift bug)
+
 ### July 2026 — Multi-club, Squad & Transfer Overhaul
 
 **Bug Fixes:**

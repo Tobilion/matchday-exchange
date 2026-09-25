@@ -9,7 +9,9 @@ export function calculateBetBuilderOdds(selections: BetBuilderSelection[]): numb
   return Math.max(1.01, Math.round(raw * (1 - discount) * 100) / 100);
 }
 
-const OUTCOME_MARKETS: MarketType[] = ["MATCH_WINNER", "DOUBLE_CHANCE", "EXACT_SCORE"];
+const OUTCOME_MARKETS: MarketType[] = [
+  "MATCH_WINNER", "DOUBLE_CHANCE", "EXACT_SCORE", "HT_FT", "WIN_TO_NIL", "RESULT_BTTS",
+];
 
 /** Returns null if valid, or an error message string */
 export function validateBetBuilderSelections(
@@ -37,6 +39,21 @@ export function validateBetBuilderSelections(
       const lineKey = `${s.marketType}_${s.selectionId.replace(/^(OVER|UNDER)_/, "")}`;
       ouSeen.set(lineKey, (ouSeen.get(lineKey) ?? 0) + 1);
       if ((ouSeen.get(lineKey) ?? 0) > 1) return `Conflicting Over/Under selections on same line.`;
+    }
+    // Team totals: same side + same line opposites conflict; other
+    // combinations (home/away, different lines) can coexist.
+    if (s.marketType === "TEAM_TOTAL_GOALS") {
+      const side = s.selectionId.startsWith("HOME_") ? "HOME" : "AWAY";
+      const lineKey = `TTG_${side}_${s.selectionId.replace(/^(HOME|AWAY)_(OVER|UNDER)_/, "")}`;
+      ouSeen.set(lineKey, (ouSeen.get(lineKey) ?? 0) + 1);
+      if ((ouSeen.get(lineKey) ?? 0) > 1) return `Conflicting team-total selections on same line.`;
+    }
+    // Clean sheets: one pick per side (Yes and No can't both win).
+    if (s.marketType === "CLEAN_SHEET") {
+      const side = s.selectionId.startsWith("HOME_") ? "HOME" : "AWAY";
+      const sideKey = `CS_${side}`;
+      ouSeen.set(sideKey, (ouSeen.get(sideKey) ?? 0) + 1);
+      if ((ouSeen.get(sideKey) ?? 0) > 1) return `Conflicting clean-sheet selections for the same team.`;
     }
   }
 

@@ -1,19 +1,33 @@
 import React, { useState } from "react";
 import { TeamCrest } from "../TeamCrest";
-import { Team } from "../../types";
+import { Fixture, Team } from "../../types";
 import { cleanPlayerName } from "../../utils/playerUtils";
+import { getTeamForm } from "../../utils/formUtils";
+import { calculatePlayerValue } from "../../engine/transferEngine";
 
 interface GlobalEntityPreviewModalProps {
   globalEntity: { type: "team" | "player"; id: string };
   teams: Team[];
+  fixtures?: Fixture[];
   onClose: () => void;
   onChangeEntity: (entity: { type: "team" | "player"; id: string }) => void;
   onNavigateToTeams: () => void;
 }
 
+// Sorare-style scarcity tiers by overall rating. Visual identity only —
+// no gameplay effect.
+const tierOf = (rating: number): "gold" | "emerald" | "sky" =>
+  rating >= 85 ? "gold" : rating >= 75 ? "emerald" : "sky";
+const TIER_STYLES: Record<string, { ring: string; text: string; glow: string; label: string }> = {
+  gold: { ring: "bg-amber-500/10 border-amber-500/40", text: "text-amber-400", glow: "shadow-[0_0_15px_rgba(245,158,11,0.18)]", label: "GOLD" },
+  emerald: { ring: "bg-emerald-500/10 border-emerald-500/30", text: "text-[#10b981]", glow: "shadow-[0_0_15px_rgba(16,185,129,0.12)]", label: "EMERALD" },
+  sky: { ring: "bg-sky-500/10 border-sky-500/30", text: "text-sky-400", glow: "shadow-[0_0_15px_rgba(56,189,248,0.12)]", label: "STANDARD" },
+};
+
 export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> = ({
   globalEntity,
   teams,
+  fixtures = [],
   onClose,
   onChangeEntity,
   onNavigateToTeams
@@ -51,15 +65,22 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
           ✕
         </button>
 
-        {foundPlayer && (
+        {foundPlayer && (() => {
+          const tier = TIER_STYLES[tierOf(foundPlayer.rating)];
+          const marketValue = foundPlayerTeam ? calculatePlayerValue(foundPlayer, foundPlayerTeam) : null;
+          const apps = Math.max(1, foundPlayer.matchesPlayed || 0);
+          const involvement = ((foundPlayer.goals || 0) + (foundPlayer.assists || 0)) / apps;
+          const isProspect = (foundPlayer.potential ?? 0) > foundPlayer.rating + 5;
+          const motmCount = fixtures.filter((f) => f.motm?.playerId === foundPlayer.id).length;
+          return (
           <div className="w-full flex flex-col items-center space-y-4">
-            {/* Player FUT-Card Inspired Title */}
+            {/* Player card header — tier identity (gold/emerald/standard) */}
             <div className="flex flex-col items-center">
-              <div className="h-11 w-11 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-xl mb-1 shadow-md animate-pulse">
+              <div className={`h-11 w-11 ${tier.ring} border rounded-2xl flex items-center justify-center text-xl mb-1 shadow-md animate-pulse`}>
                 🏃
               </div>
-              <p className="text-[10px] font-mono tracking-widest text-[#10b981] font-extrabold uppercase">
-                CHAMPIONSHIP PLAYER PORTRAIT
+              <p className={`text-[10px] font-mono tracking-widest ${tier.text} font-extrabold uppercase`}>
+                {tier.label} · CHAMPIONSHIP PLAYER CARD
               </p>
               <h3 className="text-lg font-black text-slate-100 tracking-tight leading-tight mt-1 truncate max-w-[240px]">
                 {cleanPlayerName(foundPlayer.name)}
@@ -68,6 +89,34 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                 <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-mono text-[#10b981] font-bold">
                   {foundPlayer.position}
                 </span>
+                <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-mono text-slate-300 font-bold">
+                  AGE {foundPlayer.age}
+                </span>
+                {foundPlayer.injured && (
+                  <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/40 rounded text-[9px] font-mono text-red-400 font-bold">
+                    INJ
+                  </span>
+                )}
+                {(foundPlayer.suspendedRounds ?? 0) > 0 && (
+                  <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/40 rounded text-[9px] font-mono text-red-400 font-bold">
+                    SUSP
+                  </span>
+                )}
+                {foundPlayer.isReserve && (
+                  <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-mono text-slate-400 font-bold">
+                    RES
+                  </span>
+                )}
+                {isProspect && (
+                  <span className="px-2 py-0.5 bg-amber-500/15 border border-amber-500/40 rounded text-[9px] font-mono text-amber-300 font-bold">
+                    🌟 PROSPECT
+                  </span>
+                )}
+                {motmCount > 0 && (
+                  <span className="px-2 py-0.5 bg-emerald-500/15 border border-emerald-500/40 rounded text-[9px] font-mono text-emerald-300 font-bold">
+                    🏆 MOTM ×{motmCount}
+                  </span>
+                )}
                 {foundPlayerTeam && (
                   <>
                     <span className="text-slate-600">•</span>
@@ -109,10 +158,10 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
             {/* Render content */}
             {globalPlayerTab === "stats" ? (
               <div className="w-full space-y-3 animate-fade-in block">
-                {/* Overall badge */}
-                <div className="h-16 w-16 mx-auto rounded-full border border-emerald-500/20 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.12)] flex flex-col items-center justify-center">
+                {/* Overall badge — tier identity */}
+                <div className={`h-16 w-16 mx-auto rounded-full border ${tier.ring} ${tier.glow} flex flex-col items-center justify-center`}>
                   <span className="text-slate-500 font-mono text-[7px] font-bold uppercase leading-none">OVR</span>
-                  <span className="text-xl font-black font-mono text-[#10b981] leading-none mt-0.5">
+                  <span className={`text-xl font-black font-mono ${tier.text} leading-none mt-0.5`}>
                     {foundPlayer.rating}
                   </span>
                 </div>
@@ -175,8 +224,21 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                 )}
               </div>
             )}
+            {/* Valuation + output rate strip */}
+            <div className="w-full grid grid-cols-2 gap-2">
+              <div className="rounded-xl bg-black/40 border border-white/5 px-3 py-2 text-center">
+                <p className="text-[8px] font-mono uppercase tracking-widest text-slate-500 font-bold">Market value</p>
+                <p className="text-sm font-mono font-black text-emerald-400">
+                  {marketValue !== null ? `$${Math.round(marketValue).toLocaleString()}` : "—"}
+                </p>
+              </div>
+              <div className="rounded-xl bg-black/40 border border-white/5 px-3 py-2 text-center">
+                <p className="text-[8px] font-mono uppercase tracking-widest text-slate-500 font-bold">Goal involv. / match</p>
+                <p className="text-sm font-mono font-black text-slate-100">{involvement.toFixed(2)}</p>
+              </div>
+            </div>
           </div>
-        )}
+          );})()}
 
         {foundTeam && (
           <div className="w-full flex flex-col items-center space-y-4">
@@ -194,6 +256,38 @@ export const GlobalEntityPreviewModal: React.FC<GlobalEntityPreviewModalProps> =
                   RATING: {foundTeam.rating.toFixed(1)} Stars
                 </span>
               </div>
+              {/* Recent form (last 5, most recent last) + locale + last season */}
+              {(() => {
+                const form = fixtures.length > 0 ? getTeamForm(foundTeam.id, fixtures, 5) : [];
+                const lastSeason = foundTeam.seasonHistory?.[foundTeam.seasonHistory.length - 1];
+                const locale = [foundTeam.city, foundTeam.country].filter(Boolean).join(", ");
+                return (
+                  <div className="flex flex-col items-center gap-1.5 mt-2">
+                    {form.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-[8px] font-mono uppercase tracking-widest text-slate-500 font-bold mr-1">Form</span>
+                        {form.map((r, i) => (
+                          <span key={i} title={r === "W" ? "Win" : r === "D" ? "Draw" : "Loss"}
+                            className={`h-4 w-4 rounded-full text-[8px] font-black font-mono flex items-center justify-center ${r === "W" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : r === "D" ? "bg-slate-500/20 text-slate-300 border border-white/15" : "bg-red-500/15 text-red-400 border border-red-500/40"}`}>
+                            {r}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {(locale || foundTeam.stadiumName) && (
+                      <span className="text-[9px] font-mono text-slate-500">
+                        {[foundTeam.stadiumName, locale].filter(Boolean).join(" · ")}
+                      </span>
+                    )}
+                    {lastSeason && (
+                      <span className="text-[9px] font-mono text-slate-400">
+                        Last season: <span className="text-slate-200 font-bold">P{lastSeason.position}</span>
+                        <span className="text-slate-500"> {lastSeason.won}W {lastSeason.drawn}D {lastSeason.lost}L{lastSeason.title ? " 🏆" : ""}</span>
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Team Color chips */}

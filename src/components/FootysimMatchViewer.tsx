@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Team, MatchEvent } from "../types";
+import { FixtureStatus, Team, MatchEvent } from "../types";
 import type { FootysimMatch } from "../engine/footysimBridge";
+import { getFootysimSession, setFootysimSession } from "../engine/footysimSessionCache";
 import { FootballPitch2D, Frame } from "./FootballPitch2D";
 import { TeamCrest } from "./TeamCrest";
 import { cleanPlayerName } from "../utils/playerUtils";
@@ -10,66 +11,143 @@ interface Props {
   awayTeam: Team;
   seed: number;
   knockout?: boolean;
+  fixtureId: string;
+  fixtureStatus: FixtureStatus;
+  /** The fixture's real (classic-engine) score — shown for context in replay mode. */
+  officialScore: { home: number; away: number } | null;
+  /**
+   * "official" — fixture is not FT: reaching full time applies this 2D result
+   * (it becomes the real score that settles bets). "replay" — fixture already
+   * FT: this view never writes; the official score is shown alongside.
+   */
+  applyMode: "official" | "replay";
   onClose: () => void;
   onApply: (m: FootysimMatch) => void;
+  onResim: () => void;
 }
 
 const SPEEDS = [1, 2, 4, 8, 20];
 
-export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed, knockout, onClose, onApply }) => {
-  const [match, setMatch] = useState<FootysimMatch | null>(null);
-  const [phase, setPhase] = useState<"simulating" | "playing" | "done" | "error">("simulating");
-  const [idx, setIdx] = useState(0);
-  const [playing, setPlaying] = useState(true);
-  const [speed, setSpeed] = useState(4);
+type RailTab = "stats" | "feed" | "goals";
+type FeedFilter = "ALL" | "KEY" | "ATTACK";
+
+const eventIcon = (type: MatchEvent["type"]): string => {
+  switch (type) {
+    case "GOAL": return "⚽";
+    case "SAVE": return "🧤";
+    case "YELLOW_CARD": return "🟨";
+    case "RED_CARD": return "🟥";
+    case "MISS": return "🎯";
+    case "FOUL": return "⚠️";
+    default: return "•";
+  }
+};
+
+export const FootysimMatchViewer: React.FC<Props> = ({
+  homeTeam, awayTeam, seed, knockout, fixtureId, fixtureStatus,
+  officialScore, applyMode, onClose, onApply, onResim,
+}) => {
+  // Hydrate from the per-fixture session cache so reopening replays the same
+  // match (same seed → same cached sim), never a fresh random one.
+  const cached = getFootysimSession(fixtureId);
+  const hydrated = cached && cached.seed === seed && cached.match;
+  const [match, setMatch] = useState<FootysimMatch | null>(hydrated ? (cached!.match as FootysimMatch) : null);
+  const [phase, setPhase] = useState<"simulating" | "playing" | "done" | "error">(
+    hydrated ? (cached!.finished ? "done" : "playing") : "simulating",
+  );
+  const [idx, setIdx] = useState(hydrated ? cached!.idx : 0);
+  const [playing, setPlaying] = useState(!hydrated || !cached!.finished);
+  const [speed, setSpeed] = useState(hydrated ? cached!.speed : 4);
+  const [railTab, setRailTab] = useState<RailTab>("feed");
+  const [feedFilter, setFeedFilter] = useState<FeedFilter>("ALL");
   const [goalFlash, setGoalFlash] = useState<MatchEvent | null>(null);
+  const [resimArmed, setResimArmed] = useState(false);
   const applied = useRef(false);
   const shownGoalKeys = useRef<Set<string>>(new Set());
+  // Refs mirror state for the unmount write-back (closing the modal persists
+  // playback so coming back resumes where you left off).
+  const stateRef = useRef({ match, idx, phase, speed });
+  stateRef.current = { match, idx, phase, speed };
+  const seedRef = useRef(seed);
+  seedRef.current = seed;
 
-  // Simulate in a web worker (keeps the UI responsive).
+  // Simulate once per fixture+seed in a web worker (keeps the UI responsive).
   useEffect(() => {
+    const existing = getFootysimSession(fixtureId);
+    if (existing && existing.seed === seed && existing.match) return; // replay cached
+    setMatch(null);
+    setPhase("simulating");
+    setIdx(0);
+    applied.current = false;
+    shownGoalKeys.current = new Set();
     const worker = new Worker(new URL("../engine/footysimWorker.ts", import.meta.url), { type: "module" });
     worker.postMessage({ homeTeam, awayTeam, seed, knockout });
     worker.onmessage = (e: MessageEvent<FootysimMatch>) => {
       setMatch(e.data);
       setPhase("playing");
+      setFootysimSession(fixtureId, { seed, match: e.data, idx: 0, speed: speedRef.current, finished: false });
       worker.terminate();
     };
     worker.onerror = (err) => {
-      // The worker's own uncaught exception was previously swallowed here and
-      // `phase` was set straight to "done" — which the UI reads as a normal
-      // completed match: it shows "✓ Result Saved" and a blank 0-0 pitch
-      // (frames stayed [] since `match` never got set), even though nothing
-      // was simulated or recorded. `onApply` below only fires when `match` is
-      // truthy, so no result was actually written, but the label claimed
-      // otherwise — misleading. Surface it as a distinct error state instead,
-      // and log what actually broke so it's debuggable.
+      // Surface worker failure distinctly — never a fake 0-0 "saved" result.
       console.error("[footysim] worker failed to simulate match", err.message || err);
       setPhase("error");
       worker.terminate();
     };
     return () => worker.terminate();
-  }, [homeTeam, awayTeam, seed, knockout]);
+    // homeTeam/awayTeam are stable object refs from context for this fixture.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fixtureId, seed]);
+
+  const speedRef = useRef(speed);
+  speedRef.current = speed;
+
+  // Persist playback on unmount (modal closed → progress saved, not lost).
+  useEffect(() => {
+    return () => {
+      const s = stateRef.current;
+      if (s.match) {
+        setFootysimSession(fixtureId, {
+          seed: seedRef.current,
+          match: s.match,
+          idx: s.idx,
+          speed: speedRef.current,
+          finished: s.phase === "done",
+        });
+      }
+    };
+  }, [fixtureId]);
 
   // Frame playback.
   useEffect(() => {
     if (phase !== "playing" || !match || !playing) return;
     const iv = setInterval(() => {
       setIdx((i) => {
-        if (i >= match.frames.length - 1) { setPhase("done"); return i; }
+        if (i >= match.frames.length - 1) {
+          setPhase("done");
+          setFootysimSession(fixtureId, { seed: seedRef.current, match, idx: match.frames.length - 1, speed: speedRef.current, finished: true });
+          return i;
+        }
         return i + 1;
       });
     }, 340 / speed);
     return () => clearInterval(iv);
-  }, [phase, match, playing, speed]);
+  }, [phase, match, playing, speed, fixtureId]);
 
   const frames = (match?.frames ?? []) as unknown as Frame[];
   const frame = frames[Math.min(idx, frames.length - 1)] ?? null;
   const minute = phase === "done" ? 90 : frame ? Math.min(90, Math.round(Number(frame.t) / 60)) : 0;
-  const shownEvents = (match?.events ?? []).filter((e) => e.minute <= minute);
-  const hs = shownEvents.filter((e) => e.type === "GOAL" && e.teamId === homeTeam.id).length;
-  const as_ = shownEvents.filter((e) => e.type === "GOAL" && e.teamId === awayTeam.id).length;
+  const shownEvents = (match?.events ?? []).filter((e) => e.minute <= (phase === "done" ? 999 : minute));
+  const goals = (match?.events ?? []).filter((e) => e.type === "GOAL");
+  const hs = goals.filter((e) => e.teamId === homeTeam.id).length;
+  const as_ = goals.filter((e) => e.teamId === awayTeam.id).length;
   const isHalfTime = minute >= 45 && minute <= 47 && phase === "playing";
+  const wentET = !!match?.wentToExtraTime;
+  const timeLabel =
+    phase === "simulating" ? "…" :
+    phase === "error" ? "—" :
+    phase === "done" ? (wentET ? "AET" : "FULL TIME") :
+    isHalfTime ? "HALF TIME" : `${minute}'`;
 
   // Goal celebration when a new goal is reached.
   useEffect(() => {
@@ -85,30 +163,71 @@ export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed,
     }
   }, [shownEvents, setGoalFlash]);
 
-  // Record the result once the match reaches full time (so it's always saved).
+  // Record the result once at full time — ONLY in official mode (fixture not
+  // yet FT). In replay mode this view never writes; the official score stands.
   useEffect(() => {
-    if (phase === "done" && match && !applied.current) {
+    if (phase === "done" && match && applyMode === "official" && !applied.current) {
       applied.current = true;
       onApply(match);
     }
-  }, [phase, match, onApply]);
+  }, [phase, match, applyMode, onApply]);
 
   const skipToResult = () => { if (match) { setIdx(match.frames.length - 1); setPhase("done"); setPlaying(false); } };
   const teamName = (id: string) => (id === homeTeam.id ? homeTeam.name : awayTeam.name);
 
+  const feedEvents = shownEvents.filter((e) => {
+    if (feedFilter === "KEY") return e.type === "GOAL" || e.type === "RED_CARD" || e.type === "YELLOW_CARD" || e.type === "COMMENTARY";
+    if (feedFilter === "ATTACK") return e.type === "GOAL" || e.type === "SAVE" || e.type === "MISS";
+    return true;
+  });
+
+  const statsRows = (() => {
+    if (!match) return [];
+    const h = match.stats.home, a = match.stats.away;
+    const possH = h.passes + a.passes > 0 ? Math.round((h.passes / (h.passes + a.passes)) * 100) : 50;
+    return [
+      { label: "Possession (pass share)", hv: `${possH}%`, av: `${100 - possH}%`, hp: possH, ap: 100 - possH },
+      { label: "Shots", hv: h.shots, av: a.shots, hp: h.shots, ap: a.shots },
+      { label: "Shots on target", hv: h.shotsOnTarget, av: a.shotsOnTarget, hp: h.shotsOnTarget, ap: a.shotsOnTarget },
+      { label: "Corners", hv: h.corners, av: a.corners, hp: h.corners, ap: a.corners },
+      { label: "Fouls", hv: h.fouls, av: a.fouls, hp: h.fouls, ap: a.fouls },
+      { label: "Yellow cards", hv: h.yellowCards, av: a.yellowCards, hp: h.yellowCards, ap: a.yellowCards },
+      { label: "Red cards", hv: h.redCards, av: a.redCards, hp: h.redCards, ap: a.redCards },
+      { label: "Saves", hv: h.saves, av: a.saves, hp: h.saves, ap: a.saves },
+      { label: "Passes", hv: h.passes, av: a.passes, hp: h.passes, ap: a.passes },
+    ];
+  })();
+
   return (
     <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
-      <div className="glass-panel border border-indigo-500/25 rounded-2xl w-full max-w-4xl max-h-[94vh] overflow-y-auto no-scrollbar p-4 space-y-3 shadow-2xl relative">
+      <div className="glass-panel border border-indigo-500/25 rounded-2xl w-full max-w-5xl max-h-[94vh] overflow-y-auto no-scrollbar p-4 space-y-3 shadow-2xl relative">
         {/* top bar */}
-        <div className="flex items-center justify-between">
-          <button onClick={onClose} className="flex items-center gap-1.5 text-xs font-bold bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-200 cursor-pointer">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <button onClick={onClose} className="flex items-center gap-1.5 text-xs font-bold bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-200 cursor-pointer" title="Close — playback progress is saved, close to place live bets elsewhere">
             ← Back to Live
           </button>
           <span className="text-[10px] font-mono font-black uppercase tracking-widest text-indigo-300">🛰️ Spatial Engine · 2D Match</span>
-          {phase === "done" ? <span className="text-[9px] font-mono text-emerald-400 uppercase">✓ Result saved</span> :
-            phase === "error" ? <span className="text-[9px] font-mono text-rose-400 uppercase">⚠ Simulation failed</span> :
-            <span className="w-16" />}
+          {phase === "done" && applyMode === "official"
+            ? <span className="text-[9px] font-mono text-emerald-400 uppercase">✓ Official result saved</span>
+            : applyMode === "replay"
+              ? <span className="text-[9px] font-mono text-sky-300 uppercase">↻ Replay — official score stands</span>
+              : phase === "error"
+                ? <span className="text-[9px] font-mono text-rose-400 uppercase">⚠ Simulation failed</span>
+                : <span className="text-[9px] font-mono text-amber-300 uppercase">● Becomes official at FT</span>}
         </div>
+
+        {/* authority banner */}
+        {applyMode === "replay" && officialScore && (
+          <div className="text-[11px] font-mono text-center bg-sky-500/10 border border-sky-500/25 text-sky-200 rounded-lg px-3 py-1.5">
+            Official result (settles bets): <span className="font-black">{officialScore.home} – {officialScore.away}</span>
+            <span className="text-sky-300/70"> · this 2D view is a replay and will not overwrite it</span>
+          </div>
+        )}
+        {applyMode === "official" && fixtureStatus !== "FT" && (
+          <div className="text-[11px] font-mono text-center bg-amber-500/10 border border-amber-500/25 text-amber-200 rounded-lg px-3 py-1.5">
+            2D sim is authoritative here — the full-time score below becomes the official result and settles bets
+          </div>
+        )}
 
         {/* scoreboard */}
         <div className="flex items-center justify-center gap-4">
@@ -118,9 +237,10 @@ export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed,
           </div>
           <div className="text-center shrink-0">
             <div className="font-mono text-2xl font-black text-white bg-black/40 px-4 py-1 rounded-lg">{hs} - {as_}</div>
-            <div className="text-[10px] font-mono text-slate-400 mt-1">
-              {phase === "simulating" ? "…" : phase === "error" ? "—" : phase === "done" ? "FULL TIME" : isHalfTime ? "HALF TIME" : `${minute}'`}
-            </div>
+            <div className="text-[10px] font-mono text-slate-400 mt-1">{timeLabel}</div>
+            {match?.penaltyScore && (
+              <div className="text-[10px] font-mono text-amber-300 mt-0.5">PENS {match.penaltyScore}</div>
+            )}
           </div>
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <TeamCrest team={awayTeam} size={28} />
@@ -128,67 +248,161 @@ export const FootysimMatchViewer: React.FC<Props> = ({ homeTeam, awayTeam, seed,
           </div>
         </div>
 
-        {/* pitch */}
-        <div className="relative">
-          {phase === "simulating" ? (
-            <div className="h-64 flex items-center justify-center text-slate-400 text-sm animate-pulse">Running the spatial simulation…</div>
-          ) : phase === "error" ? (
-            <div className="h-64 flex flex-col items-center justify-center gap-2 text-center px-6">
-              <span className="text-3xl">⚠️</span>
-              <p className="text-sm font-bold text-rose-400">The spatial engine couldn't simulate this match.</p>
-              <p className="text-xs text-slate-400 max-w-sm">
-                No result was recorded — the fixture is unchanged. Check the browser console for details, or go back and use the standard sim for this match instead.
-              </p>
+        {/* main grid: pitch + side rail (compact so stats/feed live alongside) */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.35fr_1fr] gap-3">
+          <div className="space-y-2 min-w-0">
+            <div className="relative">
+              {phase === "simulating" ? (
+                <div className="h-64 flex items-center justify-center text-slate-400 text-sm animate-pulse">Running the spatial simulation…</div>
+              ) : phase === "error" ? (
+                <div className="h-64 flex flex-col items-center justify-center gap-2 text-center px-6">
+                  <span className="text-3xl">⚠️</span>
+                  <p className="text-sm font-bold text-rose-400">The spatial engine couldn't simulate this match.</p>
+                  <p className="text-xs text-slate-400 max-w-sm">
+                    No result was recorded — the fixture is unchanged. Check the browser console for details, or go back and use the standard sim for this match instead.
+                  </p>
+                </div>
+              ) : (
+                <FootballPitch2D frame={frame} homeTeamId={homeTeam.id} homeColor={homeTeam.primaryColor} awayColor={awayTeam.primaryColor} homeName={homeTeam.shortName} awayName={awayTeam.shortName} />
+              )}
+              {goalFlash && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="bg-emerald-500/90 text-slate-950 font-black px-6 py-3 rounded-2xl text-xl shadow-2xl animate-bounce text-center">
+                    ⚽ GOAL!<div className="text-xs font-bold mt-1">{cleanPlayerName(goalFlash.playerName ?? "")} · {teamName(goalFlash.teamId ?? "")}</div>
+                  </div>
+                </div>
+              )}
+              {isHalfTime && !goalFlash && (
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-amber-500/90 text-slate-950 font-black px-4 py-1 rounded-full text-xs">⏸ HALF TIME</div>
+              )}
+              {phase === "done" && (
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-white/90 text-slate-950 font-black px-4 py-1 rounded-full text-xs">
+                  🏁 {wentET ? (match?.penaltyScore ? `PENS ${match.penaltyScore}` : "AFTER EXTRA TIME") : "FULL TIME"}
+                </div>
+              )}
             </div>
-          ) : (
-            <FootballPitch2D frame={frame} homeTeamId={homeTeam.id} homeColor={homeTeam.primaryColor} awayColor={awayTeam.primaryColor} homeName={homeTeam.shortName} awayName={awayTeam.shortName} />
-          )}
-          {goalFlash && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="bg-emerald-500/90 text-slate-950 font-black px-6 py-3 rounded-2xl text-xl shadow-2xl animate-bounce text-center">
-                ⚽ GOAL!<div className="text-xs font-bold mt-1">{cleanPlayerName(goalFlash.playerName ?? "")} · {teamName(goalFlash.teamId ?? "")}</div>
+
+            {/* controls */}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                {phase === "playing" && (
+                  <button onClick={() => setPlaying((p) => !p)} className="text-[11px] font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-200 cursor-pointer">
+                    {playing ? "⏸ Pause" : "▶ Play"}
+                  </button>
+                )}
+                {phase !== "simulating" && SPEEDS.map((s) => (
+                  <button key={s} onClick={() => setSpeed(s)} className={`text-[10px] font-bold px-2 py-1.5 rounded-lg cursor-pointer border ${speed === s ? "bg-indigo-500 text-white border-indigo-500" : "bg-white/5 text-slate-400 border-white/10"}`}>{s}x</button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                {match && !resimArmed && (
+                  <button onClick={() => setResimArmed(true)} title="Simulate a brand-new 2D match for this fixture" className="text-[11px] font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-300 cursor-pointer">
+                    🎲 Re-sim
+                  </button>
+                )}
+                {resimArmed && (
+                  <span className="flex items-center gap-1.5 text-[11px]">
+                    <span className="text-amber-300 font-mono">{fixtureStatus === "FT" || applyMode === "replay" ? "Overwrite official?" : "Discard & re-sim?"}</span>
+                    <button onClick={() => { setResimArmed(false); onResim(); }} className="font-bold uppercase bg-red-500 hover:bg-red-400 text-white px-2 py-1 rounded-lg cursor-pointer">Yes</button>
+                    <button onClick={() => setResimArmed(false)} className="font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-2 py-1 rounded-lg text-slate-300 cursor-pointer">No</button>
+                  </span>
+                )}
+                {phase === "playing" && (
+                  <button onClick={skipToResult} className="text-[11px] font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-300 cursor-pointer">⏭ Sim straight through</button>
+                )}
+                <button onClick={onClose} className="text-[11px] font-black uppercase bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-1.5 rounded-lg cursor-pointer">
+                  {phase === "done" ? "Done → Live" : "Back to Live"}
+                </button>
               </div>
             </div>
-          )}
-          {isHalfTime && !goalFlash && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-amber-500/90 text-slate-950 font-black px-4 py-1 rounded-full text-xs">⏸ HALF TIME</div>
-          )}
-          {phase === "done" && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-white/90 text-slate-950 font-black px-4 py-1 rounded-full text-xs">🏁 FULL TIME</div>
-          )}
-        </div>
-
-        {/* event ticker */}
-        <div className="h-16 overflow-y-auto bg-black/30 rounded-lg p-2 text-[11px] font-mono space-y-0.5 no-scrollbar border border-white/5">
-          {shownEvents.length === 0 && <div className="text-slate-500">Kick-off…</div>}
-          {[...shownEvents].reverse().slice(0, 6).map((e, i) => (
-            <div key={i} className={e.type === "GOAL" ? "text-emerald-400 font-bold" : "text-slate-300"}>
-              <span className="text-slate-500">{e.minute}'</span>{" "}
-              {e.type === "GOAL" ? "⚽" : e.type === "SAVE" ? "🧤" : e.type === "YELLOW_CARD" ? "🟨" : e.type === "RED_CARD" ? "🟥" : "•"}{" "}
-              {cleanPlayerName(e.playerName ?? "")} <span className="text-slate-500">· {teamName(e.teamId ?? "")}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* controls */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5">
-            {phase === "playing" && (
-              <button onClick={() => setPlaying((p) => !p)} className="text-[11px] font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-200 cursor-pointer">
-                {playing ? "⏸ Pause" : "▶ Play"}
-              </button>
-            )}
-            {phase !== "simulating" && SPEEDS.map((s) => (
-              <button key={s} onClick={() => setSpeed(s)} className={`text-[10px] font-bold px-2 py-1.5 rounded-lg cursor-pointer border ${speed === s ? "bg-indigo-500 text-white border-indigo-500" : "bg-white/5 text-slate-400 border-white/10"}`}>{s}x</button>
-            ))}
+            <p className="text-[10px] font-mono text-slate-500">Closing saves playback — reopen to resume. Place live bets from the Live tab while paused.</p>
           </div>
-          <div className="flex items-center gap-2">
-            {phase === "playing" && (
-              <button onClick={skipToResult} className="text-[11px] font-bold uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg text-slate-300 cursor-pointer">⏭ Sim straight through</button>
-            )}
-            <button onClick={onClose} className="text-[11px] font-black uppercase bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-1.5 rounded-lg cursor-pointer">
-              {phase === "done" ? "Done → Live" : "Back to Live"}
-            </button>
+
+          {/* side rail */}
+          <div className="min-w-0 flex flex-col rounded-xl border border-white/5 bg-black/30 overflow-hidden">
+            <div className="flex border-b border-white/5 shrink-0">
+              {(["feed", "goals", "stats"] as RailTab[]).map((t) => (
+                <button key={t} type="button" onClick={() => setRailTab(t)}
+                  className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${railTab === t ? "text-indigo-300 border-b-2 border-indigo-400 bg-indigo-500/5" : "text-slate-500 hover:text-slate-300"}`}>
+                  {t === "feed" ? "Feed" : t === "goals" ? `Goals (${goals.length})` : "Stats"}
+                </button>
+              ))}
+            </div>
+            <div className="flex-1 overflow-y-auto no-scrollbar p-2 min-h-[220px] max-h-[380px]">
+              {railTab === "feed" && (
+                <div className="space-y-1">
+                  <div className="flex gap-1 mb-1.5">
+                    {(["ALL", "KEY", "ATTACK"] as FeedFilter[]).map((f) => (
+                      <button key={f} type="button" onClick={() => setFeedFilter(f)}
+                        className={`text-[9px] font-mono font-bold px-2 py-1 rounded-md cursor-pointer border ${feedFilter === f ? "bg-white/10 text-white border-white/20" : "text-slate-500 border-transparent hover:text-slate-300"}`}>
+                        {f === "ALL" ? "All" : f === "KEY" ? "Key moments" : "Attack"}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="text-[11px] font-mono space-y-0.5">
+                    {feedEvents.length === 0 && <div className="text-slate-500">Kick-off…</div>}
+                    {[...feedEvents].reverse().map((e, i) => (
+                      <div key={i} className={e.type === "GOAL" ? "text-emerald-400 font-bold" : "text-slate-300"}>
+                        <span className="text-slate-500">{e.minute}'</span>{" "}
+                        {eventIcon(e.type)}{" "}
+                        {cleanPlayerName(e.playerName ?? e.commentary ?? "")}
+                        {e.type === "GOAL" && e.assistantPlayerName && (
+                          <span className="text-slate-500 font-normal"> (asst. {cleanPlayerName(e.assistantPlayerName)})</span>
+                        )}{" "}
+                        <span className="text-slate-500">· {teamName(e.teamId ?? "")}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {railTab === "goals" && (
+                <div className="space-y-1 text-[11px] font-mono">
+                  {goals.length === 0 && <div className="text-slate-500">No goals yet — they stay pinned here once scored.</div>}
+                  {goals.map((e, i) => (
+                    <div key={i} className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 rounded-lg px-2 py-1.5">
+                      <span className="font-black text-emerald-300">{e.minute}'</span>
+                      <span className="text-slate-100 font-bold truncate">{cleanPlayerName(e.playerName ?? "")}</span>
+                      {e.assistantPlayerName && (
+                        <span className="text-slate-400 truncate text-[10px]">asst. {cleanPlayerName(e.assistantPlayerName)}</span>
+                      )}
+                      <span className="text-slate-500 truncate">· {teamName(e.teamId ?? "")}</span>
+                    </div>
+                  ))}
+                  {wentET && (
+                    <div className="text-amber-300 pt-1">↳ Went to extra time{match?.penaltyScore ? ` — shootout ${match.penaltyScore}` : ""}.</div>
+                  )}
+                </div>
+              )}
+              {railTab === "stats" && (
+                <div className="space-y-2">
+                  <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest text-center">
+                    {phase === "done" ? "Full-time stats" : "Sim final stats (score still playing out)"}
+                  </p>
+                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 px-1">
+                    <span className="font-bold" style={{ color: homeTeam.primaryColor }}>{homeTeam.shortName}</span>
+                    <span className="uppercase tracking-widest">Stat</span>
+                    <span className="font-bold" style={{ color: awayTeam.primaryColor }}>{awayTeam.shortName}</span>
+                  </div>
+                  {statsRows.map((r) => {
+                    const total = Number(r.hp) + Number(r.ap);
+                    const pctH = total > 0 ? Math.round((Number(r.hp) / total) * 100) : 50;
+                    return (
+                      <div key={r.label}>
+                        <div className="flex items-center justify-between text-[11px] font-mono px-1">
+                          <span className="text-slate-100 font-bold">{String(r.hv)}</span>
+                          <span className="text-slate-500 text-[10px]">{r.label}</span>
+                          <span className="text-slate-100 font-bold">{String(r.av)}</span>
+                        </div>
+                        <div className="flex h-1 rounded-full overflow-hidden bg-white/5 mt-0.5">
+                          <div style={{ width: `${pctH}%`, background: homeTeam.primaryColor }} />
+                          <div style={{ width: `${100 - pctH}%`, background: awayTeam.primaryColor }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

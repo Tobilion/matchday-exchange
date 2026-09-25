@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BetBuilderSelection, Profile } from "../types";
 import { ROUND_LABELS } from "../data/tournament";
 import { useProfile } from "../hooks/useProfile";
@@ -16,6 +16,7 @@ import { generateTransferListings } from "../engine/transferEngine";
 import { BettingSlip } from "./BettingSlip";
 import { LiveMatches } from "./LiveMatches";
 import { FootysimMatchViewer } from "./FootysimMatchViewer";
+import { clearAllFootysimSessions, clearFootysimSession, stableFootysimSeed } from "../engine/footysimSessionCache";
 import { FixturesOdds } from "./FixturesOdds";
 import { MyBets } from "./MyBets";
 import { TeamsList } from "./TeamsList";
@@ -58,9 +59,21 @@ export default function Dashboard() {
     betBuilderFixtureId, setBetBuilderFixtureId,
     footysim2DId, setFootysim2DId,
     selectedFixtureId, setSelectedFixtureId,
-    footysimSessionSeed, setFootysimSessionSeed,
     careerProfile,
   } = useUI();
+
+  // Explicit re-sim seeds: empty = stable deterministic seed per fixture.
+  // Only an intentional "Re-sim" click (inside the viewer) writes here.
+  const [footysimResimSeeds, setFootysimResimSeeds] = useState<Record<string, number>>({});
+
+  // 2D sessions are keyed by fixture id, which repeats across save slots —
+  // drop them (and any re-sim overrides) whenever the campaign changes.
+  useEffect(() => {
+    clearAllFootysimSessions();
+    setFootysimResimSeeds({});
+    setFootysim2DId(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameMode, activeSlot]);
 
   const profileHook = useProfile({ gameMode, activeSlot, teams, setTeams, fixtures, tipsters, tipsterTickets });
   const { userProfile, setUserProfile, persist } = profileHook;
@@ -294,7 +307,7 @@ export default function Dashboard() {
       {showWalletModal && <WalletModal balance={userProfile.balance} onConfirmTransaction={profileHook.handleConfirmWalletTransaction} onClose={() => setShowWalletModal(false)} grantScopeKey={gameMode ? `${gameMode.toLowerCase()}_slot${activeSlot}` : undefined} />}
       {showWinnerCelebration && <WinnerCelebrationModal gameMode={gameMode} balance={userProfile.balance} championName={champion.name} championCrest={champion.crest} onClose={() => setShowWinnerCelebration(false)} onResetRound={handleResetAndReloadProfile} />}
       {ownerRevenueReport && <OwnerRevenueModal teamName={ownerRevenueReport.teamName} revenue={ownerRevenueReport.revenue} fixtures={ownerRevenueReport.fixtures} onClose={() => setOwnerRevenueReport(null)} />}
-      {globalEntity && <GlobalEntityPreviewModal globalEntity={globalEntity} teams={teams} onClose={() => setGlobalEntity(null)} onChangeEntity={(e) => setGlobalEntity(e)} onNavigateToTeams={() => { setGlobalEntity(null); setActiveTab("teams"); }} />}
+      {globalEntity && <GlobalEntityPreviewModal globalEntity={globalEntity} teams={teams} fixtures={fixtures} onClose={() => setGlobalEntity(null)} onChangeEntity={(e) => setGlobalEntity(e)} onNavigateToTeams={() => { setGlobalEntity(null); setActiveTab("teams"); }} />}
       {betBuilderFixtureId && (() => { const bb = fixtures.find(f => f.id === betBuilderFixtureId); return bb ? <BetBuilder fixture={bb} teams={teams} balance={userProfile.balance} onPlace={handleBBPlace} onClose={() => setBetBuilderFixtureId(null)} /> : null; })()}
       {showHighlightsFixture && <MatchHighlightsModal fixture={showHighlightsFixture} teams={teams} onClose={() => setShowHighlightsFixture(null)} />}
       {footysim2DId && (() => {
@@ -303,13 +316,26 @@ export default function Dashboard() {
         const home = teams.find(t => t.id === fx.homeTeamId);
         const away = teams.find(t => t.id === fx.awayTeamId);
         if (!home || !away) return null;
+        // Stable seed → reopening replays the same 2D match (session cache).
+        // Fixture already FT (classic result stands) → replay mode: the viewer
+        // can never overwrite. Otherwise the 2D result is authoritative.
+        const seed = footysimResimSeeds[fx.id] ?? stableFootysimSeed(fx.id, fx.roundIndex);
+        const isFT = fx.status === "FT";
         return (
           <FootysimMatchViewer
             homeTeam={home} awayTeam={away}
-            seed={((fx.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0) + userProfile.currentRoundIndex * 31) ^ footysimSessionSeed) >>> 0}
+            seed={seed}
             knockout={gameMode === "TOURNAMENT"}
+            fixtureId={fx.id}
+            fixtureStatus={fx.status}
+            officialScore={isFT ? { home: Math.floor(fx.homeScore), away: Math.floor(fx.awayScore) } : null}
+            applyMode={isFT ? "replay" : "official"}
             onClose={() => setFootysim2DId(null)}
-            onApply={(m) => { applyFootysimResult(fx.id, m); setFootysimSessionSeed(Math.floor(Math.random() * 1e9)); }}
+            onApply={(m) => { applyFootysimResult(fx.id, m); }}
+            onResim={() => {
+              clearFootysimSession(fx.id);
+              setFootysimResimSeeds((prev) => ({ ...prev, [fx.id]: Math.floor(Math.random() * 1e9) }));
+            }}
           />
         );
       })()}

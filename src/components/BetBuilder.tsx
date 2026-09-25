@@ -16,7 +16,7 @@ interface BetBuilderProps {
   onClose: () => void;
 }
 
-type Category = "MAIN" | "GOALS" | "PLAYERS";
+type Category = "MAIN" | "GOALS" | "TOTALS" | "PLAYERS";
 
 function getTeam(teams: Team[], id: string): Team {
   return teams.find((t) => t.id === id) ?? teams[0];
@@ -27,7 +27,7 @@ function selKey(s: BetBuilderSelection) {
 }
 
 const CONFLICT_GROUPS: MarketType[][] = [
-  ["MATCH_WINNER", "DOUBLE_CHANCE", "EXACT_SCORE"],
+  ["MATCH_WINNER", "DOUBLE_CHANCE", "EXACT_SCORE", "HT_FT", "WIN_TO_NIL", "RESULT_BTTS"],
 ];
 
 function removeConflicts(
@@ -49,6 +49,26 @@ function removeConflicts(
     return prev.filter(
       (s) =>
         !(s.marketType === next.marketType && s.selectionId.replace(/^(OVER|UNDER)_/, "") === line),
+    );
+  }
+  // Team totals: same side + same line opposite removed; other sides/lines stay.
+  if (next.marketType === "TEAM_TOTAL_GOALS") {
+    const side = next.selectionId.startsWith("HOME_") ? "HOME" : "AWAY";
+    const line = next.selectionId.replace(/^(HOME|AWAY)_(OVER|UNDER)_/, "");
+    return prev.filter(
+      (s) =>
+        !(s.marketType === "TEAM_TOTAL_GOALS" &&
+          (s.selectionId.startsWith("HOME_") ? "HOME" : "AWAY") === side &&
+          s.selectionId.replace(/^(HOME|AWAY)_(OVER|UNDER)_/, "") === line),
+    );
+  }
+  // Clean sheet: same side removed (Yes and No can't both win).
+  if (next.marketType === "CLEAN_SHEET") {
+    const side = next.selectionId.startsWith("HOME_") ? "HOME" : "AWAY";
+    return prev.filter(
+      (s) =>
+        !(s.marketType === "CLEAN_SHEET" &&
+          (s.selectionId.startsWith("HOME_") ? "HOME" : "AWAY") === side),
     );
   }
   // BTTS: only one
@@ -145,6 +165,30 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
           </div>
         </>
       )}
+      {o.resultBtts && (
+        <>
+          <p className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest">Result + BTTS combo</p>
+          <div className="grid grid-cols-2 gap-1.5">
+            {o.resultBtts.map((r) => btn("RESULT_BTTS", r.selectionId, r.label, r.odds))}
+          </div>
+        </>
+      )}
+      {o.htFt && (
+        <>
+          <p className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest">Half-time / Full-time</p>
+          <div className="grid grid-cols-3 gap-1.5">
+            {o.htFt.map((r) => btn("HT_FT", r.selectionId, r.label, r.odds))}
+          </div>
+        </>
+      )}
+      {o.winToNil && (
+        <>
+          <p className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest">Win to nil</p>
+          <div className="grid grid-cols-2 gap-1.5">
+            {o.winToNil.map((r) => btn("WIN_TO_NIL", r.selectionId, r.label, r.odds))}
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -167,6 +211,51 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
       })}
     </div>
   ) : <p className="text-slate-600 text-xs">No goals markets available.</p>;
+
+  const scoreLabel = (score: string): string =>
+    score === "ANY_HOME" ? "Any other home" : score === "ANY_DRAW" ? "Any other draw" : score === "ANY_AWAY" ? "Any other away" : score;
+
+  const scoresMarkets = o.exactScores?.length ? (
+    <div className="space-y-2">
+      <p className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest">Correct Score</p>
+      <div className="grid grid-cols-3 gap-1.5">
+        {o.exactScores.map((s) => btn("EXACT_SCORE", s.score, scoreLabel(s.score), s.odds))}
+      </div>
+    </div>
+  ) : null;
+
+  const totalsMarkets = (
+    <div className="space-y-3">
+      {o.teamTotals && (
+        <div className="space-y-2">
+          <p className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest">Team Totals</p>
+          {(["HOME", "AWAY"] as const).map((side) => (
+            <div key={side} className="space-y-1.5">
+              <p className="text-[9px] font-mono text-slate-500">
+                {side === "HOME" ? homeTeam.shortName : awayTeam.shortName} goals
+              </p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {o.teamTotals
+                  .filter((t) => t.side === side)
+                  .flatMap((t) => [
+                    btn("TEAM_TOTAL_GOALS", `${side}_OVER_${t.line}`, `Over ${t.line}`, t.over),
+                    btn("TEAM_TOTAL_GOALS", `${side}_UNDER_${t.line}`, `Under ${t.line}`, t.under),
+                  ])}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {o.cleanSheet && (
+        <div className="space-y-2">
+          <p className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest">Clean Sheet</p>
+          <div className="grid grid-cols-2 gap-1.5">
+            {o.cleanSheet.map((c) => btn("CLEAN_SHEET", c.selectionId, c.label, c.odds))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   const playerMarkets = o.goalscorers?.length ? (
     <div className="space-y-2">
@@ -205,7 +294,7 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
           {/* LEFT: Markets */}
           <div className="flex-1 flex flex-col min-h-0 border-r border-white/5">
             <div className="flex border-b border-white/5 shrink-0">
-              {(["MAIN","GOALS","PLAYERS"] as Category[]).map((cat) => (
+              {(["MAIN","GOALS","TOTALS","PLAYERS"] as Category[]).map((cat) => (
                 <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
                   className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${activeCategory===cat?"text-amber-400 border-b-2 border-amber-400 bg-amber-500/5":"text-slate-500 hover:text-slate-300"}`}>
                   {cat}
@@ -214,7 +303,8 @@ export const BetBuilder: React.FC<BetBuilderProps> = ({
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
               {activeCategory === "MAIN" && mainMarkets}
-              {activeCategory === "GOALS" && goalsMarkets}
+              {activeCategory === "GOALS" && (<div className="space-y-4">{goalsMarkets}{scoresMarkets}</div>)}
+              {activeCategory === "TOTALS" && totalsMarkets}
               {activeCategory === "PLAYERS" && playerMarkets}
             </div>
           </div>

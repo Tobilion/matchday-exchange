@@ -252,6 +252,68 @@ export function computeLiveOdds(
       const over = need < 0 ? 1 : probTotalOver(need, remaining);
       return oddsFromProb(isOver ? over : 1 - over);
     }
+    case "TEAM_TOTAL_GOALS": {
+      const side = selectionId.startsWith("HOME_") ? "HOME" : selectionId.startsWith("AWAY_") ? "AWAY" : null;
+      if (!side) return baseOdds;
+      // selectionId: "HOME_OVER_1.5" — strip the side prefix, reuse the O/U parser.
+      const { isOver, line } = parseLine(selectionId.slice(5));
+      const scored = side === "HOME" ? st.hs : st.as;
+      if (scored > line) return null; // decided
+      const pre = preMatchLambdas(fixture);
+      const rem = Math.max(0.01, (side === "HOME" ? pre.home : pre.away) * st.frac);
+      let over = 0;
+      for (let k = Math.max(0, Math.floor(line - scored) + 1); k <= MAXG; k++) over += poisson(k, rem);
+      over = clamp(over, 0, 1);
+      return oddsFromProb(isOver ? over : 1 - over);
+    }
+    case "CLEAN_SHEET": {
+      const id = selectionId.toUpperCase();
+      const homeClean = id.startsWith("HOME_");
+      const wantYes = id.endsWith("YES");
+      const conceded = homeClean ? st.as : st.hs;
+      if (conceded > 0) return null; // clean sheet decided (yes lost / no won)
+      const pre = preMatchLambdas(fixture);
+      const oppRem = Math.max(0.01, (homeClean ? pre.away : pre.home) * st.frac);
+      const yesP = poisson(0, oppRem);
+      return oddsFromProb(wantYes ? yesP : 1 - yesP);
+    }
+    case "WIN_TO_NIL": {
+      const id = selectionId.toUpperCase();
+      const home = id === "HOME";
+      const conceded = home ? st.as : st.hs;
+      if (conceded > 0) return null; // nil gone
+      const p = sumWhere((h, a) => (home ? h > a && a === st.as : a > h && h === st.hs) && (home ? a === 0 : h === 0));
+      return oddsFromProb(p);
+    }
+    case "RESULT_BTTS": {
+      const id = selectionId.toUpperCase();
+      const wantYes = id.endsWith("_YES");
+      const wantRes = id.startsWith("HOME_") ? "H" : id.startsWith("AWAY_") ? "A" : "D";
+      const bothScored = st.hs >= 1 && st.as >= 1;
+      const p = bothScored
+        ? sumWhere((h, a) => (wantRes === "H" ? h > a : wantRes === "A" ? a > h : h === a))
+        : sumWhere((h, a) => {
+            const r = h > a ? "H" : h === a ? "D" : "A";
+            const b = h >= 1 && a >= 1;
+            return r === wantRes && b === wantYes;
+          });
+      return oddsFromProb(p);
+    }
+    case "HT_FT": {
+      const id = selectionId.toUpperCase();
+      if (id.length !== 2) return baseOdds;
+      const min = clamp(fixture.currentMinute || 0, 0, 90);
+      if (min < 45) return baseOdds; // HT not yet knowable — pre-match price stands
+      const htH = fixture.events.filter((ev) => ev.type === "GOAL" && ev.minute <= 45 && ev.teamId === fixture.homeTeamId).length;
+      const htA = fixture.events.filter((ev) => ev.type === "GOAL" && ev.minute <= 45 && ev.teamId === fixture.awayTeamId).length;
+      const htSide = htH > htA ? "H" : htH === htA ? "D" : "A";
+      if (id[0] !== htSide) return null; // HT decided otherwise
+      const p = sumWhere((h, a) => {
+        const ft = h > a ? "H" : h === a ? "D" : "A";
+        return ft === id[1];
+      });
+      return oddsFromProb(p);
+    }
     default:
       return baseOdds > 0 ? baseOdds : null;
   }

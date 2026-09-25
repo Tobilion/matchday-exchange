@@ -2,8 +2,13 @@ import { BetSelection, MarketType } from "../types";
 
 // Match-result markets are all the same mutually-exclusive outcome group:
 // you can't win both "Home Win" and "Away Win", nor pair them with a
-// double-chance / exact-score pick for the same match inside one accumulator.
-export const RESULT_MARKETS: MarketType[] = ["MATCH_WINNER", "DOUBLE_CHANCE", "EXACT_SCORE"];
+// double-chance / exact-score / HT-FT / win-to-nil / result+BTTS pick for the
+// same match inside one accumulator. (Clean sheets and team totals are NOT in
+// this group: "Home Win" + "Home Over 1.5" can both win — only same-line
+// opposites conflict, handled by their own group keys below.)
+export const RESULT_MARKETS: MarketType[] = [
+  "MATCH_WINNER", "DOUBLE_CHANCE", "EXACT_SCORE", "HT_FT", "WIN_TO_NIL", "RESULT_BTTS",
+];
 
 /**
  * Key identifying the mutually-exclusive market group a selection belongs to.
@@ -17,6 +22,18 @@ export function marketGroupKey(sel: BetSelection): string {
   }
   if (RESULT_MARKETS.includes(sel.marketType)) {
     return `RESULT:${sel.fixtureId}`;
+  }
+  if (sel.marketType === "TEAM_TOTAL_GOALS") {
+    // Same side + same line opposites conflict ("HOME Over 1.5" vs "HOME
+    // Under 1.5"); different sides or lines can coexist in one accumulator.
+    const side = sel.selectionId.startsWith("HOME_") ? "HOME" : "AWAY";
+    const line = sel.selectionId.replace(/^(HOME|AWAY)_(OVER|UNDER)_/, "");
+    return `TTG:${sel.fixtureId}:${side}:${line}`;
+  }
+  if (sel.marketType === "CLEAN_SHEET") {
+    // Same side Yes/No conflict; home and away sheets are independent.
+    const side = sel.selectionId.startsWith("HOME_") ? "HOME" : "AWAY";
+    return `CS:${sel.fixtureId}:${side}`;
   }
   return `${sel.marketType}:${sel.fixtureId}`;
 }

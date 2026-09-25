@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import { Trophy, Award, Sparkles, User, Coins, Play, ArrowRight, Trash2 } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Trophy, Award, Sparkles, User, Coins, ArrowRight, Trash2, Wallet, Swords, CalendarDays, ChevronDown } from "lucide-react";
 import { LINKS } from "./ui/site-footer";
-import { getKeysForMode } from "../utils/storage";
+import { getKeysForMode, loadFixtures, loadProfile } from "../utils/storage";
+import { ROUND_SHORT_LABELS } from "../data/tournament";
+import { useTheme } from "../hooks/useTheme";
+import { ThemeToggle } from "./ThemeToggle";
 
 // Last mode/slot the player actually entered — read once on mount so the
 // form (and "Last Played" badge below) default to wherever they left off.
@@ -42,13 +45,74 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [mode, setMode] = useState<"TOURNAMENT" | "LEAGUE">(lastUsed.mode);
   const [selectedSlot, setSelectedSlot] = useState<number>(lastUsed.slot);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{mode: "TOURNAMENT" | "LEAGUE", slot: number} | null>(null);
+  const [overwriteConfirmation, setOverwriteConfirmation] = useState(false);
+  const [expandedKey, setExpandedKey] = useState<string | null>(() => `${lastUsed.mode}:${lastUsed.slot}`);
+  // Bumped after delete/overwrite so slot summaries re-read localStorage even
+  // when the parent doesn't re-render (deleting a save sets no React state).
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { theme, setTheme } = useTheme();
 
   // Selection presets for starting bankroll budget
   const balancePresets = [500, 1000, 2500, 5000];
 
+  // Real save details per slot, read from the signed saves (same keys the game
+  // resumes from). Corrupt/tampered saves verify to null and render as Empty.
+  interface SlotSummary {
+    exists: boolean;
+    username: string;
+    balance: number;
+    stageLabel: string;
+    gamesPlayed: number;
+    betsPlaced: number;
+  }
+  const readSummary = (slotMode: "TOURNAMENT" | "LEAGUE", slot: number): SlotSummary => {
+    const empty: SlotSummary = { exists: false, username: "", balance: 0, stageLabel: "", gamesPlayed: 0, betsPlaced: 0 };
+    try {
+      const keys = getKeysForMode(slotMode, slot);
+      const profile = loadProfile(keys);
+      if (!profile) return empty;
+      const fixtures = loadFixtures(keys);
+      const finished = fixtures ? fixtures.filter((f) => f.status === "FT").length : 0;
+      const stageLabel =
+        slotMode === "TOURNAMENT"
+          ? (ROUND_SHORT_LABELS[profile.currentRoundIndex] ?? `Round ${profile.currentRoundIndex + 1}`)
+          : `Matchday ${(profile.currentRoundIndex ?? 0) + 1}`;
+      return {
+        exists: true,
+        username: profile.username || "Manager",
+        balance: profile.balance ?? 0,
+        stageLabel,
+        gamesPlayed: finished,
+        betsPlaced: profile.tickets?.length ?? 0,
+      };
+    } catch {
+      return empty;
+    }
+  };
+  const summaries = useMemo(() => {
+    const out: Record<string, SlotSummary> = {};
+    (["TOURNAMENT", "LEAGUE"] as const).forEach((m) => {
+      [1, 2, 3].forEach((slot) => { out[`${m}:${slot}`] = readSummary(m, slot); });
+    });
+    // Re-read when the parent's existence flags change (resume/delete/kickoff),
+    // or when refreshKey is bumped after an in-place delete/overwrite.
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savedTournaments.join(""), savedLeagues.join(""), refreshKey]);
+
+  const writeTargetOccupied =
+    (mode === "TOURNAMENT" ? savedTournaments[selectedSlot - 1] : savedLeagues[selectedSlot - 1]) ||
+    summaries[`${mode}:${selectedSlot}`]?.exists;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim()) return;
+    // Never silently overwrite: an occupied write slot requires confirmation.
+    if (writeTargetOccupied && !overwriteConfirmation) {
+      setOverwriteConfirmation(true);
+      return;
+    }
+    setOverwriteConfirmation(false);
     onKickoff(username.trim(), balance, mode, selectedSlot);
   };
 
@@ -81,6 +145,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             <p className="text-xs text-slate-400 leading-relaxed">
               Step into the ultimate visual betting and matches simulator. Take charge of a football club championship campaign as a general manager and elite bet predictor.
             </p>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-mono uppercase tracking-widest text-slate-500 font-bold">Theme</span>
+              <ThemeToggle theme={theme} onChange={setTheme} />
+            </div>
           </div>
 
           {/* Quick Stats Panel / Resume options if they already exist */}
@@ -90,101 +159,123 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             </h4>
             
             <div className="space-y-4">
-              {/* TOURNAMENT SLOTS */}
-              <div className="space-y-1.5 animate-fade-in">
-                <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-amber-500 font-bold">
-                  <Trophy size={11} className="shrink-0" />
-                  <span>Tournament Mode</span>
-                </div>
-                <div className="grid grid-cols-1 gap-1.5">
-                  {[1, 2, 3].map((slot) => {
-                    const exists = savedTournaments[slot - 1];
-                    const isLastPlayed = exists && lastUsed.mode === "TOURNAMENT" && lastUsed.slot === slot;
-                    return (
-                      <div key={`t-slot-${slot}`} className={`flex items-center justify-between p-2 rounded-xl bg-white/2 border text-[11px] ${isLastPlayed ? "border-amber-500/40" : "border-white/5"}`}>
-                        <div className="flex items-center gap-2">
-                          <span className={`w-1.5 h-1.5 rounded-full ${exists ? "bg-amber-500 animate-pulse" : "bg-slate-700"}`} />
-                          <span className="font-bold text-slate-305">Slot {slot}</span>
-                          <span className="text-[9px] font-mono text-slate-500">
-                            {isLastPlayed ? "Last Played" : exists ? "Active Save" : "Empty Slot"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          {exists ? (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => resumeActiveMode("TOURNAMENT", slot)}
-                                className="bg-amber-500/15 hover:bg-amber-500 text-amber-400 hover:text-slate-950 font-black px-2 py-0.5 rounded-md transition-all text-[9.5px] cursor-pointer"
-                              >
-                                Resume
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setDeleteConfirmation({ mode: "TOURNAMENT", slot })}
-                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 rounded-md transition-all cursor-pointer h-5 w-5 flex items-center justify-center border border-white/5 text-[9px]"
-                                title="Delete Save Slot"
-                              >
-                                ✕
-                              </button>
-                            </>
-                          ) : (
-                            <span className="text-[8px] font-mono text-slate-600 uppercase">Available</span>
+              {([
+                { slotMode: "TOURNAMENT" as const, title: "Tournament Mode", icon: Trophy, accent: "amber", existsArr: savedTournaments },
+                { slotMode: "LEAGUE" as const, title: "Elite League Mode", icon: Award, accent: "blue", existsArr: savedLeagues },
+              ]).map(({ slotMode, title, icon: ModeIcon, accent, existsArr }) => (
+                <div key={slotMode} className="space-y-1.5 animate-fade-in">
+                  <div className={`flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest font-bold ${accent === "amber" ? "text-amber-500" : "text-blue-400"}`}>
+                    <ModeIcon size={11} className="shrink-0" />
+                    <span>{title}</span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-1.5">
+                    {[1, 2, 3].map((slot) => {
+                      const summary = summaries[`${slotMode}:${slot}`];
+                      const exists = existsArr[slot - 1] || summary.exists;
+                      const isLastPlayed = exists && lastUsed.mode === slotMode && lastUsed.slot === slot;
+                      const key = `${slotMode}:${slot}`;
+                      const expanded = expandedKey === key;
+                      const ring = isLastPlayed
+                        ? (accent === "amber" ? "border-amber-500/40" : "border-blue-400/40")
+                        : "border-white/5";
+                      const dot = exists
+                        ? (accent === "amber" ? "bg-amber-500 animate-pulse" : "bg-blue-400 animate-pulse")
+                        : "bg-slate-700";
+                      return (
+                        <div key={`${slotMode}-slot-${slot}`} className={`rounded-xl bg-white/2 border text-[11px] overflow-hidden ${ring}`}>
+                          <button
+                            type="button"
+                            onClick={() => setExpandedKey(expanded ? null : key)}
+                            aria-expanded={expanded}
+                            className="w-full flex items-center justify-between p-2 cursor-pointer text-left"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
+                              <span className="font-bold text-slate-305">Slot {slot}</span>
+                              {isLastPlayed ? (
+                                <span className={`text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${accent === "amber" ? "bg-amber-500/20 text-amber-300" : "bg-blue-500/20 text-blue-300"}`}>
+                                  Last Played
+                                </span>
+                              ) : (
+                                <span className="text-[9px] font-mono text-slate-500">
+                                  {exists ? "Active Save" : "Empty Slot"}
+                                </span>
+                              )}
+                              {exists && (
+                                <span className="text-[9px] font-mono text-emerald-400 truncate">
+                                  ${summary.balance.toLocaleString()}
+                                </span>
+                              )}
+                            </div>
+                            <ChevronDown size={12} className={`text-slate-500 shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} />
+                          </button>
+                          {expanded && (
+                            <div className="px-2 pb-2 pt-0.5 space-y-2 border-t border-white/5">
+                              {exists ? (
+                                <>
+                                  <div className="grid grid-cols-2 gap-1.5 pt-1.5">
+                                    <div className="rounded-lg bg-black/25 border border-white/5 px-2 py-1.5">
+                                      <p className="text-[8px] font-mono uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                                        <Wallet size={9} /> Wallet
+                                      </p>
+                                      <p className="text-[12px] font-mono font-bold text-emerald-400">
+                                        ${summary.balance.toLocaleString()}
+                                      </p>
+                                    </div>
+                                    <div className="rounded-lg bg-black/25 border border-white/5 px-2 py-1.5">
+                                      <p className="text-[8px] font-mono uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                                        <CalendarDays size={9} /> Stage
+                                      </p>
+                                      <p className="text-[11px] font-bold text-slate-200 truncate">{summary.stageLabel}</p>
+                                    </div>
+                                    <div className="rounded-lg bg-black/25 border border-white/5 px-2 py-1.5 col-span-2">
+                                      <p className="text-[8px] font-mono uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                                        <Swords size={9} /> Campaign
+                                      </p>
+                                      <p className="text-[10px] text-slate-300">
+                                        <span className="font-bold text-slate-100">{summary.username}</span>
+                                        <span className="text-slate-500"> · {summary.gamesPlayed} played · {summary.betsPlaced} bets</span>
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => resumeActiveMode(slotMode, slot)}
+                                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-2 py-1.5 rounded-lg transition-all text-[10px] uppercase tracking-wide cursor-pointer"
+                                    >
+                                      Continue Save
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDeleteConfirmation({ mode: slotMode, slot })}
+                                      title="Reset (delete) this save"
+                                      className="border border-red-500/40 hover:bg-red-500/15 text-red-400 font-bold px-2 py-1.5 rounded-lg transition-all text-[10px] uppercase tracking-wide cursor-pointer flex items-center justify-center gap-1"
+                                    >
+                                      <Trash2 size={10} /> Reset
+                                    </button>
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="pt-1.5 flex items-center justify-between gap-2">
+                                  <span className="text-[9px] font-mono text-slate-500 uppercase">Available — start fresh here</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => { setMode(slotMode); setSelectedSlot(slot); }}
+                                    className="bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 font-bold px-2 py-1 rounded-lg transition-all text-[9.5px] cursor-pointer"
+                                  >
+                                    Use this slot
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           )}
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-
-              {/* LEAGUE SLOTS */}
-              <div className="space-y-1.5 animate-fade-in">
-                <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-blue-400 font-bold">
-                  <Award size={11} className="shrink-0" />
-                  <span>Elite League Mode</span>
-                </div>
-                <div className="grid grid-cols-1 gap-1.5">
-                  {[1, 2, 3].map((slot) => {
-                    const exists = savedLeagues[slot - 1];
-                    const isLastPlayed = exists && lastUsed.mode === "LEAGUE" && lastUsed.slot === slot;
-                    return (
-                      <div key={`l-slot-${slot}`} className={`flex items-center justify-between p-2 rounded-xl bg-white/2 border text-[11px] ${isLastPlayed ? "border-blue-400/40" : "border-white/5"}`}>
-                        <div className="flex items-center gap-2">
-                          <span className={`w-1.5 h-1.5 rounded-full ${exists ? "bg-blue-400 animate-pulse" : "bg-slate-700"}`} />
-                          <span className="font-bold text-slate-305">Slot {slot}</span>
-                          <span className="text-[9px] font-mono text-slate-500">
-                            {isLastPlayed ? "Last Played" : exists ? "Active Save" : "Empty Slot"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          {exists ? (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => resumeActiveMode("LEAGUE", slot)}
-                                className="bg-blue-500/15 hover:bg-blue-500 text-blue-300 hover:text-slate-950 font-black px-2 py-0.5 rounded-md transition-all text-[9.5px] cursor-pointer"
-                              >
-                                Resume
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setDeleteConfirmation({ mode: "LEAGUE", slot })}
-                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 rounded-md transition-all cursor-pointer h-5 w-5 flex items-center justify-center border border-white/5 text-[9px]"
-                                title="Delete Save Slot"
-                              >
-                                ✕
-                              </button>
-                            </>
-                          ) : (
-                            <span className="text-[8px] font-mono text-slate-600 uppercase">Available</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -340,7 +431,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               type="submit"
               className="w-full bg-emerald-500 hover:bg-emerald-450 active:scale-98 text-slate-950 font-sans font-black tracking-wider uppercase py-3.5 px-4 rounded-2xl text-xs transition-all duration-150 flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/25 cursor-pointer mt-4"
             >
-              KICK OFF CAMPAIGN
+              {writeTargetOccupied ? "REVIEW OVERWRITE & KICK OFF" : "KICK OFF CAMPAIGN"}
               <ArrowRight size={14} strokeWidth={2.5} />
             </button>
           </form>
@@ -374,6 +465,46 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       </div>
       </div>
 
+      {/* Overwrite Confirmation Modal — starting a new campaign on an occupied slot */}
+      {overwriteConfirmation && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 border border-amber-500/30 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl shadow-amber-500/10 animate-fade-in text-center flex flex-col items-center">
+            <div className="h-12 w-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mb-2">
+              <Trash2 size={24} />
+            </div>
+            <h3 className="text-lg font-black text-slate-100 uppercase tracking-widest font-sans">Overwrite Save?</h3>
+            <p className="text-xs text-slate-400">
+              <span className="text-white font-bold">Slot {selectedSlot}</span> ({mode}) already holds a campaign
+              {summaries[`${mode}:${selectedSlot}`]?.exists
+                ? <> — <span className="text-emerald-400 font-mono font-bold">${summaries[`${mode}:${selectedSlot}`].balance.toLocaleString()}</span>, {summaries[`${mode}:${selectedSlot}`].stageLabel}</>
+                : null}
+              . Starting fresh here permanently replaces it. This cannot be undone.
+            </p>
+            <div className="grid grid-cols-2 gap-3 w-full pt-4">
+              <button
+                type="button"
+                onClick={() => setOverwriteConfirmation(false)}
+                className="py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+              >
+                Keep Save
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setOverwriteConfirmation(false);
+                  if (!username.trim()) return;
+                  onKickoff(username.trim(), balance, mode, selectedSlot);
+                }}
+                className="py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition-colors shadow-lg shadow-amber-500/20 cursor-pointer"
+              >
+                Overwrite & Kick Off
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Delete Confirmation Modal */}
       {deleteConfirmation && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -396,6 +527,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 onClick={() => {
                   onDeleteSave(deleteConfirmation.mode, deleteConfirmation.slot);
                   setDeleteConfirmation(null);
+                  setRefreshKey((k) => k + 1);
                 }}
                 className="py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-slate-950 font-black text-xs transition-colors shadow-lg shadow-red-500/20"
               >

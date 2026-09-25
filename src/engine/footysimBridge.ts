@@ -234,7 +234,16 @@ export function simulateFixtureFootysim(
     const minute = Math.max(1, Math.round(Number(ev.t) / 60));
     const teamId = actor ? teamIdOf(actor) : undefined;
     if (type === "goal") {
-      events.push({ minute, type: "GOAL", teamId, playerId: player?.id, playerName: player?.name, commentary: `⚽ Goal! ${player?.name ?? ""}` });
+      // The spatial engine logs the assister pid on the goal event — map it
+      // so 2D-applied fixtures carry assists exactly like classic-engine ones.
+      const assistPid = (ev as Record<string, unknown>).assist as string | null;
+      const assister = assistPid ? nameOf(assistPid) : undefined;
+      events.push({
+        minute, type: "GOAL", teamId,
+        playerId: player?.id, playerName: player?.name,
+        assistantPlayerId: assister?.id, assistantPlayerName: assister?.name,
+        commentary: `⚽ Goal! ${player?.name ?? ""}${assister ? ` (assist: ${assister.name})` : ""}`,
+      });
     } else if (type === "save") {
       events.push({ minute, type: "SAVE", teamId, playerId: player?.id, playerName: player?.name, commentary: `🧤 Save by ${player?.name ?? "the keeper"}` });
     } else if (type === "yellow_card") {

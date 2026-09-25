@@ -8,21 +8,61 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-:root {
+:root,
+:root[data-theme="matte"] {
   --bg: #07090e;            /* page background */
   --surface: #12151c;       /* cards */
   --surface-2: #1a1e27;     /* nested/hover */
   --border: rgba(255,255,255,0.07);
   --border-hover: rgba(255,255,255,0.14);
-  --text: #f2f4f8; 
+  --text: #f2f4f8;
   --muted: #8b93a3;
-  --accent: #10b981;        /* Emerald green */
+  --accent: #10b981;        /* Emerald green — through-line across all themes */
   --accent-2: #06b6d4;      /* Cyan */
   --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
-  --radius: 16px; 
+  --radius: 16px;
   --radius-lg: 24px;
   --shadow: 0 8px 32px rgba(0,0,0,0.35);
   --ease: cubic-bezier(0.25,0.46,0.45,0.94);
+  color-scheme: dark;
+}
+
+/* Navy blue dark variant — same emerald accent, cooler surfaces/glows. */
+:root[data-theme="navy"] {
+  --bg: #060b1a;
+  --surface: #0d1530;
+  --surface-2: #142044;
+  --border: rgba(147,197,253,0.12);
+  --border-hover: rgba(147,197,253,0.24);
+  --text: #eef3ff;
+  --muted: #93a0c4;
+  --accent: #10b981;
+  --accent-2: #38bdf8;
+  --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow: 0 8px 32px rgba(2,8,30,0.6);
+  --ease: cubic-bezier(0.25,0.46,0.45,0.94);
+  color-scheme: dark;
+}
+
+/* Cream light theme — off-white background, ink text, emerald stays for money/CTAs. */
+:root[data-theme="cream"] {
+  --bg: #f6f1e7;
+  --surface: #fffdf7;
+  --surface-2: #efe7d6;
+  --border: rgba(60,45,15,0.12);
+  --border-hover: rgba(60,45,15,0.24);
+  --text: #1c1917;
+  --muted: #78716c;
+  --accent: #059669;
+  --accent-2: #0e7490;
+  --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow: 0 8px 32px rgba(60,45,15,0.12);
+  --ease: cubic-bezier(0.25,0.46,0.45,0.94);
+  color-scheme: light;
 }
 
 @keyframes progress-bar {
@@ -100,6 +140,28 @@ body {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 8px 24px 0 rgba(16, 185, 129, 0.12);
+}
+
+/* Light-theme adaptations: dark translucent glass becomes white translucent
+   so panels stay readable on cream. Accent (emerald) is untouched. */
+:root[data-theme="cream"] .glass-panel {
+  background: rgba(255, 253, 247, 0.82);
+  border-color: rgba(60, 45, 15, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(60, 45, 15, 0.1);
+}
+:root[data-theme="cream"] .glass-panel-heavy {
+  background: rgba(255, 253, 247, 0.94);
+  border-color: rgba(60, 45, 15, 0.14);
+  box-shadow: 0 12px 40px 0 rgba(60, 45, 15, 0.12);
+}
+:root[data-theme="cream"] .glass-card {
+  background: rgba(60, 45, 15, 0.03);
+  border-color: rgba(60, 45, 15, 0.08);
+}
+:root[data-theme="cream"] .glass-card-hover:hover {
+  background: rgba(60, 45, 15, 0.06);
+  border-color: rgba(60, 45, 15, 0.16);
+  box-shadow: 0 8px 24px 0 rgba(5, 150, 105, 0.14);
 }
 
 /* Custom glass scrollbar */

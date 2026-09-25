@@ -69,8 +69,57 @@ export function resolveSelection(sel: SelectionLike, fixture: Fixture): LegResul
         sel.selectionId,
         (fixture.stats?.home.saves ?? 0) + (fixture.stats?.away.saves ?? 0),
       );
-    case "EXACT_SCORE":
-      return sel.selectionId === `${h}-${a}` ? "WON" : "LOST";
+    case "EXACT_SCORE": {
+      if (sel.selectionId === `${h}-${a}`) return "WON";
+      // "Any other" buckets: the winning margin class hit, but the exact
+      // score is not one of the listed lines in the fixture's stored odds.
+      if (sel.selectionId === "ANY_HOME" || sel.selectionId === "ANY_DRAW" || sel.selectionId === "ANY_AWAY") {
+        const listed = new Set((fixture.odds?.exactScores ?? []).map((s) => s.score));
+        if (listed.has(`${h}-${a}`)) return "LOST";
+        const cls = h > a ? "ANY_HOME" : h === a ? "ANY_DRAW" : "ANY_AWAY";
+        return sel.selectionId === cls ? "WON" : "LOST";
+      }
+      return "LOST";
+    }
+    case "TEAM_TOTAL_GOALS": {
+      // selectionId: "HOME_OVER_1.5" | "AWAY_UNDER_2.5"
+      const side = sel.selectionId.startsWith("HOME_") ? "HOME" : sel.selectionId.startsWith("AWAY_") ? "AWAY" : null;
+      if (!side) return "LOST";
+      const parsed = parseOverUnder(sel.selectionId.replace(/^(HOME|AWAY)_/, ""));
+      if (!parsed) return "LOST";
+      const total = side === "HOME" ? h : a;
+      if (parsed.mode === "OVER") return total > parsed.line ? "WON" : "LOST";
+      return total < parsed.line ? "WON" : "LOST";
+    }
+    case "CLEAN_SHEET": {
+      // selectionId: "HOME_YES" | "HOME_NO" | "AWAY_YES" | "AWAY_NO"
+      const homeClean = a === 0;
+      const awayClean = h === 0;
+      if (sel.selectionId === "HOME_YES") return homeClean ? "WON" : "LOST";
+      if (sel.selectionId === "HOME_NO") return homeClean ? "LOST" : "WON";
+      if (sel.selectionId === "AWAY_YES") return awayClean ? "WON" : "LOST";
+      if (sel.selectionId === "AWAY_NO") return awayClean ? "LOST" : "WON";
+      return "LOST";
+    }
+    case "WIN_TO_NIL": {
+      if (sel.selectionId === "HOME") return h > a && a === 0 ? "WON" : "LOST";
+      if (sel.selectionId === "AWAY") return a > h && h === 0 ? "WON" : "LOST";
+      return "LOST";
+    }
+    case "RESULT_BTTS": {
+      // selectionId: "HOME_YES" | "HOME_NO" | "DRAW_YES" | ...
+      const outcome = h > a ? "HOME" : a > h ? "AWAY" : "DRAW";
+      const btts = h > 0 && a > 0 ? "YES" : "NO";
+      return sel.selectionId === `${outcome}_${btts}` ? "WON" : "LOST";
+    }
+    case "HT_FT": {
+      // selectionId: "HH" | "HD" | ... FT side = regulation outcome (same as
+      // MATCH_WINNER, ET counts); HT side = goals with minute <= 45.
+      const htH = fixture.events.filter((ev) => ev.type === "GOAL" && ev.minute <= 45 && ev.teamId === fixture.homeTeamId).length;
+      const htA = fixture.events.filter((ev) => ev.type === "GOAL" && ev.minute <= 45 && ev.teamId === fixture.awayTeamId).length;
+      const side = (x: number, y: number): string => (x > y ? "H" : x === y ? "D" : "A");
+      return sel.selectionId === `${side(htH, htA)}${side(h, a)}` ? "WON" : "LOST";
+    }
     case "ANYTIME_GOALSCORER":
       return fixture.events.some((ev) => ev.type === "GOAL" && ev.playerId === sel.selectionId)
         ? "WON" : "LOST";

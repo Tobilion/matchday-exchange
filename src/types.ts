@@ -125,7 +125,12 @@ export type MarketType =
   | "ANYTIME_GOALSCORER"
   | "OVER_UNDER_CORNERS"
   | "OVER_UNDER_CARDS"
-  | "OVER_UNDER_SAVES";
+  | "OVER_UNDER_SAVES"
+  | "TEAM_TOTAL_GOALS"
+  | "CLEAN_SHEET"
+  | "WIN_TO_NIL"
+  | "RESULT_BTTS"
+  | "HT_FT";
 
 export interface MatchStats {
   home: {
@@ -210,6 +215,21 @@ export interface MatchOdds {
     under: number;
     line: number;
   }[];
+  /** Per-side goals lines, e.g. Home Over 1.5. selectionId: "HOME_OVER_1.5". */
+  teamTotals?: {
+    side: "HOME" | "AWAY";
+    line: number;
+    over: number;
+    under: number;
+  }[];
+  /** selectionId: "HOME_YES" | "HOME_NO" | "AWAY_YES" | "AWAY_NO". */
+  cleanSheet?: { selectionId: string; label: string; odds: number }[];
+  /** selectionId: "HOME" | "AWAY". */
+  winToNil?: { selectionId: string; label: string; odds: number }[];
+  /** Result + BTTS combos: "HOME_YES" | "HOME_NO" | "DRAW_YES" | ... */
+  resultBtts?: { selectionId: string; label: string; odds: number }[];
+  /** Half-time/Full-time, "HH" | "HD" | ... | "AA" (H=home, D=draw, A=away). */
+  htFt?: { selectionId: string; label: string; odds: number }[];
 }
 
 export type WeatherCondition =

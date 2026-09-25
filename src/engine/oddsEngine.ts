@@ -61,9 +61,10 @@ function formNudge(teamId: string, fixtures: Fixture[]): number {
 }
 
 const EXACT_SCORELINES = [
-  "1-0", "2-0", "2-1", "3-0", "3-1", "3-2",
-  "0-0", "1-1", "2-2", "0-1", "0-2", "1-2",
-  "0-3", "1-3", "2-3",
+  "1-0", "2-0", "2-1", "3-0", "3-1", "3-2", "4-0", "4-1", "4-2",
+  "0-0", "1-1", "2-2", "3-3",
+  "0-1", "0-2", "1-2", "0-3", "1-3", "2-3", "0-4", "1-4", "2-4",
+  "4-3", "3-4",
 ];
 
 // How much a player's own scoring record is trusted vs the positional baseline.
@@ -159,6 +160,25 @@ export function computeMatchOdds(
     const p = hs <= MAX_GOALS && as_ <= MAX_GOALS ? matrix[hs][as_] / matrixSum : 1e-4;
     return { score, odds: oddsFromProb(p) };
   });
+  // "Any other" buckets catch the matrix tail not covered by listed scorelines.
+  {
+    const listed = new Set(EXACT_SCORELINES);
+    let otherHome = 0, otherDraw = 0, otherAway = 0;
+    for (let i = 0; i <= MAX_GOALS; i++) {
+      for (let j = 0; j <= MAX_GOALS; j++) {
+        if (listed.has(`${i}-${j}`)) continue;
+        const p = matrix[i][j] / matrixSum;
+        if (i > j) otherHome += p;
+        else if (i === j) otherDraw += p;
+        else otherAway += p;
+      }
+    }
+    exactScores.push(
+      { score: "ANY_HOME", odds: oddsFromProb(otherHome) },
+      { score: "ANY_DRAW", odds: oddsFromProb(otherDraw) },
+      { score: "ANY_AWAY", odds: oddsFromProb(otherAway) },
+    );
+  }
 
   // Goals over/unders come from the SAME (Dixon-Coles corrected) score matrix as
   // 1X2/BTTS/exact scores, so no goal market can disagree with another.
@@ -187,6 +207,93 @@ export function computeMatchOdds(
     yes: oddsFromProb(bttsYesP),
     no: oddsFromProb(1 - bttsYesP),
   };
+
+  // ── Same-game markets, all read off the SAME corrected matrix above ──
+  const cellP = (i: number, j: number): number =>
+    i <= MAX_GOALS && j <= MAX_GOALS ? matrix[i][j] / matrixSum : 0;
+  const homeGoalsP = (n: number): number => {
+    let p = 0;
+    for (let j = 0; j <= MAX_GOALS; j++) p += cellP(n, j);
+    return p;
+  };
+  const awayGoalsP = (n: number): number => {
+    let p = 0;
+    for (let i = 0; i <= MAX_GOALS; i++) p += cellP(i, n);
+    return p;
+  };
+  const teamOverP = (goalsP: (n: number) => number, line: number): number => {
+    let p = 0;
+    for (let n = Math.floor(line) + 1; n <= MAX_GOALS; n++) p += goalsP(n);
+    return clamp(p, 0, 1);
+  };
+  const TEAM_TOTAL_LINES = [0.5, 1.5, 2.5, 3.5];
+  const teamTotals = (["HOME", "AWAY"] as const).flatMap((side) =>
+    TEAM_TOTAL_LINES.map((line) => {
+      const over = teamOverP(side === "HOME" ? homeGoalsP : awayGoalsP, line);
+      return { side, line, over: oddsFromProb(over), under: oddsFromProb(1 - over) };
+    }),
+  );
+  const cleanSheetProbs: Record<string, number> = {
+    HOME_YES: awayGoalsP(0),
+    HOME_NO: 1 - awayGoalsP(0),
+    AWAY_YES: homeGoalsP(0),
+    AWAY_NO: 1 - homeGoalsP(0),
+  };
+  const cleanSheet = (Object.keys(cleanSheetProbs) as string[]).map((selectionId) => ({
+    selectionId,
+    label: `Clean sheet: ${selectionId === "HOME_YES" ? "Home Yes" : selectionId === "HOME_NO" ? "Home No" : selectionId === "AWAY_YES" ? "Away Yes" : "Away No"}`,
+    odds: oddsFromProb(cleanSheetProbs[selectionId]),
+  }));
+  let homeNilP = 0, awayNilP = 0;
+  for (let i = 1; i <= MAX_GOALS; i++) homeNilP += cellP(i, 0);
+  for (let j = 1; j <= MAX_GOALS; j++) awayNilP += cellP(0, j);
+  const winToNil = [
+    { selectionId: "HOME", label: "Home win to nil", odds: oddsFromProb(homeNilP) },
+    { selectionId: "AWAY", label: "Away win to nil", odds: oddsFromProb(awayNilP) },
+  ];
+  const rbAcc: Record<string, number> = {
+    HOME_YES: 0, HOME_NO: 0, DRAW_YES: 0, DRAW_NO: 0, AWAY_YES: 0, AWAY_NO: 0,
+  };
+  for (let i = 0; i <= MAX_GOALS; i++) {
+    for (let j = 0; j <= MAX_GOALS; j++) {
+      const p = cellP(i, j);
+      const res = i > j ? "HOME" : i === j ? "DRAW" : "AWAY";
+      const btts = i >= 1 && j >= 1 ? "YES" : "NO";
+      rbAcc[`${res}_${btts}`] += p;
+    }
+  }
+  const rbLabel = (id: string): string => {
+    const [res, btts] = id.split("_");
+    const r = res === "HOME" ? "Home win" : res === "AWAY" ? "Away win" : "Draw";
+    return `${r} + BTTS ${btts === "YES" ? "Yes" : "No"}`;
+  };
+  const resultBtts = Object.keys(rbAcc).map((selectionId) => ({
+    selectionId, label: rbLabel(selectionId), odds: oddsFromProb(rbAcc[selectionId]),
+  }));
+  // Half-time/Full-time: HT goals ~ Poisson(HT_FRAC * lambda) per side,
+  // second-half the remainder; FT = HT + SH. (Dixon-Coles applies to the FT
+  // matrix only — HT keeps plain Poisson; noted, not hidden.)
+  const HT_FRAC = 0.45;
+  const htLambdaH = lambdaHome * HT_FRAC, htLambdaA = lambdaAway * HT_FRAC;
+  const shLambdaH = lambdaHome * (1 - HT_FRAC), shLambdaA = lambdaAway * (1 - HT_FRAC);
+  const HT_BOUND = 6;
+  const htP = (i: number, j: number): number => poisson(i, htLambdaH) * poisson(j, htLambdaA);
+  const shP = (k: number, l: number): number => poisson(k, shLambdaH) * poisson(l, shLambdaA);
+  const outcomeOf = (x: number, y: number): "H" | "D" | "A" => (x > y ? "H" : x === y ? "D" : "A");
+  const htftAcc: Record<string, number> = {};
+  for (let i = 0; i <= HT_BOUND; i++)
+    for (let j = 0; j <= HT_BOUND; j++)
+      for (let k = 0; k <= HT_BOUND; k++)
+        for (let l = 0; l <= HT_BOUND; l++)
+          htftAcc[outcomeOf(i, j) + outcomeOf(i + k, j + l)] =
+            (htftAcc[outcomeOf(i, j) + outcomeOf(i + k, j + l)] ?? 0) + htP(i, j) * shP(k, l);
+  const htftLabel = (id: string): string => {
+    const word = (c: string): string => (c === "H" ? "Home" : c === "A" ? "Away" : "Draw");
+    return `${word(id[0])} / ${word(id[1])}`;
+  };
+  const htFt = Object.keys(htftAcc)
+    .sort()
+    .map((selectionId) => ({ selectionId, label: htftLabel(selectionId), odds: oddsFromProb(htftAcc[selectionId]) }));
 
   // ── Corners / cards / saves — same blended model, priced off a Poisson total ──
   const cornersE = blend("corners", STAT_BASELINE.corners);
@@ -225,5 +332,10 @@ export function computeMatchOdds(
     overUnderCorners,
     overUnderCards,
     overUnderSaves,
+    teamTotals,
+    cleanSheet,
+    winToNil,
+    resultBtts,
+    htFt,
   };
 }
